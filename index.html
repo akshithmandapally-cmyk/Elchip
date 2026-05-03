@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akshith Mandapally | Semiconductor Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-slate-900 font-sans">
+
+    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
+    <h1 class="font-bold text-xl tracking-tighter">ELECHIP</h1>
+    <div class="space-x-8 text-sm uppercase tracking-widest">
+        <!-- The href must match the ID of the section exactly -->
+        <a href="#process" class="hover:text-blue-600 transition">Process</a>
+        
+        <a href="#works" class="hover:text-blue-600 transition">Works</a>
+        <a href="#experience" class="hover:text-blue-600 transition">Experience</a>
+        <a href="#contact" class="hover:text-blue-600 transition">Contact</a>
+    </div>
+</nav>
+
+    <section class="h-screen flex flex-col justify-center items-center text-center px-4">
+        <h2 class="text-6xl font-bold mb-4" data-aos="fade-up">Building the Future.</h2>
+        <p class="text-xl text-slate-500" data-aos="fade-up" data-aos-delay="200">
+            A deep dive into Semiconductor Manufacturing & Engineering.
+        </p>
+    </section>
+
+    <script>
+        AOS.init(); // This starts the animation engine
+    </script>
+</body>
+</html>
+
+<section id="process" class="py-20 max-w-4xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div data-aos="fade-right">
+            <span class="text-blue-600 font-mono text-sm">STEP 01</span>
+            <h3 class="text-3xl font-bold my-4">Wafer Preparation</h3>
+            <p class="text-slate-600 leading-relaxed">
+                It starts with a silicon ingot, grown to 99.9999% purity. We slice these into ultra-thin wafers, creating the canvas for modern computing.
+            </p>
+        </div>
+        <!-- IMAGE CONTAINER -->
+        <div class="flex justify-center" data-aos="zoom-in" data-aos-duration="800">
+            <!-- Replace the path with your wafer image -->
+            <img src="wafer.jpeg" alt="Silicon Wafer" class="w-72 h-auto object-contain">
+        </div>
+    </div>
+</section>
+
+<section class="py-20 max-w-4xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <!-- Visual First this time for layout variety -->
+        <div class="relative flex justify-center order-2 md:order-1" data-aos="fade-up-left" data-aos-duration="1000">
+            <!-- Replace the path with your photolithography image -->
+            <img src="photolitho.avif" alt="Photolithography Process" class="w-72 h-auto object-contain">
+        </div>
+        <div class="order-1 md:order-2" data-aos="fade-left">
+            <span class="text-blue-600 font-mono text-sm">STEP 02</span>
+            <h3 class="text-3xl font-bold my-4">Photolithography</h3>
+            <p class="text-slate-600 leading-relaxed">
+                Using DUV (Deep Ultraviolet) light, we project intricate circuit patterns onto a light-sensitive coating called photoresist. This is where the "logic" is printed.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 max-w-4xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div data-aos="fade-right">
+            <span class="text-blue-600 font-mono text-sm">STEP 03</span>
+            <h3 class="text-3xl font-bold my-4">Etching & Deposition</h3>
+            <p class="text-slate-600 leading-relaxed">
+                Chemical gases carve away the unexposed areas, leaving behind the three-dimensional structures of the transistors. We then deposit copper layers to create the "wiring."
+            </p>
+        </div>
+        <div class="flex justify-center items-center" data-aos="zoom-in">
+    <!-- The Frame: Sets the size for both images -->
+    <div class="relative w-64 h-64 md:w-80 md:h-80">
+        
+        <!-- Bottom Image (Deposition) - Always visible -->
+        <img src="depositon.png" 
+             alt="Deposition Process" 
+             class="absolute inset-0 w-full h-full object-contain">
+        
+        <!-- Top Image (Etching) - Fades in and out -->
+        <img src="etching.png" 
+             alt="Etching Process" 
+             class="animate-loop absolute inset-0 w-full h-full object-contain">
+             
+    </div>
+</div>
+</section>
+
+<section class="py-20 max-w-4xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="flex justify-center order-2 md:order-1" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="1200">
+            <!-- Replace the path with your ion implantation image -->
+            <img src="ion.png" alt="Ion Implantation" class="w-64 h-auto object-contain">
+        </div>
+        <div class="order-1 md:order-2" data-aos="fade-left">
+            <span class="text-blue-600 font-mono text-sm">STEP 04</span>
+            <h3 class="text-3xl font-bold my-4">Ion Implantation</h3>
+            <p class="text-slate-600 leading-relaxed">
+                To create transistors, we "dope" the silicon by firing high-energy ions into the surface. This alters the conductivity of specific regions, creating the P-type and N-type junctions that allow electricity to flow or stop on command.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 max-w-4xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div data-aos="fade-right">
+            <span class="text-blue-600 font-mono text-sm">STEP 05</span>
+            <h3 class="text-3xl font-bold my-4">Metrology & Quality Control</h3>
+            <p class="text-slate-600 leading-relaxed">
+                Precision is everything. We use <b>Scanning Electron Microscopes (SEM)</b> to inspect circuit patterns at the nanometer scale and <b>Raman Spectroscopy</b> to analyze material stress and lattice quality, ensuring zero defects before the wafer is diced.
+            </p>
+        </div>
+        <div class="flex justify-center" data-aos="slide-up" data-aos-duration="800">
+            <!-- Replace the path with your metrology/inspection image -->
+            <img src="eds.png" alt="Metrology and Inspection Screen" class="w-72 h-auto object-contain">
+        </div>
+    </div>
+</section>
+
+<section class="py-20 max-w-4xl mx-auto px-6">
+    <div class="text-center" data-aos="fade-up" data-aos-duration="1000">
+        <span class="text-blue-600 font-mono text-sm">STEP 06</span>
+        <h3 class="text-3xl font-bold my-4">Assembly & Packaging</h3>
+        <p class="text-slate-600 leading-relaxed max-w-2xl mx-auto mb-12">
+            The finished wafer is sliced into individual dies. Each die is connected to pins and sealed in a protective ceramic or plastic case to become the processor that powers your devices.
+            <!-- Add a Final test line -->
+            The final step is the functional test, validating performance across voltage and temperature corners.
+        </p>
+        <!-- IMAGE CONTAINER -->
+        <div class="flex justify-center mt-12">
+            <!-- Replace the path with your final microchip image -->
+            <img src="package.webp" alt="Final Packaged Microchip" class="w-64 h-auto object-contain">
+        </div>
+    </div>
+</section>
+
+<style>
+    /* This ensures the Etching image disappears and reappears smoothly */
+    .animate-loop {
+        animation: crossfade 6s infinite ease-in-out;
+    }
+
+    @keyframes crossfade {
+        0%, 100% {
+            opacity: 0; /* Only Deposition image is visible */
+        }
+        50% {
+            opacity: 1; /* Etching image covers Deposition */
+        }
+    }
+
+    /* Optional: Improves image rendering for technical diagrams */
+    img {
+        image-rendering: -webkit-optimize-contrast;
+    }
+</style>
+
+
+<script>
+        AOS.init(); // This starts the animation engine
+    </script>
+
+<section id="works" class="py-24 bg-white">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 class="text-4xl font-bold mb-16 text-center tracking-tight">Technical Case Studies</h2>
+        
+        <div class="grid md:grid-cols-2 gap-10">
+            <!-- Project 1 -->
+            <div class="group border border-slate-100 p-8 rounded-2xl hover:bg-slate-50 transition-all duration-300" data-aos="fade-up">
+                <div class="flex justify-between items-start mb-6">
+                    <span class="text-xs font-mono bg-blue-100 text-blue-700 px-3 py-1 rounded-full">Python • Streamlit</span>
+                    <a href="#" class="text-slate-400 hover:text-blue-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                    </a>
+                </div>
+                <h3 class="text-2xl font-bold mb-3">EnergyFlex Hub</h3>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    A dynamic demand response system for renewable energy integration. Developed a Python-based simulation to optimize grid efficiency during peak loads.
+                </p>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="group border border-slate-100 p-8 rounded-2xl hover:bg-slate-50 transition-all duration-300" data-aos="fade-up" data-aos-delay="100">
+        <div class="flex justify-between items-start mb-6">
+            <span class="text-xs font-mono bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Embedded C • Sensors</span>
+            <span class="text-slate-300">02</span>
+        </div>
+        <h3 class="text-2xl font-bold mb-3">Smart Home Automation</h3>
+        <p class="text-slate-600 mb-6 leading-relaxed">
+            A comprehensive diploma project focusing on home security and appliance control. Integrated motion sensors, light automation, and remote control capabilities via a central microcontroller.
+        </p>
+    </div>
+        <!-- Project 3: IoT ECG & Oxygen Monitor -->
+<div class="group border border-slate-100 p-8 rounded-2xl hover:bg-slate-50 transition-all duration-300" data-aos="fade-up" data-aos-delay="200">
+    <div class="flex justify-between items-start mb-6">
+        <span class="text-xs font-mono bg-red-100 text-red-700 px-3 py-1 rounded-full">C++ • IoT • Sensors</span>
+        <a href="#" class="text-slate-400 hover:text-blue-600">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+        </a>
+    </div>
+    <h3 class="text-2xl font-bold mb-3">IoT ECG & SpO2 Monitor</h3>
+    <p class="text-slate-600 mb-6 leading-relaxed">
+        Developed a remote health monitoring system that tracks heart rate (ECG) and oxygen levels (SpO2) in real-time. Data is transmitted via IoT protocols for remote clinical observation.
+    </p>
+    <div class="flex gap-2">
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Microcontroller</span>
+        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Real-time Data</span>
+    </div>
+</div>
+</section>
+
+
+<section class="py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="text-sm font-mono text-blue-600 uppercase tracking-[0.2em] mb-8">Technical Stack</h2>
+        <div class="flex flex-wrap justify-center gap-4 text-slate-700 font-medium">
+            <span class="bg-white border px-4 py-2 rounded-lg">Python (Pandas)</span>
+            <span class="bg-white border px-4 py-2 rounded-lg">Verilog HDL</span>
+            <span class="bg-white border px-4 py-2 rounded-lg">C Programming</span>
+            <span class="bg-white border px-4 py-2 rounded-lg">Semiconductor Metrology</span>
+            <span class="bg-white border px-4 py-2 rounded-lg">Streamlit</span>
+        </div>
+    </div>
+</section>
+
+
+<section id="experience" class="py-20 bg-slate-50">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 class="text-4xl font-bold mb-12 text-center">Professional Experience</h2>
+        
+        <div class="max-w-4xl mx-auto bg-white border border-slate-100 p-8 rounded-2xl shadow-sm" data-aos="fade-up">
+            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
+                <div>
+                    <h3 class="text-2xl font-bold text-slate-800">Solar Energy Intern</h3>
+                    <p class="text-blue-600 font-medium">6-Month Technical Internship</p>
+                </div>
+                <span class="text-slate-400 font-mono text-sm mt-2 md:mt-0">Duration: 6 Months</span>
+            </div>
+
+            <p class="text-slate-600 mb-6 leading-relaxed">
+                Gained hands-on experience in renewable energy systems, focusing on the installation, configuration, and maintenance of diverse solar technologies.
+            </p>
+
+            <ul class="grid md:grid-cols-2 gap-4">
+                <li class="flex items-center text-slate-700">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                    On-Grid & Off-Grid Systems
+                </li>
+                <li class="flex items-center text-slate-700">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                    Solar Water Heaters
+                </li>
+                <li class="flex items-center text-slate-700">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                    Solar Fencing Installation
+                </li>
+                <li class="flex items-center text-slate-700">
+                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                    System Troubleshooting
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section id="contact" class="py-24 bg-white border-t border-slate-100">
+    <div class="max-w-4xl mx-auto px-6 text-center">
+        <h2 class="text-4xl font-bold mb-6 tracking-tight" data-aos="fade-up">Let's Connect</h2>
+        <p class="text-slate-600 mb-10 text-lg" data-aos="fade-up" data-aos-delay="100">
+            I'm currently looking for opportunities in <b>Semiconductor Manufacturing</b> and <b>IoT Engineering</b>. 
+            Whether you have a question or just want to say hi, my inbox is always open!
+        </p>
+
+        <div class="flex flex-col md:flex-row justify-center items-center gap-6" data-aos="fade-up" data-aos-delay="200">
+            <!-- Email Button -->
+            <a href="mailto:akshith.mandapally@gmail.com" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 w-full md:w-auto">
+                Email Me
+            </a>
+            
+            <!-- GitHub Button -->
+            <a href="https://github.com/akshithmandapally-cmyk" target="_blank" class="border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition w-full md:w-auto">
+                GitHub Profile
+            </a>
+
+            <!-- LinkedIn Button -->
+            <a href="https://linkedin.com/in/akshith-mandapally-078691280" target="_blank" class="border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition w-full md:w-auto">
+                LinkedIn
+            </a>
+        </div>
+
+        <!-- Optional: Small detail about your location/availability -->
+        <p class="mt-12 text-slate-400 text-sm font-mono uppercase tracking-widest">
+            Based in India • Open to Relocation
+        </p>
+    </div>
+</section>
+
+
+<footer class="py-12 border-t border-slate-100 text-center text-slate-500 text-sm">
+    <p>© 2026 • Built with passion </p>
+</footer>
