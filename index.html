@@ -4,411 +4,1107 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Akshith Mandapally | Semiconductor Portfolio</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="description" content="Semiconductor Manufacturing & Engineering portfolio of Akshith Mandapally. Explore chip fabrication processes, technical projects, and professional experience.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-dark: #0a0a0f;
+            --bg-mid: #141420;
+            --gray-1: #1a1a2e;
+            --gray-2: #252535;
+            --accent-blue: #4f8ef7;
+            --accent-blue-glow: rgba(79, 142, 247, 0.25);
+            --accent-cyan: #67e8f9;
+            --white: #ffffff;
+            --white-80: rgba(255, 255, 255, 0.8);
+            --white-60: rgba(255, 255, 255, 0.6);
+            --white-20: rgba(255, 255, 255, 0.2);
+            --white-10: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --glass-hover: rgba(255, 255, 255, 0.12);
+            --font-main: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-dark);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ─── BACKGROUND ─────────────────────────────────── */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background:
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(79,142,247,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(103,232,249,0.05) 0%, transparent 60%),
+                linear-gradient(160deg, #0a0a0f 0%, #111122 40%, #1a1a2e 70%, #0d0d18 100%);
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background-image: url('background.png');
+            background-size: cover;
+            background-position: top center;
+            opacity: 0.04;
+            filter: grayscale(100%);
+        }
+
+        /* ─── SCROLLBAR ──────────────────────────────────── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: rgba(79,142,247,0.4); border-radius: 3px; }
+
+        /* ─── NAV ────────────────────────────────────────── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1100px;
+            margin: 0 auto;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        nav::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 10, 15, 0.75);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: -1;
+        }
+
+        .nav-logo {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.15em;
+            color: var(--white);
+            text-decoration: none;
+            background: linear-gradient(135deg, #fff 30%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-size: 0.75rem;
+            font-family: var(--font-mono);
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--white-60);
+            text-decoration: none;
+            transition: color 0.2s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--accent-blue);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* ─── HAMBURGER (MOBILE) ─────────────────────────── */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 4px;
+            background: none;
+            border: none;
+        }
+
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--white-80);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ─── HERO ───────────────────────────────────────── */
+        .hero {
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 1.5rem 4rem;
+            position: relative;
+        }
+
+        .hero-eyebrow {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 8vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #c8d8ff 50%, var(--accent-cyan) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: var(--white-60);
+            max-width: 520px;
+            line-height: 1.7;
+            margin-bottom: 3rem;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            padding: 0.85rem 2rem;
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #3a6fd8 100%);
+            color: #fff;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 20px var(--accent-blue-glow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(79, 142, 247, 0.4);
+        }
+
+        .btn-outline {
+            padding: 0.85rem 2rem;
+            border: 1px solid var(--glass-border);
+            color: var(--white-80);
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            backdrop-filter: blur(8px);
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            background: var(--glass-hover);
+            transform: translateY(-2px);
+        }
+
+        /* Scroll cue */
+        .scroll-cue {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.35;
+        }
+
+        .scroll-cue span {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .scroll-arrow {
+            width: 20px;
+            height: 20px;
+            border-right: 2px solid var(--white);
+            border-bottom: 2px solid var(--white);
+            transform: rotate(45deg);
+            animation: bounce 1.6s infinite ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: rotate(45deg) translateY(0); }
+            50% { transform: rotate(45deg) translateY(6px); }
+        }
+
+        /* ─── SECTION WRAPPER ────────────────────────────── */
+        .section-inner {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        /* ─── PROCESS SECTION ────────────────────────────── */
+        #process {
+            padding: 5rem 0;
+        }
+
+        #process .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-align: center;
+            margin-bottom: 4rem;
+            color: var(--white);
+        }
+
+        .process-step {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+            margin-bottom: 5rem;
+        }
+
+        .process-step.reverse .step-image { order: -1; }
+
+        .step-badge {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .step-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        /* ─── TEXT BOX (WHITE GLASS) ─────────────────────── */
+        .text-box {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.06) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            padding: 1.25rem 1.5rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: rgba(255, 255, 255, 0.88);
+            font-size: 0.95rem;
+            line-height: 1.75;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .text-box:hover {
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+
+        .text-box b {
+            color: var(--white);
+            font-weight: 600;
+        }
+
+        .step-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .step-image img {
+            width: 100%;
+            max-width: 280px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 16px;
+            filter: drop-shadow(0 8px 32px rgba(0,0,0,0.6));
+            transition: transform 0.4s ease;
+        }
+
+        .step-image img:hover {
+            transform: scale(1.04);
+        }
+
+        /* Crossfade animation for Step 3 */
+        .img-frame {
+            position: relative;
+            width: 240px;
+            height: 240px;
+        }
+
+        .img-frame img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .animate-loop {
+            animation: crossfade 6s infinite ease-in-out;
+        }
+
+        @keyframes crossfade {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* ─── WORKS SECTION ──────────────────────────────── */
+        #works {
+            padding: 5rem 0;
+        }
+
+        #works .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--white);
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 1.75rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .project-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(79, 142, 247, 0.35);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(79,142,247,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.25rem;
+        }
+
+        .card-tag {
+            font-size: 0.65rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            padding: 0.35rem 0.75rem;
+            border-radius: 99px;
+            text-transform: uppercase;
+        }
+
+        .tag-blue { background: rgba(79,142,247,0.18); color: #93b8ff; border: 1px solid rgba(79,142,247,0.25); }
+        .tag-amber { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
+        .tag-red { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+
+        .card-link {
+            color: var(--white-60);
+            transition: color 0.2s;
+        }
+
+        .card-link:hover { color: var(--accent-blue); }
+
+        .card-link svg {
+            width: 20px; height: 20px;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .card-desc {
+            font-size: 0.9rem;
+            color: var(--white-60);
+            line-height: 1.7;
+        }
+
+        .card-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .chip {
+            font-size: 0.6rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--white-60);
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.25rem 0.6rem;
+            border-radius: 6px;
+        }
+
+        /* ─── TECH STACK ─────────────────────────────────── */
+        .tech-section {
+            padding: 3rem 0;
+        }
+
+        .tech-label {
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent-blue);
+            margin-bottom: 1.5rem;
+        }
+
+        .tech-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .tech-pill {
+            background: linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.05) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 0.55rem 1.1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--white-80);
+            backdrop-filter: blur(8px);
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .tech-pill:hover {
+            border-color: rgba(79,142,247,0.4);
+            background: rgba(79,142,247,0.1);
+            color: var(--white);
+        }
+
+        /* ─── EXPERIENCE ─────────────────────────────────── */
+        #experience {
+            padding: 5rem 0;
+        }
+
+        #experience .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: var(--white);
+        }
+
+        .exp-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+            max-width: 760px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exp-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(79,142,247,0.4), transparent);
+        }
+
+        .exp-header {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (min-width: 600px) {
+            .exp-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        .exp-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .exp-sub {
+            font-size: 0.9rem;
+            color: var(--accent-blue);
+            font-weight: 500;
+        }
+
+        .exp-duration {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--white-60);
+        }
+
+        .exp-desc {
+            font-size: 0.92rem;
+            color: var(--white-60);
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+        }
+
+        .exp-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem 1.5rem;
+            list-style: none;
+        }
+
+        @media (max-width: 500px) {
+            .exp-list { grid-template-columns: 1fr; }
+        }
+
+        .exp-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            color: var(--white-80);
+        }
+
+        .exp-list li::before {
+            content: "";
+            display: block;
+            width: 6px;
+            height: 6px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* ─── CONTACT ────────────────────────────────────── */
+        #contact {
+            padding: 6rem 0;
+        }
+
+        .contact-inner {
+            max-width: 640px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 1.5rem;
+        }
+
+        .contact-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .contact-desc {
+            font-size: 1rem;
+            color: var(--white-60);
+            line-height: 1.75;
+            margin-bottom: 2.5rem;
+        }
+
+        .contact-desc b {
+            color: var(--white-80);
+            font-weight: 600;
+        }
+
+        .contact-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        @media (min-width: 480px) {
+            .contact-buttons {
+                flex-direction: row;
+                justify-content: center;
+            }
+        }
+
+        .contact-buttons a {
+            padding: 0.9rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s;
+            width: 100%;
+            text-align: center;
+        }
+
+        @media (min-width: 480px) {
+            .contact-buttons a { width: auto; }
+        }
+
+        .contact-location {
+            margin-top: 3rem;
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* ─── FOOTER ─────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--glass-border);
+            padding: 2rem 1.5rem;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.05em;
+        }
+
+        /* ─── DIVIDER ────────────────────────────────────── */
+        .section-divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-cyan));
+            border-radius: 2px;
+            margin: 0 auto 3rem;
+        }
+
+        /* ─── MOBILE NAV OVERLAY ─────────────────────────── */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 99;
+            background: rgba(8, 8, 14, 0.97);
+            backdrop-filter: blur(20px);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        .mobile-nav.open { display: flex; }
+
+        .mobile-nav a {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--white-80);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .mobile-nav a:hover { color: var(--accent-cyan); }
+
+        /* ─── RESPONSIVE ─────────────────────────────────── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hamburger { display: flex; }
+
+            .process-step {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .process-step.reverse .step-image { order: 0; }
+
+            .img-frame {
+                width: 180px;
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero { padding: 5rem 1.25rem 3rem; }
+            .section-inner { padding: 0 1.25rem; }
+        }
+
+        /* image rendering */
+        img {
+            image-rendering: -webkit-optimize-contrast;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-slate-900 font-sans">
+<body>
 
-    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
-    <h1 class="font-bold text-xl tracking-tighter">ELECHIP</h1>
-    <div class="space-x-8 text-sm uppercase tracking-widest">
-        <!-- The href must match the ID of the section exactly -->
-        <a href="#process" class="hover:text-blue-600 transition">Process</a>
-        
-        <a href="#works" class="hover:text-blue-600 transition">Works</a>
-        <a href="#experience" class="hover:text-blue-600 transition">Experience</a>
-        <a href="#contact" class="hover:text-blue-600 transition">Contact</a>
+    <!-- ─── MOBILE NAV ────────────────────────────────────── -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#process" onclick="closeMobileNav()">Process</a>
+        <a href="#works" onclick="closeMobileNav()">Works</a>
+        <a href="#experience" onclick="closeMobileNav()">Experience</a>
+        <a href="#contact" onclick="closeMobileNav()">Contact</a>
     </div>
-</nav>
 
-    <section class="h-screen flex flex-col justify-center items-center text-center px-4">
-        <h2 class="text-6xl font-bold mb-4" data-aos="fade-up">Building the Future.</h2>
-        <p class="text-xl text-slate-500" data-aos="fade-up" data-aos-delay="200" style="color:white;">
-            A deep dive into Semiconductor Manufacturing & Engineering.
+    <!-- ─── NAV ──────────────────────────────────────────── -->
+    <nav>
+        <a class="nav-logo" href="#">ELECHIP</a>
+        <ul class="nav-links">
+            <li><a href="#process">Process</a></li>
+            <li><a href="#works">Works</a></li>
+            <li><a href="#experience">Experience</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu" onclick="toggleMobileNav()">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ─── HERO ──────────────────────────────────────────── -->
+    <section class="hero">
+        <p class="hero-eyebrow" data-aos="fade-down">Semiconductor Engineering Portfolio</p>
+        <h1 data-aos="fade-up" data-aos-delay="100">Building the Future.</h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+            A deep dive into Semiconductor Manufacturing &amp; Engineering — from silicon ingot to packaged chip.
         </p>
+        <div class="hero-cta" data-aos="fade-up" data-aos-delay="300">
+            <a href="#process" class="btn-primary">Explore Process</a>
+            <a href="#contact" class="btn-outline">Get in Touch</a>
+        </div>
+        <div class="scroll-cue">
+            <span>scroll</span>
+            <div class="scroll-arrow"></div>
+        </div>
     </section>
 
+    <!-- ─── PROCESS ───────────────────────────────────────── -->
+    <section id="process">
+        <div class="section-inner">
+            <span class="section-label" style="text-align:center; display:block;" data-aos="fade-up">The Journey</span>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="50">Chip Fabrication Process</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="100"></div>
+
+            <!-- Step 1 -->
+            <div class="process-step" data-aos="fade-up">
+                <div>
+                    <span class="step-badge">Step 01</span>
+                    <h3 class="step-title">Wafer Preparation</h3>
+                    <p class="text-box">
+                        It starts with a silicon ingot, grown to 99.9999% purity. We slice these into ultra-thin wafers, creating the canvas for modern computing.
+                    </p>
+                </div>
+                <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="wafer.jpeg" alt="Silicon Wafer">
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="process-step" data-aos="fade-up">
+                <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="photolitho.avif" alt="Photolithography Process">
+                </div>
+                <div>
+                    <span class="step-badge">Step 02</span>
+                    <h3 class="step-title">Photolithography</h3>
+                    <p class="text-box">
+                        Using DUV (Deep Ultraviolet) light, we project intricate circuit patterns onto a light-sensitive coating called photoresist. This is where the &quot;logic&quot; is printed.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="process-step" data-aos="fade-up">
+                <div>
+                    <span class="step-badge">Step 03</span>
+                    <h3 class="step-title">Etching &amp; Deposition</h3>
+                    <p class="text-box">
+                        Chemical gases carve away the unexposed areas, leaving behind the three-dimensional structures of the transistors. We then deposit copper layers to create the &quot;wiring.&quot;
+                    </p>
+                </div>
+                <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
+                    <div class="img-frame">
+                        <img src="depositon.png" alt="Deposition Process">
+                        <img src="etching.png" alt="Etching Process" class="animate-loop">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="process-step" data-aos="fade-up">
+                <div class="step-image" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-delay="100">
+                    <img src="ion.png" alt="Ion Implantation">
+                </div>
+                <div>
+                    <span class="step-badge">Step 04</span>
+                    <h3 class="step-title">Ion Implantation</h3>
+                    <p class="text-box">
+                        To create transistors, we &quot;dope&quot; the silicon by firing high-energy ions into the surface. This alters the conductivity of specific regions, creating the P-type and N-type junctions that allow electricity to flow or stop on command.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="process-step" data-aos="fade-up">
+                <div>
+                    <span class="step-badge">Step 05</span>
+                    <h3 class="step-title">Metrology &amp; Quality Control</h3>
+                    <p class="text-box">
+                        Precision is everything. We use <b>Scanning Electron Microscopes (SEM)</b> to inspect circuit patterns at the nanometer scale and <b>Raman Spectroscopy</b> to analyze material stress and lattice quality, ensuring zero defects before the wafer is diced.
+                    </p>
+                </div>
+                <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="eds.png" alt="Metrology and Inspection Screen">
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div style="text-align:center; margin-bottom: 2rem;" data-aos="fade-up">
+                <span class="step-badge" style="display:inline-block;">Step 06</span>
+                <h3 class="step-title">Assembly &amp; Packaging</h3>
+                <p class="text-box" style="max-width:620px; margin: 0 auto 2rem;">
+                    The finished wafer is sliced into individual dies. Each die is connected to pins and sealed in a protective ceramic or plastic case to become the processor that powers your devices. The final step is the functional test, validating performance across voltage and temperature corners.
+                </p>
+                <div style="display:flex; justify-content:center;">
+                    <img src="package.webp" alt="Final Packaged Microchip" style="width:200px; height:auto; object-fit:contain; border-radius:16px; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6));">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── TECH STACK ────────────────────────────────────── -->
+    <div class="tech-section" data-aos="fade-up">
+        <div class="section-inner">
+            <p class="tech-label">Technical Stack</p>
+            <div class="tech-pills">
+                <span class="tech-pill">Python</span>
+                <span class="tech-pill">UI/UX Design</span>
+                <span class="tech-pill">C Programming</span>
+                <span class="tech-pill">Semiconductor Metrology</span>
+                <span class="tech-pill">Streamlit</span>
+                <span class="tech-pill">Embedded C</span>
+                <span class="tech-pill">IoT Protocols</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ─── WORKS ──────────────────────────────────────────── -->
+    <section id="works">
+        <div class="section-inner">
+            <span class="section-label" style="text-align:center; display:block;" data-aos="fade-up">Portfolio</span>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="50">Technical Case Studies</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="100"></div>
+
+            <div class="projects-grid">
+                <!-- Project 1 -->
+                <div class="project-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <span class="card-tag tag-blue">Python • Streamlit</span>
+                        <a href="#" class="card-link" aria-label="View project">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                        </a>
+                    </div>
+                    <h3 class="card-title">EnergyFlex Hub</h3>
+                    <p class="card-desc">A dynamic demand response system for renewable energy integration. Developed a Python-based simulation to optimize grid efficiency during peak loads.</p>
+                    <div class="card-chips">
+                        <span class="chip">Simulation</span>
+                        <span class="chip">Grid Optimization</span>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-header">
+                        <span class="card-tag tag-amber">Embedded C • Sensors</span>
+                        <span style="font-family:var(--font-mono); font-size:0.75rem; color:rgba(255,255,255,0.2);">02</span>
+                    </div>
+                    <h3 class="card-title">Smart Home Automation</h3>
+                    <p class="card-desc">A comprehensive diploma project focusing on home security and appliance control. Integrated motion sensors, light automation, and remote control via a central microcontroller.</p>
+                    <div class="card-chips">
+                        <span class="chip">Microcontroller</span>
+                        <span class="chip">Motion Sensing</span>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-header">
+                        <span class="card-tag tag-red">C++ • IoT • Sensors</span>
+                        <a href="#" class="card-link" aria-label="View project">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                        </a>
+                    </div>
+                    <h3 class="card-title">IoT ECG &amp; SpO2 Monitor</h3>
+                    <p class="card-desc">Developed a remote health monitoring system that tracks heart rate (ECG) and oxygen levels (SpO2) in real-time. Data is transmitted via IoT protocols for remote clinical observation.</p>
+                    <div class="card-chips">
+                        <span class="chip">Microcontroller</span>
+                        <span class="chip">Real-time Data</span>
+                        <span class="chip">Healthcare</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── EXPERIENCE ────────────────────────────────────── -->
+    <section id="experience">
+        <div class="section-inner">
+            <span class="section-label" style="text-align:center; display:block;" data-aos="fade-up">Career</span>
+            <h2 class="section-title" data-aos="fade-up" data-aos-delay="50">Professional Experience</h2>
+            <div class="section-divider" data-aos="fade-up" data-aos-delay="100"></div>
+
+            <div class="exp-card" data-aos="fade-up" data-aos-delay="150">
+                <div class="exp-header">
+                    <div>
+                        <h3 class="exp-title">Solar Energy Intern</h3>
+                        <p class="exp-sub">6-Month Technical Internship</p>
+                    </div>
+                    <span class="exp-duration">Duration: 6 Months</span>
+                </div>
+                <p class="exp-desc">
+                    Gained hands-on experience in renewable energy systems, focusing on the installation, configuration, and maintenance of diverse solar technologies.
+                </p>
+                <ul class="exp-list">
+                    <li>On-Grid &amp; Off-Grid Systems</li>
+                    <li>Solar Water Heaters</li>
+                    <li>Solar Fencing Installation</li>
+                    <li>System Troubleshooting</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CONTACT ───────────────────────────────────────── -->
+    <section id="contact">
+        <div class="contact-inner">
+            <span class="section-label" data-aos="fade-up">Say Hello</span>
+            <h2 class="contact-title" data-aos="fade-up" data-aos-delay="50">Let's Connect</h2>
+            <p class="contact-desc" data-aos="fade-up" data-aos-delay="100">
+                I'm currently looking for opportunities in <b>Semiconductor Manufacturing</b> and <b>IoT Engineering</b>. Whether you have a question or just want to say hi, my inbox is always open!
+            </p>
+            <div class="contact-buttons" data-aos="fade-up" data-aos-delay="150">
+                <a href="mailto:akshith.mandapally@gmail.com" class="btn-primary">Email Me</a>
+                <a href="https://github.com/akshithmandapally-cmyk" target="_blank" rel="noopener" class="btn-outline">GitHub Profile</a>
+                <a href="https://linkedin.com/in/akshith-mandapally-078691280" target="_blank" rel="noopener" class="btn-outline">LinkedIn</a>
+            </div>
+            <p class="contact-location" data-aos="fade-up" data-aos-delay="200">Based in India &bull; Open to Relocation</p>
+        </div>
+    </section>
+
+    <!-- ─── FOOTER ────────────────────────────────────────── -->
+    <footer>
+        <p>© 2026 Akshith Mandapally &nbsp;•&nbsp; Built with passion</p>
+    </footer>
+
     <script>
-        AOS.init(); // This starts the animation engine
+        AOS.init({
+            duration: 700,
+            once: true,
+            offset: 60,
+        });
+
+        function toggleMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            const btn = document.getElementById('hamburger');
+            nav.classList.toggle('open');
+            btn.classList.toggle('open');
+            document.body.style.overflow = nav.classList.contains('open') ? 'hidden' : '';
+        }
+
+        function closeMobileNav() {
+            const nav = document.getElementById('mobileNav');
+            const btn = document.getElementById('hamburger');
+            nav.classList.remove('open');
+            btn.classList.remove('open');
+            document.body.style.overflow = '';
+        }
     </script>
 </body>
 </html>
-
-
-
-<style>
-    body {
-        /* Set a fallback color in case the image takes a second to load */
-        background-color: #f8fafc;
-        margin: 0;
-        padding: 0;
-    }
-
-    body::before {
-        content: "";
-        position: fixed; /* Keeps the background still */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1; /* Keeps it behind your text and animations */
-        
-        /* Your Image */
-        background-image: 
-            /* This white linear-gradient overlay ensures your text remains the hero */
-            linear-gradient(rgba(255, 255, 255, 0.92), rgba(0, 0, 0, 0.5)),
-            url('background.png'); /* REPLACE with your actual filename */
-            
-        background-size: cover; /* This forces your 1970x870 image to fill the space */
-        background-position: top;
-        background-repeat: no-repeat;
-        filter: grayscale(20%) brightness(105%); /* Makes it look more like an 'engineering' aesthetic */
-    }
-</style>
-
-
-
-<style>
-    /* This targets ONLY the description text in your 6 steps */
-    #process p {
-        color: #ffffff !important;
-        text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: Adds a tiny shadow to make white text pop on images */
-    }
-
-    /* This ensures your Step Labels (Step 01, etc.) stay blue/bright */
-    #process span {
-        color: #3b82f6 !important; /* Keep this blue or change to your preference */
-        font-weight: bold;
-    }
-
-    /* This keeps your Headings (Wafer Preparation, etc.) the original dark color */
-    /* If you want them to be a different color, change it here */
-    #process h3 {
-        color: #1e293b; /* Dark slate - change this to match your design */
-    }
-
-    #process p {
-    background: rgba(0, 0, 0, 0.2); /* Very light dark tint */
-    backdrop-filter: blur(8px);    /* The "glass" effect */
-    padding: 15px;
-    border-radius: 12px;
-
-
-}
-</style>
-
-
-<section id="process" class="py-20 max-w-4xl mx-auto px-6">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div data-aos="fade-right">
-            <span class="text-blue-600 font-mono text-sm">STEP 01</span>
-            <h3 class="text-3xl font-bold my-4">Wafer Preparation</h3>
-            <p class="text-slate-600 leading-relaxed">
-                It starts with a silicon ingot, grown to 99.9999% purity. We slice these into ultra-thin wafers, creating the canvas for modern computing.
-            </p>
-        </div>
-        <!-- IMAGE CONTAINER -->
-        <div class="flex justify-center" data-aos="zoom-in" data-aos-duration="800">
-            <!-- Replace the path with your wafer image -->
-            <img src="wafer.jpeg" alt="Silicon Wafer" class="w-72 h-auto object-contain">
-        </div>
-    </div>
-</section>
-
-<section class="py-20 max-w-4xl mx-auto px-6">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-        <!-- Visual First this time for layout variety -->
-        <div class="relative flex justify-center order-2 md:order-1" data-aos="fade-up-left" data-aos-duration="1000">
-            <!-- Replace the path with your photolithography image -->
-            <img src="photolitho.avif" alt="Photolithography Process" class="w-72 h-auto object-contain">
-        </div>
-        <div class="order-1 md:order-2" data-aos="fade-left">
-            <span class="text-blue-600 font-mono text-sm">STEP 02</span>
-            <h3 class="text-3xl font-bold my-4">Photolithography</h3>
-            <p class="text-slate-600 leading-relaxed" style = "
-                padding: 16px;
-                background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  color: #fff;
-             ">
-                Using DUV (Deep Ultraviolet) light, we project intricate circuit patterns onto a light-sensitive coating called photoresist. This is where the "logic" is printed.
-            </p>
-        </div>
-    </div>
-</section>
-
-<section class="py-20 max-w-4xl mx-auto px-6">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div data-aos="fade-right">
-            <span class="text-blue-600 font-mono text-sm">STEP 03</span>
-            <h3 class="text-3xl font-bold my-4">Etching & Deposition</h3>
-            <p class="text-slate-600 leading-relaxed" style = "padding: 16px;
-                background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  color: #fff;
-            ">
-                Chemical gases carve away the unexposed areas, leaving behind the three-dimensional structures of the transistors. We then deposit copper layers to create the "wiring."
-            </p>
-        </div>
-        <div class="flex justify-center items-center" data-aos="zoom-in">
-    <!-- The Frame: Sets the size for both images -->
-    <div class="relative w-64 h-64 md:w-80 md:h-80">
-        
-        <!-- Bottom Image (Deposition) - Always visible -->
-        <img src="depositon.png" 
-             alt="Deposition Process" 
-             class="absolute inset-0 w-full h-full object-contain">
-        
-        <!-- Top Image (Etching) - Fades in and out -->
-        <img src="etching.png" 
-             alt="Etching Process" 
-             class="animate-loop absolute inset-0 w-full h-full object-contain">
-             
-    </div>
-</div>
-</section>
-
-<section class="py-20 max-w-4xl mx-auto px-6">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div class="flex justify-center order-2 md:order-1" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-duration="1200">
-            <!-- Replace the path with your ion implantation image -->
-            <img src="ion.png" alt="Ion Implantation" class="w-64 h-auto object-contain">
-        </div>
-        <div class="order-1 md:order-2" data-aos="fade-left">
-            <span class="text-blue-600 font-mono text-sm">STEP 04</span>
-            <h3 class="text-3xl font-bold my-4">Ion Implantation</h3>
-            <p class="text-slate-600 leading-relaxed" style = "
-                padding: 16px;
-                background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  color: #fff;">
-                To create transistors, we "dope" the silicon by firing high-energy ions into the surface. This alters the conductivity of specific regions, creating the P-type and N-type junctions that allow electricity to flow or stop on command.
-            </p>
-        </div>
-    </div>
-</section>
-
-<section class="py-20 max-w-4xl mx-auto px-6">
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-        <div data-aos="fade-right">
-            <span class="text-blue-600 font-mono text-sm">STEP 05</span>
-            <h3 class="text-3xl font-bold my-4">Metrology & Quality Control</h3>
-            <p class="text-slate-600 leading-relaxed" style = "
-                padding: 16px;
-                background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  color: #fff;">
-                Precision is everything. We use <b>Scanning Electron Microscopes (SEM)</b> to inspect circuit patterns at the nanometer scale and <b>Raman Spectroscopy</b> to analyze material stress and lattice quality, ensuring zero defects before the wafer is diced.
-            </p>
-        </div>
-        <div class="flex justify-center" data-aos="slide-up" data-aos-duration="800">
-            <!-- Replace the path with your metrology/inspection image -->
-            <img src="eds.png" alt="Metrology and Inspection Screen" class="w-72 h-auto object-contain">
-        </div>
-    </div>
-</section>
-
-<section class="py-20 max-w-4xl mx-auto px-6">
-    <div class="text-center" data-aos="fade-up" data-aos-duration="1000">
-        <span class="text-blue-600 font-mono text-sm">STEP 06</span>
-        <h3 class="text-3xl font-bold my-4">Assembly & Packaging</h3>
-        <p class="text-slate-600 leading-relaxed max-w-2xl mx-auto mb-12" style = "
-                padding: 16px;
-                background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  color: #fff;">
-            The finished wafer is sliced into individual dies. Each die is connected to pins and sealed in a protective ceramic or plastic case to become the processor that powers your devices.
-            <!-- Add a Final test line -->
-            The final step is the functional test, validating performance across voltage and temperature corners.
-        </p>
-        <!-- IMAGE CONTAINER -->
-        <div class="flex justify-center mt-12">
-            <!-- Replace the path with your final microchip image -->
-            <img src="package.webp" alt="Final Packaged Microchip" class="w-64 h-auto object-contain">
-        </div>
-    </div>
-</section>
-
-
-<style>
-    /* This ensures the Etching image disappears and reappears smoothly */
-    .animate-loop {
-        animation: crossfade 6s infinite ease-in-out;
-    }
-
-    @keyframes crossfade {
-        0%, 100% {
-            opacity: 0; /* Only Deposition image is visible */
-        }
-        50% {
-            opacity: 1; /* Etching image covers Deposition */
-        }
-    }
-
-    /* Optional: Improves image rendering for technical diagrams */
-    img {
-        image-rendering: -webkit-optimize-contrast;
-    }
-</style>
-
-
-<script>
-        AOS.init(); // This starts the animation engine
-    </script>
-
-<section id="works" class="py-24 bg-white">
-    <div class="max-w-6xl mx-auto px-6">
-        <h2 class="text-4xl font-bold mb-16 text-center tracking-tight">Technical Case Studies</h2>
-        
-        <div class="grid md:grid-cols-2 gap-10">
-            <!-- Project 1 -->
-            <div class="group border border-slate-100 p-8 rounded-2xl hover:bg-slate-50 transition-all duration-300" data-aos="fade-up">
-                <div class="flex justify-between items-start mb-6">
-                    <span class="text-xs font-mono bg-blue-100 text-blue-700 px-3 py-1 rounded-full">Python • Streamlit</span>
-                    <a href="#" class="text-slate-400 hover:text-blue-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-                    </a>
-                </div>
-                <h3 class="text-2xl font-bold mb-3">EnergyFlex Hub</h3>
-                <p class="text-slate-600 mb-6 leading-relaxed">
-                    A dynamic demand response system for renewable energy integration. Developed a Python-based simulation to optimize grid efficiency during peak loads.
-                </p>
-            </div>
-
-            <!-- Project 2 -->
-            <div class="group border border-slate-100 p-8 rounded-2xl hover:bg-slate-50 transition-all duration-300" data-aos="fade-up" data-aos-delay="100">
-        <div class="flex justify-between items-start mb-6">
-            <span class="text-xs font-mono bg-amber-100 text-amber-700 px-3 py-1 rounded-full">Embedded C • Sensors</span>
-            <span class="text-slate-300">02</span>
-        </div>
-        <h3 class="text-2xl font-bold mb-3">Smart Home Automation</h3>
-        <p class="text-slate-600 mb-6 leading-relaxed">
-            A comprehensive diploma project focusing on home security and appliance control. Integrated motion sensors, light automation, and remote control capabilities via a central microcontroller.
-        </p>
-    </div>
-        <!-- Project 3: IoT ECG & Oxygen Monitor -->
-<div class="group border border-slate-100 p-8 rounded-2xl hover:bg-slate-50 transition-all duration-300" data-aos="fade-up" data-aos-delay="200">
-    <div class="flex justify-between items-start mb-6">
-        <span class="text-xs font-mono bg-red-100 text-red-700 px-3 py-1 rounded-full">C++ • IoT • Sensors</span>
-        <a href="#" class="text-slate-400 hover:text-blue-600">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
-        </a>
-    </div>
-    <h3 class="text-2xl font-bold mb-3">IoT ECG & SpO2 Monitor</h3>
-    <p class="text-slate-600 mb-6 leading-relaxed">
-        Developed a remote health monitoring system that tracks heart rate (ECG) and oxygen levels (SpO2) in real-time. Data is transmitted via IoT protocols for remote clinical observation.
-    </p>
-    <div class="flex gap-2">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Microcontroller</span>
-        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Real-time Data</span>
-    </div>
-</div>
-</section>
-
-
-<section class="py-20 bg-slate-50">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-        <h2 class="text-sm font-mono text-blue-600 uppercase tracking-[0.2em] mb-8">Technical Stack</h2>
-        <div class="flex flex-wrap justify-center gap-4 text-slate-700 font-medium">
-            <span class="bg-white border px-4 py-2 rounded-lg">Python </span>
-            <span class="bg-white border px-4 py-2 rounded-lg">UI/UX Design</span>
-            <span class="bg-white border px-4 py-2 rounded-lg">C Programming</span>
-            <span class="bg-white border px-4 py-2 rounded-lg">Semiconductor Metrology</span>
-            <span class="bg-white border px-4 py-2 rounded-lg">Streamlit</span>
-        </div>
-    </div>
-</section>
-
-
-<section id="experience" class="py-20 bg-slate-50">
-    <div class="max-w-6xl mx-auto px-6">
-        <h2 class="text-4xl font-bold mb-12 text-center">Professional Experience</h2>
-        
-        <div class="max-w-4xl mx-auto bg-white border border-slate-100 p-8 rounded-2xl shadow-sm" data-aos="fade-up">
-            <div class="flex flex-col md:flex-row md:items-center justify-between mb-6">
-                <div>
-                    <h3 class="text-2xl font-bold text-slate-800">Solar Energy Intern</h3>
-                    <p class="text-blue-600 font-medium">6-Month Technical Internship</p>
-                </div>
-                <span class="text-slate-400 font-mono text-sm mt-2 md:mt-0">Duration: 6 Months</span>
-            </div>
-
-            <p class="text-slate-600 mb-6 leading-relaxed">
-                Gained hands-on experience in renewable energy systems, focusing on the installation, configuration, and maintenance of diverse solar technologies.
-            </p>
-
-            <ul class="grid md:grid-cols-2 gap-4">
-                <li class="flex items-center text-slate-700">
-                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    On-Grid & Off-Grid Systems
-                </li>
-                <li class="flex items-center text-slate-700">
-                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    Solar Water Heaters
-                </li>
-                <li class="flex items-center text-slate-700">
-                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    Solar Fencing Installation
-                </li>
-                <li class="flex items-center text-slate-700">
-                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
-                    System Troubleshooting
-                </li>
-            </ul>
-        </div>
-    </div>
-</section>
-
-<section id="contact" class="py-24 bg-white border-t border-slate-100">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-        <h2 class="text-4xl font-bold mb-6 tracking-tight" data-aos="fade-up">Let's Connect</h2>
-        <p class="text-slate-600 mb-10 text-lg" data-aos="fade-up" data-aos-delay="100">
-            I'm currently looking for opportunities in <b>Semiconductor Manufacturing</b> and <b>IoT Engineering</b>. 
-            Whether you have a question or just want to say hi, my inbox is always open!
-        </p>
-
-        <div class="flex flex-col md:flex-row justify-center items-center gap-6" data-aos="fade-up" data-aos-delay="200">
-            <!-- Email Button -->
-            <a href="mailto:akshith.mandapally@gmail.com" class="bg-blue-600 text-white px-8 py-4 rounded-xl font-bold hover:bg-blue-700 transition shadow-lg shadow-blue-200 w-full md:w-auto">
-                Email Me
-            </a>
-            
-            <!-- GitHub Button -->
-            <a href="https://github.com/akshithmandapally-cmyk" target="_blank" class="border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition w-full md:w-auto">
-                GitHub Profile
-            </a>
-
-            <!-- LinkedIn Button -->
-            <a href="https://linkedin.com/in/akshith-mandapally-078691280" target="_blank" class="border border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition w-full md:w-auto">
-                LinkedIn
-            </a>
-        </div>
-
-        <!-- Optional: Small detail about your location/availability -->
-        <p class="mt-12 text-slate-400 text-sm font-mono uppercase tracking-widest">
-            Based in India • Open to Relocation
-        </p>
-    </div>
-</section>
-
-
-<footer class="py-12 border-t border-slate-100 text-center text-slate-500 text-sm" style = "
-                padding: 16px;
-                background: rgba(0,0,0,0.3);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 8px;
-  color: #fff;">
-    <p>© 2026 • Built with passion </p>
-</footer>
