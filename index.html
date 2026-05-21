@@ -24,7 +24,7 @@
 
     <section class="h-screen flex flex-col justify-center items-center text-center px-4">
         <h2 class="text-6xl font-bold mb-4" data-aos="fade-up">Building the Future.</h2>
-        <p class="text-xl text-slate-500" data-aos="fade-up" data-aos-delay="200">
+        <p class="text-xl text-slate-500" data-aos="fade-up" data-aos-delay="200" style="color:white;">
             A deep dive into Semiconductor Manufacturing & Engineering.
         </p>
     </section>
@@ -34,6 +34,70 @@
     </script>
 </body>
 </html>
+
+
+
+<style>
+    body {
+        /* Set a fallback color in case the image takes a second to load */
+        background-color: #f8fafc;
+        margin: 0;
+        padding: 0;
+    }
+
+    body::before {
+        content: "";
+        position: fixed; /* Keeps the background still */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Keeps it behind your text and animations */
+        
+        /* Your Image */
+        background-image: 
+            /* This white linear-gradient overlay ensures your text remains the hero */
+            linear-gradient(rgba(255, 255, 255, 0.92), rgba(0, 0, 0, 0.5)),
+            url('background.png'); /* REPLACE with your actual filename */
+            
+        background-size: cover; /* This forces your 1970x870 image to fill the space */
+        background-position: top;
+        background-repeat: no-repeat;
+        filter: grayscale(20%) brightness(105%); /* Makes it look more like an 'engineering' aesthetic */
+    }
+</style>
+
+
+
+<style>
+    /* This targets ONLY the description text in your 6 steps */
+    #process p {
+        color: #ffffff !important;
+        text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5); /* Optional: Adds a tiny shadow to make white text pop on images */
+    }
+
+    /* This ensures your Step Labels (Step 01, etc.) stay blue/bright */
+    #process span {
+        color: #3b82f6 !important; /* Keep this blue or change to your preference */
+        font-weight: bold;
+    }
+
+    /* This keeps your Headings (Wafer Preparation, etc.) the original dark color */
+    /* If you want them to be a different color, change it here */
+    #process h3 {
+        color: #1e293b; /* Dark slate - change this to match your design */
+    }
+
+    #process p {
+    background: rgba(0, 0, 0, 0.2); /* Very light dark tint */
+    backdrop-filter: blur(8px);    /* The "glass" effect */
+    padding: 15px;
+    border-radius: 12px;
+
+
+}
+</style>
+
 
 <section id="process" class="py-20 max-w-4xl mx-auto px-6">
     <div class="grid md:grid-cols-2 gap-12 items-center">
@@ -62,7 +126,14 @@
         <div class="order-1 md:order-2" data-aos="fade-left">
             <span class="text-blue-600 font-mono text-sm">STEP 02</span>
             <h3 class="text-3xl font-bold my-4">Photolithography</h3>
-            <p class="text-slate-600 leading-relaxed">
+            <p class="text-slate-600 leading-relaxed" style = "
+                padding: 16px;
+                background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #fff;
+             ">
                 Using DUV (Deep Ultraviolet) light, we project intricate circuit patterns onto a light-sensitive coating called photoresist. This is where the "logic" is printed.
             </p>
         </div>
@@ -74,7 +145,13 @@
         <div data-aos="fade-right">
             <span class="text-blue-600 font-mono text-sm">STEP 03</span>
             <h3 class="text-3xl font-bold my-4">Etching & Deposition</h3>
-            <p class="text-slate-600 leading-relaxed">
+            <p class="text-slate-600 leading-relaxed" style = "padding: 16px;
+                background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #fff;
+            ">
                 Chemical gases carve away the unexposed areas, leaving behind the three-dimensional structures of the transistors. We then deposit copper layers to create the "wiring."
             </p>
         </div>
@@ -105,7 +182,13 @@
         <div class="order-1 md:order-2" data-aos="fade-left">
             <span class="text-blue-600 font-mono text-sm">STEP 04</span>
             <h3 class="text-3xl font-bold my-4">Ion Implantation</h3>
-            <p class="text-slate-600 leading-relaxed">
+            <p class="text-slate-600 leading-relaxed" style = "
+                padding: 16px;
+                background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #fff;">
                 To create transistors, we "dope" the silicon by firing high-energy ions into the surface. This alters the conductivity of specific regions, creating the P-type and N-type junctions that allow electricity to flow or stop on command.
             </p>
         </div>
@@ -117,7 +200,13 @@
         <div data-aos="fade-right">
             <span class="text-blue-600 font-mono text-sm">STEP 05</span>
             <h3 class="text-3xl font-bold my-4">Metrology & Quality Control</h3>
-            <p class="text-slate-600 leading-relaxed">
+            <p class="text-slate-600 leading-relaxed" style = "
+                padding: 16px;
+                background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #fff;">
                 Precision is everything. We use <b>Scanning Electron Microscopes (SEM)</b> to inspect circuit patterns at the nanometer scale and <b>Raman Spectroscopy</b> to analyze material stress and lattice quality, ensuring zero defects before the wafer is diced.
             </p>
         </div>
@@ -132,7 +221,13 @@
     <div class="text-center" data-aos="fade-up" data-aos-duration="1000">
         <span class="text-blue-600 font-mono text-sm">STEP 06</span>
         <h3 class="text-3xl font-bold my-4">Assembly & Packaging</h3>
-        <p class="text-slate-600 leading-relaxed max-w-2xl mx-auto mb-12">
+        <p class="text-slate-600 leading-relaxed max-w-2xl mx-auto mb-12" style = "
+                padding: 16px;
+                background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #fff;">
             The finished wafer is sliced into individual dies. Each die is connected to pins and sealed in a protective ceramic or plastic case to become the processor that powers your devices.
             <!-- Add a Final test line -->
             The final step is the functional test, validating performance across voltage and temperature corners.
@@ -144,6 +239,7 @@
         </div>
     </div>
 </section>
+
 
 <style>
     /* This ensures the Etching image disappears and reappears smoothly */
@@ -225,8 +321,8 @@
     <div class="max-w-4xl mx-auto px-6 text-center">
         <h2 class="text-sm font-mono text-blue-600 uppercase tracking-[0.2em] mb-8">Technical Stack</h2>
         <div class="flex flex-wrap justify-center gap-4 text-slate-700 font-medium">
-            <span class="bg-white border px-4 py-2 rounded-lg">Python (Pandas)</span>
-            <span class="bg-white border px-4 py-2 rounded-lg">Verilog HDL</span>
+            <span class="bg-white border px-4 py-2 rounded-lg">Python </span>
+            <span class="bg-white border px-4 py-2 rounded-lg">UI/UX Design</span>
             <span class="bg-white border px-4 py-2 rounded-lg">C Programming</span>
             <span class="bg-white border px-4 py-2 rounded-lg">Semiconductor Metrology</span>
             <span class="bg-white border px-4 py-2 rounded-lg">Streamlit</span>
@@ -307,6 +403,12 @@
 </section>
 
 
-<footer class="py-12 border-t border-slate-100 text-center text-slate-500 text-sm">
+<footer class="py-12 border-t border-slate-100 text-center text-slate-500 text-sm" style = "
+                padding: 16px;
+                background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #fff;">
     <p>© 2026 • Built with passion </p>
 </footer>
