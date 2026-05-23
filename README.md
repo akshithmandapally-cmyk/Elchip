@@ -1,4 +1,4 @@
-# ELECHIP — Semiconductor Engineering Portfolio
+# ELCHIP — Semiconductor Engineering Portfolio
 
 > A dark-themed, animated portfolio website showcasing semiconductor chip fabrication processes, technical projects, and professional experience.
 

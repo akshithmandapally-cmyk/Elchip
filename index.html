@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Akshith Mandapally | Semiconductor Portfolio</title>
-    <meta name="description" content="Semiconductor Manufacturing & Engineering portfolio of Akshith Mandapally. Explore chip fabrication processes, technical projects, and professional experience.">
+    <title>ELCHIP</title>
+    <meta name="description"
+        content="Semiconductor Manufacturing & Engineering portfolio of Akshith Mandapally. Explore chip fabrication processes, technical projects, and professional experience.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
         :root {
-            --bg-dark: #0a0a0f;
-            --bg-mid: #141420;
-            --gray-1: #1a1a2e;
-            --gray-2: #252535;
+            --bg-dark: #000000;
+            --bg-mid: #050505;
+            --gray-1: #0a0a0a;
+            --gray-2: #111111;
             --accent-blue: #4f8ef7;
             --accent-blue-glow: rgba(79, 142, 247, 0.25);
             --accent-cyan: #67e8f9;
@@ -57,9 +63,9 @@
             inset: 0;
             z-index: -2;
             background:
-                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(79,142,247,0.08) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(103,232,249,0.05) 0%, transparent 60%),
-                linear-gradient(160deg, #0a0a0f 0%, #111122 40%, #1a1a2e 70%, #0d0d18 100%);
+                radial-gradient(ellipse 80% 60% at 20% 10%, rgba(79, 142, 247, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(103, 232, 249, 0.05) 0%, transparent 60%),
+                linear-gradient(160deg, #000000 0%, #050505 40%, #0a0a0a 70%, #000000 100%);
         }
 
         body::after {
@@ -75,9 +81,18 @@
         }
 
         /* ─── SCROLLBAR ──────────────────────────────────── */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
-        ::-webkit-scrollbar-thumb { background: rgba(79,142,247,0.4); border-radius: 3px; }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 142, 247, 0.4);
+            border-radius: 3px;
+        }
 
         /* ─── NAV ────────────────────────────────────────── */
         nav {
@@ -172,9 +187,17 @@
             transition: all 0.3s ease;
         }
 
-        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-        .hamburger.open span:nth-child(2) { opacity: 0; }
-        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        .hamburger.open span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .hamburger.open span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.open span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
 
         /* ─── HERO ───────────────────────────────────────── */
         .hero {
@@ -289,8 +312,15 @@
         }
 
         @keyframes bounce {
-            0%, 100% { transform: rotate(45deg) translateY(0); }
-            50% { transform: rotate(45deg) translateY(6px); }
+
+            0%,
+            100% {
+                transform: rotate(45deg) translateY(0);
+            }
+
+            50% {
+                transform: rotate(45deg) translateY(6px);
+            }
         }
 
         /* ─── SECTION WRAPPER ────────────────────────────── */
@@ -332,7 +362,9 @@
             margin-bottom: 5rem;
         }
 
-        .process-step.reverse .step-image { order: -1; }
+        .process-step.reverse .step-image {
+            order: -1;
+        }
 
         .step-badge {
             font-family: var(--font-mono);
@@ -354,7 +386,7 @@
 
         /* ─── TEXT BOX (WHITE GLASS) ─────────────────────── */
         .text-box {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.06) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.06) 100%);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 16px;
             padding: 1.25rem 1.5rem;
@@ -363,13 +395,13 @@
             color: rgba(255, 255, 255, 0.88);
             font-size: 0.95rem;
             line-height: 1.75;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .text-box:hover {
             border-color: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
         }
 
         .text-box b {
@@ -389,7 +421,7 @@
             height: auto;
             object-fit: contain;
             border-radius: 16px;
-            filter: drop-shadow(0 8px 32px rgba(0,0,0,0.6));
+            filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.6));
             transition: transform 0.4s ease;
         }
 
@@ -417,8 +449,15 @@
         }
 
         @keyframes crossfade {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         /* ─── WORKS SECTION ──────────────────────────────── */
@@ -442,7 +481,7 @@
         }
 
         .project-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 1.75rem;
@@ -456,15 +495,17 @@
         .project-card::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         }
 
         .project-card:hover {
             transform: translateY(-4px);
             border-color: rgba(79, 142, 247, 0.35);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(79,142,247,0.1);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(79, 142, 247, 0.1);
         }
 
         .card-header {
@@ -484,19 +525,36 @@
             text-transform: uppercase;
         }
 
-        .tag-blue { background: rgba(79,142,247,0.18); color: #93b8ff; border: 1px solid rgba(79,142,247,0.25); }
-        .tag-amber { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.25); }
-        .tag-red { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+        .tag-blue {
+            background: rgba(79, 142, 247, 0.18);
+            color: #93b8ff;
+            border: 1px solid rgba(79, 142, 247, 0.25);
+        }
+
+        .tag-amber {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+
+        .tag-red {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.25);
+        }
 
         .card-link {
             color: var(--white-60);
             transition: color 0.2s;
         }
 
-        .card-link:hover { color: var(--accent-blue); }
+        .card-link:hover {
+            color: var(--accent-blue);
+        }
 
         .card-link svg {
-            width: 20px; height: 20px;
+            width: 20px;
+            height: 20px;
         }
 
         .card-title {
@@ -526,8 +584,8 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             color: var(--white-60);
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 0.25rem 0.6rem;
             border-radius: 6px;
         }
@@ -555,7 +613,7 @@
         }
 
         .tech-pill {
-            background: linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.05) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.05) 100%);
             border: 1px solid var(--glass-border);
             border-radius: 10px;
             padding: 0.55rem 1.1rem;
@@ -567,8 +625,8 @@
         }
 
         .tech-pill:hover {
-            border-color: rgba(79,142,247,0.4);
-            background: rgba(79,142,247,0.1);
+            border-color: rgba(79, 142, 247, 0.4);
+            background: rgba(79, 142, 247, 0.1);
             color: var(--white);
         }
 
@@ -587,13 +645,13 @@
         }
 
         .exp-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.04) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
             border: 1px solid var(--glass-border);
             border-radius: 20px;
             padding: 2rem;
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            box-shadow: 0 4px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.3);
             max-width: 760px;
             margin: 0 auto;
             position: relative;
@@ -603,9 +661,11 @@
         .exp-card::before {
             content: "";
             position: absolute;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(79,142,247,0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba(79, 142, 247, 0.4), transparent);
         }
 
         .exp-header {
@@ -656,7 +716,9 @@
         }
 
         @media (max-width: 500px) {
-            .exp-list { grid-template-columns: 1fr; }
+            .exp-list {
+                grid-template-columns: 1fr;
+            }
         }
 
         .exp-list li {
@@ -735,7 +797,9 @@
         }
 
         @media (min-width: 480px) {
-            .contact-buttons a { width: auto; }
+            .contact-buttons a {
+                width: auto;
+            }
         }
 
         .contact-location {
@@ -744,7 +808,7 @@
             font-size: 0.65rem;
             letter-spacing: 0.25em;
             text-transform: uppercase;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
         }
 
         /* ─── FOOTER ─────────────────────────────────────── */
@@ -754,7 +818,7 @@
             text-align: center;
             font-family: var(--font-mono);
             font-size: 0.75rem;
-            color: rgba(255,255,255,0.3);
+            color: rgba(255, 255, 255, 0.3);
             letter-spacing: 0.05em;
         }
 
@@ -781,7 +845,9 @@
             gap: 2.5rem;
         }
 
-        .mobile-nav.open { display: flex; }
+        .mobile-nav.open {
+            display: flex;
+        }
 
         .mobile-nav a {
             font-family: var(--font-mono);
@@ -793,19 +859,28 @@
             transition: color 0.2s;
         }
 
-        .mobile-nav a:hover { color: var(--accent-cyan); }
+        .mobile-nav a:hover {
+            color: var(--accent-cyan);
+        }
 
         /* ─── RESPONSIVE ─────────────────────────────────── */
         @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .hamburger { display: flex; }
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger {
+                display: flex;
+            }
 
             .process-step {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
 
-            .process-step.reverse .step-image { order: 0; }
+            .process-step.reverse .step-image {
+                order: 0;
+            }
 
             .img-frame {
                 width: 180px;
@@ -814,8 +889,13 @@
         }
 
         @media (max-width: 480px) {
-            .hero { padding: 5rem 1.25rem 3rem; }
-            .section-inner { padding: 0 1.25rem; }
+            .hero {
+                padding: 5rem 1.25rem 3rem;
+            }
+
+            .section-inner {
+                padding: 0 1.25rem;
+            }
         }
 
         /* image rendering */
@@ -824,6 +904,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- ─── MOBILE NAV ────────────────────────────────────── -->
@@ -836,7 +917,7 @@
 
     <!-- ─── NAV ──────────────────────────────────────────── -->
     <nav>
-        <a class="nav-logo" href="#">ELECHIP</a>
+        <a class="nav-logo" href="#">ELCHIP</a>
         <ul class="nav-links">
             <li><a href="#process">Process</a></li>
             <li><a href="#works">Works</a></li>
@@ -878,24 +959,26 @@
                     <span class="step-badge">Step 01</span>
                     <h3 class="step-title">Wafer Preparation</h3>
                     <p class="text-box">
-                        It starts with a silicon ingot, grown to 99.9999% purity. We slice these into ultra-thin wafers, creating the canvas for modern computing.
+                        It starts with a silicon ingot, grown to 99.9999% purity. We slice these into ultra-thin wafers,
+                        creating the canvas for modern computing.
                     </p>
                 </div>
                 <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
-                    <img src="wafer.jpeg" alt="Silicon Wafer">
+                    <img src="real_wafer_1779418564747.png" alt="Silicon Wafer">
                 </div>
             </div>
 
             <!-- Step 2 -->
             <div class="process-step" data-aos="fade-up">
                 <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
-                    <img src="photolitho.avif" alt="Photolithography Process">
+                    <img src="real_photolitho_1779418591399.png" alt="Photolithography Process">
                 </div>
                 <div>
                     <span class="step-badge">Step 02</span>
                     <h3 class="step-title">Photolithography</h3>
                     <p class="text-box">
-                        Using DUV (Deep Ultraviolet) light, we project intricate circuit patterns onto a light-sensitive coating called photoresist. This is where the &quot;logic&quot; is printed.
+                        Using DUV (Deep Ultraviolet) light, we project intricate circuit patterns onto a light-sensitive
+                        coating called photoresist. This is where the &quot;logic&quot; is printed.
                     </p>
                 </div>
             </div>
@@ -906,13 +989,14 @@
                     <span class="step-badge">Step 03</span>
                     <h3 class="step-title">Etching &amp; Deposition</h3>
                     <p class="text-box">
-                        Chemical gases carve away the unexposed areas, leaving behind the three-dimensional structures of the transistors. We then deposit copper layers to create the &quot;wiring.&quot;
+                        Chemical gases carve away the unexposed areas, leaving behind the three-dimensional structures
+                        of the transistors. We then deposit copper layers to create the &quot;wiring.&quot;
                     </p>
                 </div>
                 <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
                     <div class="img-frame">
-                        <img src="depositon.png" alt="Deposition Process">
-                        <img src="etching.png" alt="Etching Process" class="animate-loop">
+                        <img src="real_deposition_1779418616958.png" alt="Deposition Process">
+                        <img src="real_etching_1779418641999.png" alt="Etching Process" class="animate-loop">
                     </div>
                 </div>
             </div>
@@ -920,13 +1004,15 @@
             <!-- Step 4 -->
             <div class="process-step" data-aos="fade-up">
                 <div class="step-image" data-aos="flip-left" data-aos-easing="ease-out-cubic" data-aos-delay="100">
-                    <img src="ion.png" alt="Ion Implantation">
+                    <img src="real_ion_implant_1779418669250.png" alt="Ion Implantation">
                 </div>
                 <div>
                     <span class="step-badge">Step 04</span>
                     <h3 class="step-title">Ion Implantation</h3>
                     <p class="text-box">
-                        To create transistors, we &quot;dope&quot; the silicon by firing high-energy ions into the surface. This alters the conductivity of specific regions, creating the P-type and N-type junctions that allow electricity to flow or stop on command.
+                        To create transistors, we &quot;dope&quot; the silicon by firing high-energy ions into the
+                        surface. This alters the conductivity of specific regions, creating the P-type and N-type
+                        junctions that allow electricity to flow or stop on command.
                     </p>
                 </div>
             </div>
@@ -937,11 +1023,13 @@
                     <span class="step-badge">Step 05</span>
                     <h3 class="step-title">Metrology &amp; Quality Control</h3>
                     <p class="text-box">
-                        Precision is everything. We use <b>Scanning Electron Microscopes (SEM)</b> to inspect circuit patterns at the nanometer scale and <b>Raman Spectroscopy</b> to analyze material stress and lattice quality, ensuring zero defects before the wafer is diced.
+                        Precision is everything. We use <b>Scanning Electron Microscopes (SEM)</b> to inspect circuit
+                        patterns at the nanometer scale and <b>Raman Spectroscopy</b> to analyze material stress and
+                        lattice quality, ensuring zero defects before the wafer is diced.
                     </p>
                 </div>
                 <div class="step-image" data-aos="zoom-in" data-aos-delay="100">
-                    <img src="eds.png" alt="Metrology and Inspection Screen">
+                    <img src="real_metrology_1779418693534.png" alt="Metrology and Inspection Screen">
                 </div>
             </div>
 
@@ -950,10 +1038,13 @@
                 <span class="step-badge" style="display:inline-block;">Step 06</span>
                 <h3 class="step-title">Assembly &amp; Packaging</h3>
                 <p class="text-box" style="max-width:620px; margin: 0 auto 2rem;">
-                    The finished wafer is sliced into individual dies. Each die is connected to pins and sealed in a protective ceramic or plastic case to become the processor that powers your devices. The final step is the functional test, validating performance across voltage and temperature corners.
+                    The finished wafer is sliced into individual dies. Each die is connected to pins and sealed in a
+                    protective ceramic or plastic case to become the processor that powers your devices. The final step
+                    is the functional test, validating performance across voltage and temperature corners.
                 </p>
                 <div style="display:flex; justify-content:center;">
-                    <img src="package.webp" alt="Final Packaged Microchip" style="width:200px; height:auto; object-fit:contain; border-radius:16px; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6));">
+                    <img src="real_chip_pkg_1779418720672.png" alt="Final Packaged Microchip"
+                        style="width:200px; height:auto; object-fit:contain; border-radius:16px; filter:drop-shadow(0 8px 32px rgba(0,0,0,0.6));">
                 </div>
             </div>
         </div>
@@ -968,9 +1059,6 @@
                 <span class="tech-pill">UI/UX Design</span>
                 <span class="tech-pill">C Programming</span>
                 <span class="tech-pill">Semiconductor Metrology</span>
-                <span class="tech-pill">Streamlit</span>
-                <span class="tech-pill">Embedded C</span>
-                <span class="tech-pill">IoT Protocols</span>
             </div>
         </div>
     </div>
@@ -988,11 +1076,15 @@
                     <div class="card-header">
                         <span class="card-tag tag-blue">Python • Streamlit</span>
                         <a href="#" class="card-link" aria-label="View project">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                            </svg>
                         </a>
                     </div>
                     <h3 class="card-title">EnergyFlex Hub</h3>
-                    <p class="card-desc">A dynamic demand response system for renewable energy integration. Developed a Python-based simulation to optimize grid efficiency during peak loads.</p>
+                    <p class="card-desc">A dynamic demand response system for renewable energy integration. Developed a
+                        Python-based simulation to optimize grid efficiency during peak loads.</p>
                     <div class="card-chips">
                         <span class="chip">Simulation</span>
                         <span class="chip">Grid Optimization</span>
@@ -1003,10 +1095,13 @@
                 <div class="project-card" data-aos="fade-up" data-aos-delay="100">
                     <div class="card-header">
                         <span class="card-tag tag-amber">Embedded C • Sensors</span>
-                        <span style="font-family:var(--font-mono); font-size:0.75rem; color:rgba(255,255,255,0.2);">02</span>
+                        <span
+                            style="font-family:var(--font-mono); font-size:0.75rem; color:rgba(255,255,255,0.2);">02</span>
                     </div>
                     <h3 class="card-title">Smart Home Automation</h3>
-                    <p class="card-desc">A comprehensive diploma project focusing on home security and appliance control. Integrated motion sensors, light automation, and remote control via a central microcontroller.</p>
+                    <p class="card-desc">A comprehensive diploma project focusing on home security and appliance
+                        control. Integrated motion sensors, light automation, and remote control via a central
+                        microcontroller.</p>
                     <div class="card-chips">
                         <span class="chip">Microcontroller</span>
                         <span class="chip">Motion Sensing</span>
@@ -1018,11 +1113,16 @@
                     <div class="card-header">
                         <span class="card-tag tag-red">C++ • IoT • Sensors</span>
                         <a href="#" class="card-link" aria-label="View project">
-                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                    stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                            </svg>
                         </a>
                     </div>
                     <h3 class="card-title">IoT ECG &amp; SpO2 Monitor</h3>
-                    <p class="card-desc">Developed a remote health monitoring system that tracks heart rate (ECG) and oxygen levels (SpO2) in real-time. Data is transmitted via IoT protocols for remote clinical observation.</p>
+                    <p class="card-desc">Developed a remote health monitoring system that tracks heart rate (ECG) and
+                        oxygen levels (SpO2) in real-time. Data is transmitted via IoT protocols for remote clinical
+                        observation.</p>
                     <div class="card-chips">
                         <span class="chip">Microcontroller</span>
                         <span class="chip">Real-time Data</span>
@@ -1049,7 +1149,8 @@
                     <span class="exp-duration">Duration: 6 Months</span>
                 </div>
                 <p class="exp-desc">
-                    Gained hands-on experience in renewable energy systems, focusing on the installation, configuration, and maintenance of diverse solar technologies.
+                    Gained hands-on experience in renewable energy systems, focusing on the installation, configuration,
+                    and maintenance of diverse solar technologies.
                 </p>
                 <ul class="exp-list">
                     <li>On-Grid &amp; Off-Grid Systems</li>
@@ -1067,14 +1168,18 @@
             <span class="section-label" data-aos="fade-up">Say Hello</span>
             <h2 class="contact-title" data-aos="fade-up" data-aos-delay="50">Let's Connect</h2>
             <p class="contact-desc" data-aos="fade-up" data-aos-delay="100">
-                I'm currently looking for opportunities in <b>Semiconductor Manufacturing</b> and <b>IoT Engineering</b>. Whether you have a question or just want to say hi, my inbox is always open!
+                I'm currently looking for opportunities in <b>Semiconductor Manufacturing</b> and <b>IoT
+                    Engineering</b>. Whether you have a question or just want to say hi, my inbox is always open!
             </p>
             <div class="contact-buttons" data-aos="fade-up" data-aos-delay="150">
                 <a href="mailto:akshith.mandapally@gmail.com" class="btn-primary">Email Me</a>
-                <a href="https://github.com/akshithmandapally-cmyk" target="_blank" rel="noopener" class="btn-outline">GitHub Profile</a>
-                <a href="https://linkedin.com/in/akshith-mandapally-078691280" target="_blank" rel="noopener" class="btn-outline">LinkedIn</a>
+                <a href="https://github.com/akshithmandapally-cmyk" target="_blank" rel="noopener"
+                    class="btn-outline">GitHub Profile</a>
+                <a href="https://linkedin.com/in/akshith-mandapally-078691280" target="_blank" rel="noopener"
+                    class="btn-outline">LinkedIn</a>
             </div>
-            <p class="contact-location" data-aos="fade-up" data-aos-delay="200">Based in India &bull; Open to Relocation</p>
+            <p class="contact-location" data-aos="fade-up" data-aos-delay="200">Based in India &bull; Open to Relocation
+            </p>
         </div>
     </section>
 
@@ -1107,4 +1212,5 @@
         }
     </script>
 </body>
+
 </html>
