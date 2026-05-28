@@ -2,7 +2,7 @@
 
 > A dark-themed, animated portfolio website showcasing semiconductor chip fabrication processes, technical projects, and professional experience.
 
-**Live site:** [View Portfolio](https://akshithmandapally-cmyk.github.io/elechip) &nbsp;|&nbsp; **Author:** [Akshith Mandapally](https://linkedin.com/in/akshith-mandapally-078691280)
+**Live site:** [View Portfolio](https://akshithmandapally-cmyk.github.io/Elchip/) &nbsp;|&nbsp; **Author:** [Akshith Mandapally](https://linkedin.com/in/akshith-mandapally-078691280)
 
 ---
 
@@ -19,7 +19,7 @@ A single-page portfolio built with pure HTML & CSS, featuring:
 ## 🗂️ Project Structure
 
 ```
-elechip/
+elchip/
 ├── index.html                          # Main (and only) HTML page — all CSS & JS inline
 ├── background.png                      # Hero background texture overlay
 ├── real_wafer_1779418564747.png        # Step 01 — Realistic silicon wafer image
@@ -75,9 +75,9 @@ No build step required — this is a static single-page site.
 
 ```bash
 # Clone the repository
-git clone https://github.com/akshithmandapally-cmyk/elechip.git
+git clone https://github.com/akshithmandapally-cmyk/elchip.git
 
-cd elechip
+cd elchip
 
 # Open directly in your browser
 open index.html
