@@ -20,16 +20,15 @@ A single-page portfolio built with pure HTML & CSS, featuring:
 
 ```
 elechip/
-├── index.html          # Main (and only) HTML page — all CSS & JS inline
-├── background.png      # Hero background texture overlay
-├── wafer.jpeg          # Step 01 — Silicon wafer image
-├── photolitho.avif     # Step 02 — Photolithography diagram
-├── depositon.png       # Step 03 — Deposition process image
-├── etching.png         # Step 03 — Etching process image (crossfade animation)
-├── ion.png             # Step 04 — Ion implantation image
-├── eds.png             # Step 05 — EDS / SEM metrology image
-├── metalwiring.png     # Metal wiring reference image
-└── package.webp        # Step 06 — Packaged microchip image
+├── index.html                          # Main (and only) HTML page — all CSS & JS inline
+├── background.png                      # Hero background texture overlay
+├── real_wafer_1779418564747.png        # Step 01 — Realistic silicon wafer image
+├── real_photolitho_1779418591399.png   # Step 02 — Photolithography machine
+├── real_deposition_1779418616958.png   # Step 03 — Deposition process image
+├── real_etching_1779418641999.png      # Step 03 — Etching process image (crossfade animation)
+├── real_ion_implant_1779418669250.png  # Step 04 — Ion implantation machine
+├── real_metrology_1779418693534.png    # Step 05 — SEM metrology scan
+└── real_chip_pkg_1779418720672.png     # Step 06 — Packaged microchip image
 ```
 
 ---
@@ -110,7 +109,7 @@ Then visit `http://localhost:8080`.
 
 ## 🎨 Design Highlights
 
-- **Color palette:** Deep space blacks (`#0a0a0f`) transitioning to dark blue-gray (`#1a1a2e`) with subtle blue accent glows
+- **Color palette:** Pure deep blacks (`#000000`, `#050505`) transitioning to dark charcoal (`#0a0a0a`) with subtle blue accent glows
 - **Glassmorphism cards:** `backdrop-filter: blur(12px)` + semi-transparent white borders on all text/project boxes
 - **Gradient text:** Hero heading uses a white → light blue → cyan gradient
 - **Micro-animations:** AOS scroll reveals, hover lift on cards, crossfade between etching & deposition images, scroll cue bounce
