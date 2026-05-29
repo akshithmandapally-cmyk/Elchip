@@ -3,7 +3,7 @@
    with user-supplied data. Static HTML built with secure DOM patterns.
    ────────────────────────────────────────────────────────────────────────── */
 
-window.renderHome = function(container) {
+window.renderHome = function (container) {
   const data = window.SEMI_DATA;
 
   // Build page using secure DOM construction
@@ -29,10 +29,10 @@ window.renderHome = function(container) {
     const size = Math.random() * 3 + 1;
     p.style.cssText = `
       width:${size}px; height:${size}px;
-      left:${Math.random()*100}%;
+      left:${Math.random() * 100}%;
       background:${Math.random() > 0.5 ? 'rgba(79,142,247,0.6)' : 'rgba(103,232,249,0.5)'};
-      animation-duration:${8 + Math.random()*12}s;
-      animation-delay:${Math.random()*8}s;
+      animation-duration:${8 + Math.random() * 12}s;
+      animation-delay:${Math.random() * 8}s;
     `;
     hero.appendChild(p);
   }
@@ -44,15 +44,14 @@ window.renderHome = function(container) {
 
   const eyebrow = document.createElement('span');
   eyebrow.className = 'hero-eyebrow anim-fade-up';
-  eyebrow.textContent = 'IC Fabrication Educational Platform';
 
   const h1 = document.createElement('h1');
   h1.className = 'hero-title anim-fade-up-d1';
-  h1.textContent = 'Semiconductor Manufacturing & Inspection System';
+  h1.textContent = 'Deep Dive into Semiconductor Manufacturing';
 
   const subtitle = document.createElement('p');
   subtitle.className = 'hero-subtitle anim-fade-up-d2';
-  subtitle.textContent = 'Interactive Educational Platform for IC Fabrication Processes — from silicon sand to packaged chip.';
+
 
   const cta = document.createElement('div');
   cta.className = 'hero-cta anim-fade-up-d3';
@@ -255,7 +254,7 @@ window.renderHome = function(container) {
   const coGrid = document.createElement('div');
   coGrid.className = 'companies-grid';
 
-  const preview = [...data.companies.foundries.slice(0,3), ...data.companies.equipment.slice(0,3)];
+  const preview = [...data.companies.foundries.slice(0, 3), ...data.companies.equipment.slice(0, 3)];
   preview.forEach(co => {
     const card = document.createElement('div');
     card.className = 'company-card glass-card';
