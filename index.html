@@ -17,17 +17,21 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="tnc-removebg-preview.png?v=3">
 
-  <!-- TODO(security): Content Security Policy — restricts sources of scripts, styles, images.
-       unsafe-inline is required ONLY for AOS CDN inline styles; remove if AOS is removed.
-       Script sources are limited to self and unpkg.com (for AOS). -->
+  <!-- Content Security Policy
+       - script-src: self + unpkg.com (AOS)
+       - connect-src: Wikipedia REST API for search results
+       - frame-src: YouTube for embedded video search
+       - img-src: Wikipedia thumbnail images
+       - style-src: unsafe-inline required for AOS CDN styles -->
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self'; 
-             script-src 'self' https://unpkg.com; 
-             style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; 
-             font-src 'self' https://fonts.gstatic.com; 
-             img-src 'self' data:; 
-             connect-src 'none'; 
-             object-src 'none'; 
+    content="default-src 'self';
+             script-src 'self' https://unpkg.com;
+             style-src 'self' 'unsafe-inline';
+             font-src 'self';
+             img-src 'self' data: https://upload.wikimedia.org https://en.wikipedia.org;
+             connect-src 'self' https://en.wikipedia.org;
+             frame-src https://www.youtube.com https://www.youtube-nocookie.com;
+             object-src 'none';
              frame-ancestors 'none';">
 
   <!-- Clickjacking protection -->
@@ -35,10 +39,7 @@
   <!-- Prevent MIME sniffing -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
-  <!-- Fonts (Google Fonts — external style-src allowed above) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Tahoma is a system font — no external font CDN required -->
 
   <!-- AOS — Animate on Scroll (CDN with SRI hash)
        TODO(security): Verify SRI hash matches current version before production deployment.
