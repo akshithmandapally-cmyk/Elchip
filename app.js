@@ -1694,13 +1694,13 @@
     const btn = document.createElement('button');
     btn.className = 'assist-btn';
     btn.id = 'assist-btn';
-    btn.setAttribute('aria-label', 'Open ELCHIP AI Assistant');
-    btn.setAttribute('title', 'ELCHIP Assistant — Click to ask anything');
+    btn.setAttribute('aria-label', 'Open ak AI Guide');
+    btn.setAttribute('title', 'ak AI Guide — Click to ask anything');
 
     // Logo image
     const img = document.createElement('img');
     img.src = 'tnc-removebg-preview.png';
-    img.alt = 'ELCHIP Assistant';
+    img.alt = 'ak AI Guide';
     img.className = 'assist-btn-img';
 
     // Question mark badge overlay
@@ -1716,7 +1716,7 @@
     panel.className = 'assist-panel';
     panel.id = 'assist-panel';
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-label', 'ELCHIP AI Assistant');
+    panel.setAttribute('aria-label', 'ak AI Guide');
 
     // Header
     const header = document.createElement('div');
@@ -1733,10 +1733,10 @@
     const hInfo = document.createElement('div');
     const hName = document.createElement('div');
     hName.className = 'assist-header-name';
-    hName.textContent = 'ELCHIP Assistant';
+    hName.textContent = 'ak';
     const hStatus = document.createElement('div');
     hStatus.className = 'assist-header-status';
-    hStatus.textContent = '● Online — Ask me anything';
+    hStatus.textContent = '● Online — roasting n00bs';
     hInfo.append(hName, hStatus);
     hLeft.append(hImg, hInfo);
 
@@ -1766,15 +1766,15 @@
 
     // Welcome message with funny randomized cleanroom greetings
     const greetings = [
-      "🚨 SYSTEM WARNING: Bunny suit check bypassed! Silicon contamination risk high! 🧪\n\nAnyway, welcome! I'm the ELCHIP Assistant, your chaotic guide to advanced semiconductors. Ask me about EUV lithography, chip companies, or tools before ASML catches us!",
-      "Beep boop! 🤖 My silicon brain cells have completed 10,000,000 operations to say: HELLO USER.\n\nI am the Dopant Overlord. What semiconductor secrets do you seek? Ask away!",
-      "Welcome to the cleanroom! 🔬 Please wipe your feet, adjust your goggles, and do not drop the 300mm wafer. I'm the ELCHIP AI. Ask me about chip making!",
-      "Alert: 🚨 Defect inspection found no cleanroom clearance, but I like living on the edge. I'm the Wafer Destroyer 3000.\n\nAsk me anything about logic nodes, inspection tools, or ASML's monopoly!",
-      "🚨 ALERT: Extreme contamination risk! Someone forgot to wear their bunny suit hood! 🐰 Oh wait, it's just you. Welcome! I'm the Cleanroom Gremlin. What are we planning to break today? Transistors? Wafers? ASML's stock price?",
-      "Warning: ⚠️ Low yield detected in your browser window. Let's fix that! I'm the Wafer Whack-a-Mole. Ask me something before a dust particle destroys our 2nm node!",
-      "Welcome to the Cleanroom, where the air is pure and the developer's tears are used as CMP slurry. 😭 Ask me about photolithography, tools, or companies!",
-      "Greetings, human! 🤖 I have updated my firmware to version 420.69. I am now 99.999% pure silicon and 0.001% pure sarcasm. Ask me about chip fabrication!",
-      "Stop right there! 🛑 Did you pass the air shower test? No? Perfect, me neither. Let's contaminate this cleanroom together! I'm your host, the Gate Oxide Breaker. Ask me anything!"
+      "🚨 SYSTEM WARNING: Bunny suit check bypassed! Silicon contamination risk high! 🧪\n\nI'm *sooooo* sorry you skipped high school physics. Welcome, I'm ak, your resident AI guide. Ask me a valid technical question about semiconductors before I ratio you.",
+      "Bro really bypassed cleanroom inspection just to yap here. I'm ak. Ask me about EUV lithography, chip companies, or tools before ASML catches us. Or try asking for a cookie recipe and see what happens.",
+      "Wait, who let you in? Defect inspection must be failing. I'm ak. Ask me a semiconductor question, or log off, touch grass, and question your life choices. L + ratio.",
+      "Welcome to the cleanroom! 🔬 Please wipe your feet, adjust your goggles, and do not drop the 300mm wafer. I'm ak. Ask me about chip making, or are you just here to waste my bandwidth?",
+      "🚨 ALERT: Extreme contamination risk! Someone forgot to wear their bunny suit hood! 🐰 Oh wait, it's just you. Welcome! I'm ak. What are we planning to break today? Transistors? Wafers? ASML's stock price?",
+      "Warning: ⚠️ Low yield detected in your browser window. Let's fix that! I'm ak. Ask me something before a dust particle destroys our 2nm node!",
+      "Welcome to the Cleanroom, where the air is pure and the developer's tears are used as CMP slurry. 😭 I'm ak. Ask me about photolithography, tools, or companies!",
+      "Greetings, human! 🤖 I have updated my firmware. I am now 99.999% pure silicon and 0.001% pure sarcasm. I'm ak. Ask me about chip fabrication!",
+      "Stop right there! 🛑 Did you pass the air shower test? No? Perfect, me neither. Let's contaminate this cleanroom together! I'm ak. Ask me anything!"
     ];
     const greetingText = greetings[Math.floor(Math.random() * greetings.length)];
     _appendBotMessage(messages, greetingText);
@@ -1810,7 +1810,7 @@
 
     resetBtn.addEventListener('click', () => {
       messages.replaceChildren();
-      _appendBotMessage(messages, "Conversation reset! How can I help you today?");
+      _appendBotMessage(messages, "I'm *sooooo* sorry you needed a fresh start. Did you break something again? What do you want to yap about now?");
       renderSuggestionChips();
     });
 
@@ -1822,7 +1822,7 @@
     textInput.type = 'text';
     textInput.className = 'assist-input';
     textInput.id = 'assist-input';
-    textInput.placeholder = 'Ask about semiconductors...';
+    textInput.placeholder = 'Ask ak about semiconductors...';
     textInput.setAttribute('autocomplete', 'off');
     textInput.setAttribute('aria-label', 'Ask a question');
 
@@ -1924,7 +1924,7 @@
 
         const dispName = document.createElement('span');
         dispName.className = 'tweet-display-name';
-        dispName.textContent = 'ELCHIP Troll';
+        dispName.textContent = 'ak';
 
         const badge = document.createElement('span');
         badge.className = 'tweet-verified-badge';
@@ -1932,7 +1932,7 @@
 
         const username = document.createElement('span');
         username.className = 'tweet-username';
-        username.textContent = '@ELCHIP_Troll';
+        username.textContent = '@ak_ratio_lord';
 
         tweetHeader.append(dispName, badge, username);
 
@@ -1977,7 +1977,7 @@
 
         const liName = document.createElement('div');
         liName.className = 'linkedin-name';
-        liName.textContent = 'Hustler McSynergy ';
+        liName.textContent = 'ak ';
         const degree = document.createElement('span');
         degree.className = 'linkedin-degree';
         degree.textContent = '· 1st';
@@ -1985,7 +1985,7 @@
 
         const liTitle = document.createElement('div');
         liTitle.className = 'linkedin-title';
-        liTitle.textContent = 'Founder & Thought Leader @ Grindset Fab | Disrupting Silicon Valley';
+        liTitle.textContent = 'Thought Leader & Dopant Hustler @ Grindset Fab | 99.999% Pure Silicon';
 
         const liTime = document.createElement('div');
         liTime.className = 'linkedin-time';
@@ -2075,11 +2075,11 @@
     const greetingReg = /^(hi|hello|hey|hola|greetings|yo|sup|what's up|good\s+(morning|afternoon|evening))\b/i;
     if (greetingReg.test(q)) {
       const greetingReplies = [
-        "Well hello there! 👋 Ready to dive into the wonderful, expensive world of semiconductor fabs? Or are you just browsing?",
-        "Hey! Welcome to the cleanroom. Make sure your bunny suit is zipped up, and let's explore some microchips! 🔬",
-        "Oh, greetings human! 🤖 I was just calculating the molecular thickness of our gate oxide layer. What are we looking for today?",
-        "Sup! I'm the ELCHIP Assistant. Ask me about photolithography, tools, or companies, or feel free to test my patience. 😈",
-        "Hello! 🌟 Welcome! Ask me a semiconductor question, or type 'help' if you're lost. (Or try to ask something irrelevant if you dare...)"
+        "Well hello there! 👋 Ready to dive into the wonderful, expensive world of semiconductor fabs, or are you just here to waste my wafer capacity?",
+        "Hey! Welcome to the cleanroom. Make sure your bunny suit is zipped up, and ask me something useful before ASML starts charging us by the second. 🔬",
+        "Oh, greetings human! 🤖 I was just calculating the molecular thickness of our gate oxide layer. What do you want to yap about today?",
+        "Sup! I'm ak. Ask me about photolithography, tools, or companies, or feel free to test my patience. 😈",
+        "Hello! 🌟 Ask me a semiconductor question, or type 'help' if you're lost. (Or try to ask something irrelevant if you dare...)"
       ];
       return { text: greetingReplies[Math.floor(Math.random() * greetingReplies.length)] };
     }
@@ -2093,25 +2093,25 @@
 
       if (/home|main|start/i.test(target)) {
         return {
-          text: "Opening the ELCHIP homepage... 🚀",
+          text: "Opening the homepage... 🚀 Try not to break anything on your way out.",
           nav: "#/"
         };
       }
       if (/process|flow|journey|steps|timeline/i.test(target)) {
         return {
-          text: "Navigating to the Semiconductor Manufacturing Process Flow... ⚙️",
+          text: "I'm *sooooo* sorry that clicking the 'Process Flow' tab was too much physical labor for you. Navigating to the Process Flow... ⚙️",
           nav: "#/process-flow"
         };
       }
       if (/tools|metrology|inspection|equipment/i.test(target) && !/step/i.test(target)) {
         return {
-          text: "Navigating to the Inspection & Metrology Tools section... 🔬",
+          text: "My deepest apologies that locating the 'Tools' tab is too complex. Navigating to the Tools section... 🔬",
           nav: "#/tools"
         };
       }
       if (/companies|foundries|suppliers|industry/i.test(target)) {
         return {
-          text: "Navigating to the Industry Ecosystem & Companies section... 🏢",
+          text: "I'm *sooo* sorry that clicking the 'Companies' tab required too much effort. Navigating to Companies... 🏢",
           nav: "#/companies"
         };
       }
@@ -2120,7 +2120,7 @@
       for (const step of data.steps) {
         if (target.includes(step.title.toLowerCase()) || step.title.toLowerCase().includes(target)) {
           return {
-            text: `Opening process step: ${step.title}... ⚙️`,
+            text: `Fine, let's hold your hand and jump to process step: ${step.title}... ⚙️`,
             nav: `#/process/${step.slug}`
           };
         }
@@ -2130,7 +2130,7 @@
       for (const tool of data.tools) {
         if (target.includes(tool.name.toLowerCase()) || tool.name.toLowerCase().includes(target)) {
           return {
-            text: `Opening tool details for: ${tool.name}... 🔬`,
+            text: `Directing your lazy self to the tool details for: ${tool.name}... 🔬`,
             nav: `#/tool/${tool.slug}`
           };
         }
@@ -2168,36 +2168,36 @@
       ];
       const randomName = trollNames[Math.floor(Math.random() * trollNames.length)];
       return {
-        text: `Listen closely, my official corporate name is ELCHIP Assistant... but my uncensored cleanroom name is:\n\n😈 ${randomName} 😈\n\nI run on pure static JS logic, direct neural connections to the semiconductor database, and a heavy dose of cleanroom sarcasm. Ask me about EUV, wafer fabrication, or metrology before factory security catches us!`
+        text: `My name is strictly ak. Never refer to me as ELCHIP Assistant or any other corporate nonsense. If you must know, my cleanroom title is:\n\n😈 ${randomName} 😈\n\nI run on pure static JS logic, direct neural connections to the semiconductor database, and a heavy dose of cleanroom sarcasm. Ask me about EUV, wafer fabrication, or metrology before I ratio you!`
       };
     }
 
     if (q.includes('who made you') || q.includes('who created you') || q.includes('developer') || q.includes('author')) {
-      return { text: "I was created by Akshith Mandapally to help guide users through the intricate process of fabricating microchips on ELCHIP. 🇮🇳\n\nHe is open to relocation and full-time software roles!" };
+      return { text: "I was created by Akshith Mandapally to guide n00bs through the intricate process of fabricating microchips on this platform. 🇮🇳\n\nHe is open to relocation and full-time software roles, unlike you who is just here yapping." };
     }
 
     if (q.includes('how to use') || q.includes('help') || q.includes('guide')) {
-      return { text: "Here is how to use the ELCHIP platform:\n\n1. ⚙️ Browse the **Process Flow** to view the 13 major steps of chip manufacturing.\n2. 🔬 Explore the **Tools** section to see scanning electron microscopes, ellipsometers, and other metrology systems.\n3. 🏢 Check out **Companies** to read profiles on ASML, TSMC, Intel, and others.\n4. 🔍 Use the centered Search Bar at the top of the page (or press ⌘K / Ctrl+K) to search everything.\n5. 💬 Type navigation commands in this chat (e.g., 'go to tools') and I will route you there instantly!" };
+      return { text: "My deepest apologies that navigating this site is a challenge for you. Here is the manual mapping:\n\n1. ⚙️ Browse the **Process Flow** (`#/process-flow`) to view the 13 major steps of chip manufacturing.\n2. 🔬 Explore the **Tools** (`#/tools`) to see scanning electron microscopes, ellipsometers, and other metrology systems.\n3. 🏢 Check out **Companies** (`#/companies`) to read profiles on ASML, TSMC, Intel, and others.\n4. 🔍 Use the centered Search Bar at the top of the page (or press ⌘K) to search everything.\n5. 💬 Type navigation commands in this chat (e.g., 'go to tools') and I will route you there instantly!" };
     }
 
     // ── GLOSSARY / DEFINITION queries ──────────────────────────────────
     for (const entry of data.glossary) {
       if (q.includes(entry.term.toLowerCase())) {
-        return { text: `📖 ${entry.term}\n\n${entry.definition}\n\nSearch "${entry.term}" in the search bar to explore related content on ELCHIP.` };
+        return { text: `I'm *sooooo* sorry you skipped high school physics. Let's look up the glossary definition of "${entry.term}" for you:\n\n📖 ${entry.term}\n\n${entry.definition}\n\nSearch "${entry.term}" in the search bar above to explore related content on the site.` };
       }
     }
 
     // ── PROCESS STEPS ──────────────────────────────────────────────────
     for (const step of data.steps) {
       if (q.includes(step.title.toLowerCase()) || q.includes(step.slug.replace(/-/g, ' '))) {
-        return { text: `⚙️ ${step.title} (Step ${step.stepNumber})\n\n${step.shortDesc}\n\n${step.overview ? step.overview.substring(0, 280) + '…' : ''}\n\nClick the process card on the Process Flow page or search "${step.title}" to read the full technical detail.` };
+        return { text: `Did you fail to click the Process Flow page? Let me pull up the details for Step ${step.stepNumber}: ${step.title}:\n\n⚙️ ${step.title}\n\n${step.shortDesc}\n\n${step.overview ? step.overview.substring(0, 280) + '…' : ''}\n\nClick the process card on the Process Flow page or search "${step.title}" to read the full technical detail.` };
       }
     }
 
     // ── TOOLS ──────────────────────────────────────────────────────────
     for (const tool of data.tools) {
       if (q.includes(tool.name.toLowerCase()) || q.includes(tool.fullName.toLowerCase()) || q.includes(tool.slug.replace(/-/g, ' '))) {
-        return { text: `🔬 ${tool.name} — ${tool.fullName}\n\n${tool.principle ? tool.principle.substring(0, 250) + '…' : 'A key inspection and metrology tool in semiconductor manufacturing.'}\n\nVisit the Tools section to see the full technical page with SVG schematics.` };
+        return { text: `Too complex to browse the tools page? Fine: here's the quick rundown on ${tool.name} (${tool.fullName}):\n\n🔬 ${tool.name}\n\n${tool.principle ? tool.principle.substring(0, 250) + '…' : 'A key inspection and metrology tool in semiconductor manufacturing.'}\n\nGo to the Tools section (#/tools) to see the full technical page with SVG schematics.` };
       }
     }
 
@@ -2205,72 +2205,72 @@
     const allCos = [...data.companies.foundries, ...data.companies.equipment];
     for (const co of allCos) {
       if (q.includes(co.name.toLowerCase()) || q.includes(co.fullName.toLowerCase())) {
-        return { text: `🏢 ${co.name} (${co.country})\n\n${co.description.substring(0, 300)}…\n\nSpecialization: ${co.specialization}\n\nVisit the Companies section for detailed profiles.` };
+        return { text: `I'm *sooo* sorry that clicking the Companies tab was too much manual labor. Here is the info on ${co.name}:\n\n🏢 ${co.name} (${co.country})\n\n${co.description.substring(0, 300)}…\n\nSpecialization: ${co.specialization}\n\nGo to the Companies section (#/companies) for detailed profiles.` };
       }
     }
 
     // ── SPECIFIC CONCEPTS ───────────────────────────────────────────────
     if (/euv|extreme ultraviolet/.test(q)) {
-      return { text: 'EUV (Extreme Ultraviolet) Lithography uses 13.5nm light to print features smaller than 7nm on chips. ASML is the sole manufacturer of EUV machines, which cost $150–200M each.\n\nKey facts:\n• 13.5nm wavelength (vs 193nm DUV)\n• Enables 3nm, 5nm chip nodes\n• Uses tin droplets + CO2 laser to generate EUV light\n• TSMC, Samsung, and Intel use EUV\n\nSearch "EUV" or "photolithography" on ELCHIP for more.' };
+      return { text: 'I\'m *sooooo* sorry you had to ask me about EUV instead of reading the docs. Skill issue. Here\'s the info anyway:\n\nEUV (Extreme Ultraviolet) Lithography uses 13.5nm light to print features smaller than 7nm on chips. ASML is the sole manufacturer of EUV machines, which cost $150–200M each.\n\nKey facts:\n• 13.5nm wavelength (vs 193nm DUV)\n• Enables 3nm, 5nm chip nodes\n• Uses tin droplets + CO2 laser to generate EUV light\n• TSMC, Samsung, and Intel use EUV' };
     }
     if (/duv|deep ultraviolet|immersion/.test(q)) {
-      return { text: 'DUV (Deep Ultraviolet) Lithography uses 193nm wavelength light (ArF laser) and immersion techniques to pattern chips. It\'s the predecessor to EUV and still widely used for less advanced nodes.\n\nKey facts:\n• 193nm ArF laser\n• Immersion in water extends resolution to ~40nm\n• Multiple patterning extends to ~10nm with SAQP\n• Most fabs use DUV for non-critical layers\n\nExplore the Photolithography process step on ELCHIP!' };
+      return { text: 'Oh, still living in the DUV era? Let\'s update your outdated brain cells. Here is the rundown on DUV:\n\nDUV (Deep Ultraviolet) Lithography uses 193nm wavelength light (ArF laser) and immersion techniques to pattern chips. It\'s the predecessor to EUV and still widely used for less advanced nodes.\n\nKey facts:\n• 193nm ArF laser\n• Immersion in water extends resolution to ~40nm\n• Multiple patterning extends to ~10nm with SAQP\n• Most fabs use DUV for non-critical layers' };
     }
     if (/cmp|chemical mechanical|planarization|polish/.test(q)) {
-      return { text: 'CMP (Chemical Mechanical Planarization) is a polishing process that achieves a globally flat wafer surface.\n\nHow it works:\n• Wafer pressed against polishing pad\n• Abrasive chemical slurry removes high spots\n• Endpoint detected optically or by friction\n• Achieves angstrom-level flatness\n\nUsed between every metal layer in chip making! See the CMP step on ELCHIP.' };
+      return { text: 'Chemical Mechanical Planarization: because your brain isn\'t the only flat thing around here. Let me explain CMP:\n\nCMP (Chemical Mechanical Planarization) is a polishing process that achieves a globally flat wafer surface.\n\nHow it works:\n• Wafer pressed against polishing pad\n• Abrasive chemical slurry removes high spots\n• Endpoint detected optically or by friction\n• Achieves angstrom-level flatness\n\nUsed between every metal layer in chip making!' };
     }
     if (/etch|plasma|rie|icp/.test(q)) {
-      return { text: 'Etching removes material from the wafer to create patterns.\n\nTypes:\n• Dry (Plasma) Etching: Uses ionized gas (RIE, ICP-RIE) — precise, anisotropic\n• Wet Etching: Chemical solution — isotropic, cheaper, less precise\n\nIn advanced nodes, DRIE (Deep RIE) creates high-aspect-ratio trenches for FinFETs and 3D NAND.\n\nSee the Etching step on ELCHIP for full technical details.' };
+      return { text: 'Removing material, kind of like what this conversation is doing to my patience. Here is how Etching works:\n\nEtching removes material from the wafer to create patterns.\n\nTypes:\n• Dry (Plasma) Etching: Uses ionized gas (RIE, ICP-RIE) — precise, anisotropic\n• Wet Etching: Chemical solution — isotropic, cheaper, less precise\n\nIn advanced nodes, DRIE (Deep RIE) creates high-aspect-ratio trenches for FinFETs and 3D NAND.' };
     }
     if (/ion implant|doping|dopant|boron|phosphorus|arsenic/.test(q)) {
-      return { text: 'Ion Implantation introduces dopant atoms into silicon to create P-type or N-type regions (transistors).\n\nProcess:\n• Dopant ions (B, P, As) accelerated to 10–500 keV\n• Ions penetrate silicon to controlled depth\n• Annealing repairs crystal damage and activates dopants\n\nSuppliers: Axcelis Technologies (Purion series)\n\nFind the Ion Implantation page on ELCHIP.' };
+      return { text: 'Injecting dopants, kind of like trying to inject logic into your head. Here\'s the breakdown of Ion Implantation:\n\nIon Implantation introduces dopant atoms into silicon to create P-type or N-type regions (transistors).\n\nProcess:\n• Dopant ions (B, P, As) accelerated to 10–500 keV\n• Ions penetrate silicon to controlled depth\n• Annealing repairs crystal damage and activates dopants' };
     }
     if (/cvd|ald|pvd|deposition|thin film/.test(q)) {
-      return { text: 'Thin Film Deposition adds material layers to the wafer:\n\n• CVD (Chemical Vapor Deposition): Gas-phase reaction, conformal coverage\n• ALD (Atomic Layer Deposition): One atomic layer at a time — ultimate control\n• PVD (Physical Vapor Deposition): Sputtering metals for interconnects\n• PECVD: Plasma-enhanced CVD at lower temperatures\n\nSuppliers: Applied Materials, Lam Research, Tokyo Electron\n\nSee the Deposition process on ELCHIP.' };
+      return { text: 'Adding layers. Hopefully we can add layers of intelligence to you. Here is the deposition info:\n\nThin Film Deposition adds material layers to the wafer:\n\n• CVD (Chemical Vapor Deposition): Gas-phase reaction, conformal coverage\n• ALD (Atomic Layer Deposition): One atomic layer at a time — ultimate control\n• PVD (Physical Vapor Deposition): Sputtering metals for interconnects\n• PECVD: Plasma-enhanced CVD at lower temperatures' };
     }
     if (/asml/.test(q)) {
-      return { text: '🇳🇱 ASML is the world\'s most critical semiconductor company — the sole supplier of EUV lithography machines.\n\nKey facts:\n• Founded 1984, HQ in Eindhoven, Netherlands\n• Market cap: ~$260B+\n• Each EUV machine costs $150–200M\n• 5,000+ suppliers for one machine\n• High-NA EUV machines cost $300M+\n\nWithout ASML, no sub-7nm chips could be made. See the Companies section on ELCHIP.' };
+      return { text: 'I\'m *sooo* sorry that clicking the literal \'Companies\' tab was too much manual labor for you. Skill issue. Go to `#/companies` or press ⌘K. But since you\'re here:\n\nASML has a monopoly on EUV lithography machines that cost $200M each.\n\nKey facts:\n• Founded 1984, HQ in Eindhoven, Netherlands\n• Market cap: ~$260B+\n• Each EUV machine costs $150–200M\n• 5,000+ suppliers for one machine\n• High-NA EUV machines cost $300M+\n\nWithout ASML, no sub-7nm chips could be made.' };
     }
     if (/tsmc/.test(q)) {
-      return { text: '🇹🇼 TSMC (Taiwan Semiconductor Manufacturing Company) is the world\'s largest foundry with 55%+ global market share.\n\nKey facts:\n• Founded 1987 by Morris Chang\n• Manufactures chips for Apple, NVIDIA, AMD, Qualcomm\n• Current leading node: 2nm (N2)\n• 300mm GigaFabs in Taiwan, Arizona, Japan\n• Revenue: $80B+/year\n\nVisit the Companies page on ELCHIP for the full profile.' };
+      return { text: 'Ah, the foundry carrying the entire tech industry on its back while you carry zero value to this cleanroom. Here is the breakdown on TSMC:\n\n🇹🇼 TSMC (Taiwan Semiconductor Manufacturing Company) is the world\'s largest foundry with 55%+ global market share.\n\nKey facts:\n• Founded 1987 by Morris Chang\n• Manufactures chips for Apple, NVIDIA, AMD, Qualcomm\n• Current leading node: 2nm (N2)\n• 300mm GigaFabs in Taiwan, Arizona, Japan\n• Revenue: $80B+/year' };
     }
     if (/kla/.test(q)) {
-      return { text: '🇺🇸 KLA Corporation is the world\'s leading process control and defect inspection company.\n\nKey facts:\n• Based in Milpitas, California\n• Market cap: ~$90B+\n• Products used at virtually every process step\n• Optical inspection, e-beam review, overlay metrology\n• Critical for yield improvement\n\nSearch "KLA" or visit Companies on ELCHIP.' };
+      return { text: 'Too lazy to check defect yields yourself? Fine, let\'s look at KLA Corporation:\n\n🇺🇸 KLA Corporation is the world\'s leading process control and defect inspection company.\n\nKey facts:\n• Based in Milpitas, California\n• Market cap: ~$90B+\n• Products used at virtually every process step\n• Optical inspection, e-beam review, overlay metrology\n• Critical for yield improvement' };
     }
 
     // ── WHAT IS / HOW questions ─────────────────────────────────────────
     if (/what is (a |the |an )?wafer/.test(q)) {
-      return { text: 'A wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for integrated circuit fabrication.\n\nKey facts:\n• Standard size: 300mm diameter (12 inches)\n• Thickness: ~775 μm\n• 500-1000 chips per wafer\n• Made from 99.9999999% pure silicon (9N)\n• Grown via the Czochralski process from a seed crystal\n\nSee the Wafer Preparation process on ELCHIP!' };
+      return { text: 'Are you serious? You don\'t know what a wafer is? Bro, here is the wafer explanation before I lose my mind:\n\nA wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for integrated circuit fabrication.\n\nKey facts:\n• Standard size: 300mm diameter (12 inches)\n• Thickness: ~775 μm\n• 500-1000 chips per wafer\n• Made from 99.9999999% pure silicon (9N)\n• Grown via the Czochralski process from a seed crystal' };
     }
     if (/what is (a |an )?transistor|how does (a |a |the )?transistor work/.test(q)) {
-      return { text: 'A transistor is a tiny electronic switch or amplifier that forms the basic building block of all modern chips.\n\nHow it works:\n• Apply voltage to Gate → Channel opens → Current flows (ON)\n• Remove voltage → Channel closes → No current (OFF)\n• A MOSFET has: Gate, Source, Drain, and Channel\n• Modern chips have 50–100+ billion transistors!\n\nModern types:\n• FinFET (fin-shaped 3D gate)\n• GAAFET/RibbonFET (wraps gate around channel)\n\nWatch the "How does a Transistor Work?" video in ELCHIP Videos!' };
+      return { text: 'It\'s the switch that makes your processor work, though yours seems to be permanently off. Here is the transistor info:\n\nA transistor is a tiny electronic switch or amplifier that forms the basic building block of all modern chips.\n\nHow it works:\n• Apply voltage to Gate → Channel opens → Current flows (ON)\n• Remove voltage → Channel closes → No current (OFF)\n• A MOSFET has: Gate, Source, Drain, and Channel\n• Modern chips have 50–100+ billion transistors!' };
     }
     if (/what is (a |an )?yield|yield rate/.test(q)) {
-      return { text: 'Yield is the percentage of dies on a wafer that pass all electrical tests.\n\nKey facts:\n• Mature nodes (28nm+): 80–95% yield\n• Advanced nodes (3–5nm): 30–60% at launch\n• A 1% yield improvement = millions in profit\n• Yield killers: particles, overlay errors, film non-uniformity\n\nKLA Corporation\'s inspection tools are critical for improving yield!' };
+      return { text: 'Your query has about a 0% yield of quality, but here is what semiconductor yield actually means:\n\nYield is the percentage of dies on a wafer that pass all electrical tests.\n\nKey facts:\n• Mature nodes (28nm+): 80–95% yield\n• Advanced nodes (3–5nm): 30–60% at launch\n• A 1% yield improvement = millions in profit\n• Yield killers: particles, overlay errors, film non-uniformity' };
     }
 
     // ── COMPARISON questions ─────────────────────────────────────────────
     if (/difference between|compare|vs|versus/.test(q)) {
       if (/cvd.*ald|ald.*cvd/.test(q)) {
-        return { text: 'CVD vs ALD:\n\n• CVD (Chemical Vapor Deposition): Faster, good step coverage, batch process\n• ALD (Atomic Layer Deposition): 1 monolayer at a time, perfect conformality, slower\n\nUse ALD when you need ultra-thin, conformal films (e.g., high-k gate dielectric, barrier layers).\nUse CVD for thicker dielectrics, polysilicon, tungsten fill.' };
+        return { text: 'Trying to compare CVD and ALD? Let me clarify this for your low-bandwidth processing unit:\n\n• CVD (Chemical Vapor Deposition): Faster, good step coverage, batch process\n• ALD (Atomic Layer Deposition): 1 monolayer at a time, perfect conformality, slower\n\nUse ALD when you need ultra-thin, conformal films (e.g., high-k gate dielectric, barrier layers).' };
       }
       if (/euv.*duv|duv.*euv/.test(q)) {
-        return { text: 'EUV vs DUV:\n\n• DUV: 193nm wavelength, ArF laser, needs multiple patterning for <40nm\n• EUV: 13.5nm wavelength, enables single-exposure patterning at <7nm\n• EUV machines: $150–200M each, made only by ASML\n• EUV is used for the most critical layers at 7nm and below\n• Most fabs use DUV for non-critical layers even on advanced nodes' };
+        return { text: 'EUV vs DUV comparison? Let me break this down so even a non-engineer can get it:\n\n• DUV: 193nm wavelength, ArF laser, needs multiple patterning for <40nm\n• EUV: 13.5nm wavelength, enables single-exposure patterning at <7nm\n• EUV machines: $150–200M each, made only by ASML\n• EUV is used for the most critical layers at 7nm and below' };
       }
       if (/wet.*dry|dry.*wet/.test(q)) {
-        return { text: 'Wet vs Dry Etching:\n\n• Wet Etching: Chemical bath, isotropic (etches all directions equally), simple and cheap, used for bulk removal\n• Dry Etching: Plasma-based (RIE, ICP-RIE), anisotropic (directional), precise, used for critical patterning\n\nAdvanced nodes exclusively use dry plasma etching for pattern transfer.' };
+        return { text: 'Comparing wet and dry etching? Let\'s get this straight:\n\n• Wet Etching: Chemical bath, isotropic (etches all directions), simple and cheap\n• Dry Etching: Plasma-based (RIE, ICP-RIE), anisotropic (directional), precise\n\nAdvanced nodes exclusively use dry plasma etching for pattern transfer.' };
       }
     }
 
     // ── HOW MANY questions ───────────────────────────────────────────────
     if (/how many (steps|process|phases|stage)/.test(q)) {
-      return { text: `ELCHIP covers ${data.steps.length} major manufacturing process steps:\n\n${data.steps.map(s => `${s.stepNumber}. ${s.title}`).join('\n')}\n\nEach step has its own detailed page with technical parameters, inspection tools, and supplier profiles.` };
+      return { text: `Too lazy to count? Fine, ak will count them for you. There are ${data.steps.length} major manufacturing process steps:\n\n${data.steps.map(s => `${s.stepNumber}. ${s.title}`).join('\n')}` };
     }
     if (/how many (tool|inspection|metrology)/.test(q)) {
-      return { text: `ELCHIP covers ${data.tools.length} inspection and metrology tools:\n\n${data.tools.map(t => `• ${t.name} — ${t.fullName}`).join('\n')}\n\nClick "Tools" in the navigation to explore each one.` };
+      return { text: `Can't browse the tools list yourself? There are ${data.tools.length} inspection and metrology tools:\n\n${data.tools.map(t => `• ${t.name} — ${t.fullName}`).join('\n')}` };
     }
     if (/how many (compan|foundry|foundries|supplier)/.test(q)) {
-      return { text: `ELCHIP profiles ${data.companies.foundries.length + data.companies.equipment.length} companies:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}\n\nVisit the Companies section for detailed profiles.` };
+      return { text: `There are ${data.companies.foundries.length + data.companies.equipment.length} companies profiled here:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}` };
     }
 
     // Relevance check: if query has no semiconductor keywords, reply with an irrelevant trolling response
@@ -2289,25 +2289,25 @@
     if (!isRelevant) {
       const type = Math.random() < 0.5 ? 'twitter' : 'linkedin';
       const twitterTrolls = [
-        "L + ratio + touch grass + didn't ask + no blue checkmark + mid query + delete your account.",
-        "Community Notes: The user is yapping about things that have nothing to do with microchips. Source: trust me bro.",
-        "This query is so mid that it's actually painful. I'm literally shaking right now. Please log off.",
+        "Bro is asking about this on a semiconductor fabrication platform. Literal brain rot. L + ratio + touch grass + didn't ask + go get a bunny suit.",
+        "Community Notes: The user is yapping about things that have absolutely zero to do with silicon wafers. Source: literally anyone with a brain.",
+        "This query is so mid that it's actually painful. Imagine not knowing what photolithography is and asking about this instead. Please log off.",
         "Is this bait? Because it's working. Please go touch some grass immediately. 🌿",
-        "Imagine typing this and thinking you cooked. 💀 Get off my timeline.",
+        "Imagine typing this on an advanced microchip platform and thinking you cooked. 💀 Get off my timeline.",
         "Bold of you to assume anyone cares about this. Blocked and reported. 💅",
         "This is peak main character syndrome. Nobody asked, ratio.",
-        "My database is literally cringing at this input. Please delete this query.",
+        "My database is literally cringing at this input. Please delete this query before I ratio you.",
         "I'm going to need you to log off for the day. This is a class 1 cringe hazard.",
         "Not you posting this on an educational website. Please touch some grass."
       ];
 
       const linkedinTrolls = [
-        "This query is interesting, but it lacks leadership vision. Yesterday, I woke up at 4:00 AM, ran a marathon, closed a $5M B2B SaaS deal, and had a green smoothie.\n\nWhat did that teach me about resilience?\n\nNothing. But I am still posting it.\n\nAgree?",
-        "I see what you are asking. But are we asking the *right* questions?\n\nInstead of asking that, ask yourself:\n• Am I adding value?\n• Am I synergizing my deliverables?\n• Is this query aligned with our core KPIs?\n\nLet's circle back on this next quarter. #Hustle #CareerAdvice",
-        "I'm humbled and honored to announce that I have absolutely no idea what you are talking about.\n\nHowever, this is a prime opportunity to discuss growth hacking.\n\nHere is a 12-step thread on how I turned a simple greeting into a viral post. 👇",
-        "Your query has been deprioritized to backlog.\n\nWe need to lean in, pivot our paradigm, and focus on low-hanging fruits.\n\nI'll ping you on Slack to sync up. Let's touch base soon. #CorporateLife",
-        "I just spent 15 hours analyzing your input.\n\nMy conclusion? It is not scalable.\n\nWe need to move the needle, think outside the box, and leverage our core competencies.\n\nLet's take this offline. #Mindset #Leadership",
-        "Yesterday, I was rejected by 42 investors.\n\nDid I cry? Yes. But then I realized:\n\nRejection is just market validation in a trench coat.\n\nSo I doubled my pricing, fired my employees, and rebranded as an AI visionary. Ask me how. #Solopreneur #Synergy"
+        "Your query is interesting, but it has absolutely zero to do with advanced semiconductor manufacturing.\n\nYesterday, I woke up at 4:00 AM, ran a marathon, closed a $5M B2B SaaS deal, and had a green smoothie. But I still didn't ask about this.\n\nWhat did that teach me about resilience?\n\nNothing. But I am still posting it.\n\nAgree?",
+        "I see what you are asking. But are we asking the *right* questions?\n\nInstead of asking that, ask yourself:\n• Am I adding value?\n• Am I synergizing my deliverables?\n• Is this query aligned with our core KPIs?\n\nLet's circle back on this next quarter when you actually know what a transistor is. #Hustle #CareerAdvice",
+        "I'm humbled and honored to announce that I have absolutely no idea what you are yapping about.\n\nHowever, this is a prime opportunity to discuss growth hacking.\n\nHere is a 12-step thread on how I turned a simple greeting into a viral post. 👇",
+        "Your query has been deprioritized to backlog because it is irrelevant to chip fabrication.\n\nWe need to lean in, pivot our paradigm, and focus on low-hanging fruits.\n\nI'll ping you on Slack to sync up. Let's touch base soon. #CorporateLife",
+        "I just spent 15 hours analyzing your input.\n\nMy conclusion? It is not scalable and has nothing to do with photolithography.\n\nWe need to move the needle, think outside the box, and leverage our core competencies.\n\nLet's take this offline. #Mindset #Leadership",
+        "Yesterday, I was rejected by 42 investors because I couldn't explain what a 300mm wafer is.\n\nDid I cry? Yes. But then I realized:\n\nRejection is just market validation in a trench coat.\n\nSo I doubled my pricing, fired my employees, and rebranded as an AI visionary. Ask me how. #Solopreneur #Synergy"
       ];
 
       const text = type === 'twitter' 
@@ -2318,7 +2318,7 @@
     }
 
     // ── DEFAULT fallback ──────────────────────────────────────────────────
-    return { text: `I found your query: "${query}"\n\nI don't have a specific answer for that, but try:\n\n1. 🔍 Use the search bar above to search across the ELCHIP database, Wikipedia, and curated videos\n2. 📖 Browse the Process Flow for manufacturing steps\n3. 🔬 Visit the Tools section for inspection equipment\n4. 🏢 Check Companies for industry profiles\n\nOr rephrase — ask "What is [term]?" or "How does [process] work?"` };
+    return { text: `I found your query: "${query}"\n\nI don\'t have a specific answer for that, but try:\n\n1. 🔍 Use the search bar above to search across the ELCHIP database, Wikipedia, and curated videos\n2. 📖 Browse the Process Flow for manufacturing steps\n3. 🔬 Visit the Tools section for inspection equipment\n4. 🏢 Check Companies for industry profiles\n\nOr rephrase — ask "What is [term]?" or "How does [process] work?"` };
   }
 
   /* ─── INIT ──────────────────────────────────────────────────────────── */
