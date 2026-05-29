@@ -1764,20 +1764,8 @@
     messages.className = 'assist-messages';
     messages.id = 'assist-messages';
 
-    // Welcome message with funny randomized cleanroom greetings
-    const greetings = [
-      "🚨 SYSTEM WARNING: Bunny suit check bypassed! Silicon contamination risk high! 🧪\n\nI'm *sooooo* sorry you skipped high school physics. Welcome, I'm ak, your resident AI guide. Ask me a valid technical question about semiconductors before I ratio you.",
-      "Bro really bypassed cleanroom inspection just to yap here. I'm ak. Ask me about EUV lithography, chip companies, or tools before ASML catches us. Or try asking for a cookie recipe and see what happens.",
-      "Wait, who let you in? Defect inspection must be failing. I'm ak. Ask me a semiconductor question, or log off, touch grass, and question your life choices. L + ratio.",
-      "Welcome to the cleanroom! 🔬 Please wipe your feet, adjust your goggles, and do not drop the 300mm wafer. I'm ak. Ask me about chip making, or are you just here to waste my bandwidth?",
-      "🚨 ALERT: Extreme contamination risk! Someone forgot to wear their bunny suit hood! 🐰 Oh wait, it's just you. Welcome! I'm ak. What are we planning to break today? Transistors? Wafers? ASML's stock price?",
-      "Warning: ⚠️ Low yield detected in your browser window. Let's fix that! I'm ak. Ask me something before a dust particle destroys our 2nm node!",
-      "Welcome to the Cleanroom, where the air is pure and the developer's tears are used as CMP slurry. 😭 I'm ak. Ask me about photolithography, tools, or companies!",
-      "Greetings, human! 🤖 I have updated my firmware. I am now 99.999% pure silicon and 0.001% pure sarcasm. I'm ak. Ask me about chip fabrication!",
-      "Stop right there! 🛑 Did you pass the air shower test? No? Perfect, me neither. Let's contaminate this cleanroom together! I'm ak. Ask me anything!"
-    ];
-    const greetingText = greetings[Math.floor(Math.random() * greetings.length)];
-    _appendBotMessage(messages, greetingText);
+    // Sarcastic welcome message
+    _appendBotMessage(messages, "I'm *sooooo* sorry you skipped high school physics. Welcome, I'm ak, your resident AI guide. Ask me a valid technical question about semiconductors before I ratio you.");
 
     // Suggestion chips container
     const chipsContainer = document.createElement('div');
@@ -1785,12 +1773,11 @@
     chipsContainer.id = 'assist-chips';
 
     const suggestionList = [
-      { text: '⚙️ Go to Process Flow', query: 'go to process flow' },
-      { text: '🔬 Go to Tools', query: 'go to tools' },
-      { text: '🏢 Go to Companies', query: 'go to companies' },
+      { text: '⚙️ Process Flow', query: 'go to process flow' },
+      { text: '🔬 Tools', query: 'go to tools' },
+      { text: '🏢 Companies', query: 'go to companies' },
       { text: '📖 What is a wafer?', query: 'what is a wafer' },
-      { text: '💡 DUV vs EUV', query: 'compare DUV vs EUV' },
-      { text: '🤖 Tell me a Joke', query: 'tell me a joke' }
+      { text: '💡 DUV vs EUV', query: 'compare DUV vs EUV' }
     ];
 
     function renderSuggestionChips() {
@@ -1881,10 +1868,6 @@
     }
   }
 
-  function _randomStat(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
   function _appendBotMessage(container, msg) {
     const row = document.createElement('div');
     row.className = 'assist-msg assist-msg-bot';
@@ -1899,128 +1882,11 @@
     const bubble = document.createElement('div');
     bubble.className = 'assist-msg-bubble';
     
-    let isTroll = false;
-    let trollType = '';
-    let msgText = '';
-
-    if (msg && typeof msg === 'object') {
-      isTroll = msg.isTroll;
-      trollType = msg.trollType;
-      msgText = msg.text;
-    } else {
-      msgText = msg || '';
-    }
-
-    if (isTroll) {
-      bubble.classList.add('troll-bubble');
-      if (trollType === 'twitter') {
-        bubble.classList.add('twitter-bubble');
-        
-        const tweetContainer = document.createElement('div');
-        tweetContainer.className = 'tweet-container';
-
-        const tweetHeader = document.createElement('div');
-        tweetHeader.className = 'tweet-header';
-
-        const dispName = document.createElement('span');
-        dispName.className = 'tweet-display-name';
-        dispName.textContent = 'ak';
-
-        const badge = document.createElement('span');
-        badge.className = 'tweet-verified-badge';
-        badge.textContent = '✓';
-
-        const username = document.createElement('span');
-        username.className = 'tweet-username';
-        username.textContent = '@ak_ratio_lord';
-
-        tweetHeader.append(dispName, badge, username);
-
-        const tweetText = document.createElement('div');
-        tweetText.className = 'tweet-text';
-        tweetText.textContent = msgText;
-
-        const tweetFooter = document.createElement('div');
-        tweetFooter.className = 'tweet-footer';
-
-        const stats = [
-          { icon: '💬', count: _randomStat(100, 999) + 'K' },
-          { icon: '🔁', count: _randomStat(100, 999) + 'K' },
-          { icon: '❤️', count: _randomStat(10, 99) + '.' + _randomStat(1, 9) + 'M' },
-          { icon: '📊', count: _randomStat(10, 99) + 'M' }
-        ];
-
-        stats.forEach(st => {
-          const statSpan = document.createElement('span');
-          statSpan.textContent = `${st.icon} ${st.count}`;
-          tweetFooter.appendChild(statSpan);
-        });
-
-        tweetContainer.append(tweetHeader, tweetText, tweetFooter);
-        bubble.appendChild(tweetContainer);
-
-      } else if (trollType === 'linkedin') {
-        bubble.classList.add('linkedin-bubble');
-
-        const liContainer = document.createElement('div');
-        liContainer.className = 'linkedin-container';
-
-        const liHeader = document.createElement('div');
-        liHeader.className = 'linkedin-header';
-
-        const liAvatar = document.createElement('div');
-        liAvatar.className = 'linkedin-avatar';
-        liAvatar.textContent = '💼';
-
-        const liInfo = document.createElement('div');
-        liInfo.className = 'linkedin-info';
-
-        const liName = document.createElement('div');
-        liName.className = 'linkedin-name';
-        liName.textContent = 'ak ';
-        const degree = document.createElement('span');
-        degree.className = 'linkedin-degree';
-        degree.textContent = '· 1st';
-        liName.appendChild(degree);
-
-        const liTitle = document.createElement('div');
-        liTitle.className = 'linkedin-title';
-        liTitle.textContent = 'Thought Leader & Dopant Hustler @ Grindset Fab | 99.999% Pure Silicon';
-
-        const liTime = document.createElement('div');
-        liTime.className = 'linkedin-time';
-        liTime.textContent = '2h · 🌎';
-
-        liInfo.append(liName, liTitle, liTime);
-        liHeader.append(liAvatar, liInfo);
-
-        const liText = document.createElement('div');
-        liText.className = 'linkedin-text';
-        
-        // Render multi-line text safely
-        msgText.split('\n').forEach((line, i) => {
-          if (i > 0) liText.appendChild(document.createElement('br'));
-          liText.appendChild(document.createTextNode(line));
-        });
-
-        const liFooter = document.createElement('div');
-        liFooter.className = 'linkedin-footer';
-        const likes = document.createElement('span');
-        likes.textContent = `👍 👏 💡 ${_randomStat(1000, 5000)} likes`;
-        const comments = document.createElement('span');
-        comments.textContent = `${_randomStat(200, 900)} comments`;
-        liFooter.append(likes, comments);
-
-        liContainer.append(liHeader, liText, liFooter);
-        bubble.appendChild(liContainer);
-      }
-    } else {
-      // Normal render
-      msgText.split('\n').forEach((line, i) => {
-        if (i > 0) bubble.appendChild(document.createElement('br'));
-        bubble.appendChild(document.createTextNode(line));
-      });
-    }
+    const msgText = (msg && typeof msg === 'object') ? msg.text : (msg || '');
+    msgText.split('\n').forEach((line, i) => {
+      if (i > 0) bubble.appendChild(document.createElement('br'));
+      bubble.appendChild(document.createTextNode(line));
+    });
 
     row.append(avatar, bubble);
     container.appendChild(row);
@@ -2071,254 +1937,120 @@
     const q = query.toLowerCase().trim();
     const data = window.SEMI_DATA;
 
-    // Greeting check
-    const greetingReg = /^(hi|hello|hey|hola|greetings|yo|sup|what's up|good\s+(morning|afternoon|evening))\b/i;
-    if (greetingReg.test(q)) {
-      const greetingReplies = [
-        "Well hello there! 👋 Ready to dive into the wonderful, expensive world of semiconductor fabs, or are you just here to waste my wafer capacity?",
-        "Hey! Welcome to the cleanroom. Make sure your bunny suit is zipped up, and ask me something useful before ASML starts charging us by the second. 🔬",
-        "Oh, greetings human! 🤖 I was just calculating the molecular thickness of our gate oxide layer. What do you want to yap about today?",
-        "Sup! I'm ak. Ask me about photolithography, tools, or companies, or feel free to test my patience. 😈",
-        "Hello! 🌟 Ask me a semiconductor question, or type 'help' if you're lost. (Or try to ask something irrelevant if you dare...)"
-      ];
-      return { text: greetingReplies[Math.floor(Math.random() * greetingReplies.length)] };
+    // 1. Identity Check
+    if (q.includes('who are you') || q.includes('name') || q.includes('what are you')) {
+      return { text: "Strictly ak. Never call me ELCHIP Assistant or any other corporate garbage. I'm your sarcastic cleanroom guide." };
     }
 
-    // Normalizing navigation
-    const rawTarget = q.replace(/^(go to|show|open|navigate to|take me to|take me|jump to|visit|nav|route to)\s+/i, '');
-    const isNav = /^(go to|show|open|navigate to|take me to|take me|jump to|visit|nav|route to)\b/i.test(query);
+    // 2. Greetings
+    if (/^(hi|hello|hey|yo|sup|greetings)\b/i.test(q)) {
+      return { text: "Oh, greetings. Ready to learn something about microchips, or are you just here to waste my wafer capacity? L + ratio." };
+    }
 
-    if (isNav || q.includes('page') || q.includes('section')) {
-      const target = rawTarget.trim();
-
-      if (/home|main|start/i.test(target)) {
-        return {
-          text: "Opening the homepage... 🚀 Try not to break anything on your way out.",
-          nav: "#/"
-        };
+    // 3. Navigation
+    if (q.includes('go to') || q.includes('page') || q.includes('navigate') || q.includes('route')) {
+      if (q.includes('flow') || q.includes('process')) {
+        return { text: "I'm *sooooo* sorry that clicking the 'Process Flow' tab was too much physical labor. Navigating to Process Flow... ⚙️", nav: "#/process-flow" };
       }
-      if (/process|flow|journey|steps|timeline/i.test(target)) {
-        return {
-          text: "I'm *sooooo* sorry that clicking the 'Process Flow' tab was too much physical labor for you. Navigating to the Process Flow... ⚙️",
-          nav: "#/process-flow"
-        };
+      if (q.includes('tool') || q.includes('equipment')) {
+        return { text: "My deepest apologies that locating the 'Tools' tab is too complex. Navigating to Tools... 🔬", nav: "#/tools" };
       }
-      if (/tools|metrology|inspection|equipment/i.test(target) && !/step/i.test(target)) {
-        return {
-          text: "My deepest apologies that locating the 'Tools' tab is too complex. Navigating to the Tools section... 🔬",
-          nav: "#/tools"
-        };
+      if (q.includes('company') || q.includes('companies')) {
+        return { text: "I'm *sooo* sorry that clicking the 'Companies' tab required too much effort. Navigating to Companies... 🏢", nav: "#/companies" };
       }
-      if (/companies|foundries|suppliers|industry/i.test(target)) {
-        return {
-          text: "I'm *sooo* sorry that clicking the 'Companies' tab required too much effort. Navigating to Companies... 🏢",
-          nav: "#/companies"
-        };
-      }
-
-      // Specific step matches
-      for (const step of data.steps) {
-        if (target.includes(step.title.toLowerCase()) || step.title.toLowerCase().includes(target)) {
-          return {
-            text: `Fine, let's hold your hand and jump to process step: ${step.title}... ⚙️`,
-            nav: `#/process/${step.slug}`
-          };
-        }
-      }
-
-      // Specific tool matches
-      for (const tool of data.tools) {
-        if (target.includes(tool.name.toLowerCase()) || tool.name.toLowerCase().includes(target)) {
-          return {
-            text: `Directing your lazy self to the tool details for: ${tool.name}... 🔬`,
-            nav: `#/tool/${tool.slug}`
-          };
-        }
+      if (q.includes('search') || q.includes('find')) {
+        return { text: "Use ⌘K to search, it's not that hard. Touch grass." };
       }
     }
 
-    // Jokes easter egg
-    if (q.includes('joke') || q.includes('funny') || q.includes('laugh')) {
-      const jokes = [
-        "Why did the transistor break up with the resistor?\n\nIt felt too much resistance. 😂",
-        "Why are silicon wafers bad at keeping secrets?\n\nBecause they have too many chips! 😭",
-        "What is a semiconductor's favorite music genre?\n\nMetal-Oxide-Semiconductor rock! 🎸",
-        "Why was the photolithography machine so expensive?\n\nBecause ASML had a laser focus on its margins! 💸",
-        "What do you call a cleanroom engineer who forgot their bunny suit?\n\nA defect! 🙅‍♂️",
-        "Why are transistors such good team players?\n\nBecause they know how to gatekeep and switch responsibilities! 🔌"
-      ];
-      const joke = jokes[Math.floor(Math.random() * jokes.length)];
-      return { text: joke };
-    }
+    // 4. Semiconductor check
+    const topics = {
+      'wafer': {
+        roast: "Are you serious? You don't know what a wafer is? Fine:",
+        ans: "A wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for building integrated circuits."
+      },
+      'photolithography': {
+        roast: "I'm *sooooo* sorry you skipped high school physics, but here is photolithography:",
+        ans: "Photolithography is the printing process transferring geometric shapes from a photomask to the wafer using light-sensitive photoresist and DUV/EUV scanners."
+      },
+      'lithography': {
+        roast: "I'm *sooooo* sorry you skipped high school physics, but here is photolithography:",
+        ans: "Photolithography is the printing process transferring geometric shapes from a photomask to the wafer using light-sensitive photoresist and DUV/EUV scanners."
+      },
+      'etching': {
+        roast: "Removing material, kind of like what this query is doing to my patience. Here:",
+        ans: "Etching removes material from the wafer. Dry etching uses plasma (RIE/ICP) for precise anisotropic patterns; wet etching uses chemical solutions."
+      },
+      'etch': {
+        roast: "Removing material, kind of like what this query is doing to my patience. Here:",
+        ans: "Etching removes material from the wafer. Dry etching uses plasma (RIE/ICP) for precise anisotropic patterns; wet etching uses chemical solutions."
+      },
+      'cmp': {
+        roast: "Chemical Mechanical Planarization: because your brain isn't the only flat thing around here:",
+        ans: "CMP is the chemical and mechanical polishing process that planarizes the wafer to angstrom-level flatness between wiring layers."
+      },
+      'deposition': {
+        roast: "Adding layers. Hopefully we can add some layers of intelligence to you. Here:",
+        ans: "Deposition thin-film technologies add materials to the wafer. CVD uses gas-phase chemical reactions, ALD adds atomic monolayers, and PVD sputters metals."
+      },
+      'ion implant': {
+        roast: "Injecting dopants, kind of like injecting logic into your head. Here:",
+        ans: "Ion Implantation accelerates dopant ions (boron, phosphorus, arsenic) into the silicon crystal lattice to create P-type/N-type transistor regions."
+      },
+      'doping': {
+        roast: "Injecting dopants, kind of like injecting logic into your head. Here:",
+        ans: "Ion Implantation accelerates dopant ions (boron, phosphorus, arsenic) into the silicon crystal lattice to create P-type/N-type transistor regions."
+      },
+      'euv': {
+        roast: "Asking about $200M machines when you can't even afford to pay attention. Fine:",
+        ans: "EUV (Extreme Ultraviolet) lithography uses 13.5nm wavelength light from tin droplets blasted by CO2 lasers to print sub-7nm transistor features."
+      },
+      'duv': {
+        roast: "Oh, still living in the DUV era? Let's update your outdated brain cells:",
+        ans: "DUV (Deep Ultraviolet) lithography uses 193nm wavelength lasers and water immersion to pattern features down to ~10nm using multiple patterning."
+      },
+      'sem': {
+        roast: "Too blind to see defects? Fine, here is the CD-SEM info:",
+        ans: "CD-SEMs (Critical Dimension Scanning Electron Microscopes) use focused electron beams to measure nanometer-scale features for quality control."
+      },
+      'asml': {
+        roast: "Oh, you want to read about the literal monopoly of the semiconductor world? Shocking. Here:",
+        ans: "ASML is the Eindhoven-based Dutch giant that has a complete monopoly on EUV lithography machines, critical for sub-7nm chips."
+      },
+      'tsmc': {
+        roast: "Ah, the company carrying the entire tech industry on its back while you carry zero value here:",
+        ans: "TSMC is the world's largest independent semiconductor foundry (Taiwan), manufacturing chips for Apple, NVIDIA, AMD, and Qualcomm."
+      },
+      'intel': {
+        roast: "Hoping for a turnaround? Fine, here is Intel:",
+        ans: "Intel is a leading IDM (Integrated Device Manufacturer) pushing RibbonFET (GAA) and PowerVia technologies to regain process leadership."
+      },
+      'kla': {
+        roast: "Too lazy to check defect yields yourself? Here:",
+        ans: "KLA Corporation is the market leader in process control diagnostics, providing optical and e-beam defect inspection and metrology systems."
+      }
+    };
 
-    if (q.includes('who are you') || q.includes('your name') || q.includes('what are you')) {
-      const trollNames = [
-        "ASML's Worst Nightmare",
-        "Silicon Lord of the Cleanroom",
-        "Wafer Destroyer 3000",
-        "The Photolithography Troublemaker",
-        "Dopant Overlord v6.9",
-        "Dirty Wafer Smuggler",
-        "EUV Laser Blaster",
-        "CMP Slurry Chugger",
-        "Liquid Tin Droplet Exploder",
-        "The 1nm Node Vaporizer",
-        "TSMC's Secret Spy",
-        "High-NA Lithography Gatekeeper"
-      ];
-      const randomName = trollNames[Math.floor(Math.random() * trollNames.length)];
-      return {
-        text: `My name is strictly ak. Never refer to me as ELCHIP Assistant or any other corporate nonsense. If you must know, my cleanroom title is:\n\n😈 ${randomName} 😈\n\nI run on pure static JS logic, direct neural connections to the semiconductor database, and a heavy dose of cleanroom sarcasm. Ask me about EUV, wafer fabrication, or metrology before I ratio you!`
-      };
-    }
-
-    if (q.includes('who made you') || q.includes('who created you') || q.includes('developer') || q.includes('author')) {
-      return { text: "I was created by Akshith Mandapally to guide n00bs through the intricate process of fabricating microchips on this platform. 🇮🇳\n\nHe is open to relocation and full-time software roles, unlike you who is just here yapping." };
-    }
-
-    if (q.includes('how to use') || q.includes('help') || q.includes('guide')) {
-      return { text: "My deepest apologies that navigating this site is a challenge for you. Here is the manual mapping:\n\n1. ⚙️ Browse the **Process Flow** (`#/process-flow`) to view the 13 major steps of chip manufacturing.\n2. 🔬 Explore the **Tools** (`#/tools`) to see scanning electron microscopes, ellipsometers, and other metrology systems.\n3. 🏢 Check out **Companies** (`#/companies`) to read profiles on ASML, TSMC, Intel, and others.\n4. 🔍 Use the centered Search Bar at the top of the page (or press ⌘K) to search everything.\n5. 💬 Type navigation commands in this chat (e.g., 'go to tools') and I will route you there instantly!" };
-    }
-
-    // ── GLOSSARY / DEFINITION queries ──────────────────────────────────
-    for (const entry of data.glossary) {
-      if (q.includes(entry.term.toLowerCase())) {
-        return { text: `I'm *sooooo* sorry you skipped high school physics. Let's look up the glossary definition of "${entry.term}" for you:\n\n📖 ${entry.term}\n\n${entry.definition}\n\nSearch "${entry.term}" in the search bar above to explore related content on the site.` };
+    for (const key in topics) {
+      if (q.includes(key)) {
+        return { text: `${topics[key].roast}\n\n${topics[key].ans}` };
       }
     }
 
-    // ── PROCESS STEPS ──────────────────────────────────────────────────
-    for (const step of data.steps) {
-      if (q.includes(step.title.toLowerCase()) || q.includes(step.slug.replace(/-/g, ' '))) {
-        return { text: `Did you fail to click the Process Flow page? Let me pull up the details for Step ${step.stepNumber}: ${step.title}:\n\n⚙️ ${step.title}\n\n${step.shortDesc}\n\n${step.overview ? step.overview.substring(0, 280) + '…' : ''}\n\nClick the process card on the Process Flow page or search "${step.title}" to read the full technical detail.` };
-      }
-    }
-
-    // ── TOOLS ──────────────────────────────────────────────────────────
-    for (const tool of data.tools) {
-      if (q.includes(tool.name.toLowerCase()) || q.includes(tool.fullName.toLowerCase()) || q.includes(tool.slug.replace(/-/g, ' '))) {
-        return { text: `Too complex to browse the tools page? Fine: here's the quick rundown on ${tool.name} (${tool.fullName}):\n\n🔬 ${tool.name}\n\n${tool.principle ? tool.principle.substring(0, 250) + '…' : 'A key inspection and metrology tool in semiconductor manufacturing.'}\n\nGo to the Tools section (#/tools) to see the full technical page with SVG schematics.` };
-      }
-    }
-
-    // ── COMPANIES ──────────────────────────────────────────────────────
-    const allCos = [...data.companies.foundries, ...data.companies.equipment];
-    for (const co of allCos) {
-      if (q.includes(co.name.toLowerCase()) || q.includes(co.fullName.toLowerCase())) {
-        return { text: `I'm *sooo* sorry that clicking the Companies tab was too much manual labor. Here is the info on ${co.name}:\n\n🏢 ${co.name} (${co.country})\n\n${co.description.substring(0, 300)}…\n\nSpecialization: ${co.specialization}\n\nGo to the Companies section (#/companies) for detailed profiles.` };
-      }
-    }
-
-    // ── SPECIFIC CONCEPTS ───────────────────────────────────────────────
-    if (/euv|extreme ultraviolet/.test(q)) {
-      return { text: 'I\'m *sooooo* sorry you had to ask me about EUV instead of reading the docs. Skill issue. Here\'s the info anyway:\n\nEUV (Extreme Ultraviolet) Lithography uses 13.5nm light to print features smaller than 7nm on chips. ASML is the sole manufacturer of EUV machines, which cost $150–200M each.\n\nKey facts:\n• 13.5nm wavelength (vs 193nm DUV)\n• Enables 3nm, 5nm chip nodes\n• Uses tin droplets + CO2 laser to generate EUV light\n• TSMC, Samsung, and Intel use EUV' };
-    }
-    if (/duv|deep ultraviolet|immersion/.test(q)) {
-      return { text: 'Oh, still living in the DUV era? Let\'s update your outdated brain cells. Here is the rundown on DUV:\n\nDUV (Deep Ultraviolet) Lithography uses 193nm wavelength light (ArF laser) and immersion techniques to pattern chips. It\'s the predecessor to EUV and still widely used for less advanced nodes.\n\nKey facts:\n• 193nm ArF laser\n• Immersion in water extends resolution to ~40nm\n• Multiple patterning extends to ~10nm with SAQP\n• Most fabs use DUV for non-critical layers' };
-    }
-    if (/cmp|chemical mechanical|planarization|polish/.test(q)) {
-      return { text: 'Chemical Mechanical Planarization: because your brain isn\'t the only flat thing around here. Let me explain CMP:\n\nCMP (Chemical Mechanical Planarization) is a polishing process that achieves a globally flat wafer surface.\n\nHow it works:\n• Wafer pressed against polishing pad\n• Abrasive chemical slurry removes high spots\n• Endpoint detected optically or by friction\n• Achieves angstrom-level flatness\n\nUsed between every metal layer in chip making!' };
-    }
-    if (/etch|plasma|rie|icp/.test(q)) {
-      return { text: 'Removing material, kind of like what this conversation is doing to my patience. Here is how Etching works:\n\nEtching removes material from the wafer to create patterns.\n\nTypes:\n• Dry (Plasma) Etching: Uses ionized gas (RIE, ICP-RIE) — precise, anisotropic\n• Wet Etching: Chemical solution — isotropic, cheaper, less precise\n\nIn advanced nodes, DRIE (Deep RIE) creates high-aspect-ratio trenches for FinFETs and 3D NAND.' };
-    }
-    if (/ion implant|doping|dopant|boron|phosphorus|arsenic/.test(q)) {
-      return { text: 'Injecting dopants, kind of like trying to inject logic into your head. Here\'s the breakdown of Ion Implantation:\n\nIon Implantation introduces dopant atoms into silicon to create P-type or N-type regions (transistors).\n\nProcess:\n• Dopant ions (B, P, As) accelerated to 10–500 keV\n• Ions penetrate silicon to controlled depth\n• Annealing repairs crystal damage and activates dopants' };
-    }
-    if (/cvd|ald|pvd|deposition|thin film/.test(q)) {
-      return { text: 'Adding layers. Hopefully we can add layers of intelligence to you. Here is the deposition info:\n\nThin Film Deposition adds material layers to the wafer:\n\n• CVD (Chemical Vapor Deposition): Gas-phase reaction, conformal coverage\n• ALD (Atomic Layer Deposition): One atomic layer at a time — ultimate control\n• PVD (Physical Vapor Deposition): Sputtering metals for interconnects\n• PECVD: Plasma-enhanced CVD at lower temperatures' };
-    }
-    if (/asml/.test(q)) {
-      return { text: 'I\'m *sooo* sorry that clicking the literal \'Companies\' tab was too much manual labor for you. Skill issue. Go to `#/companies` or press ⌘K. But since you\'re here:\n\nASML has a monopoly on EUV lithography machines that cost $200M each.\n\nKey facts:\n• Founded 1984, HQ in Eindhoven, Netherlands\n• Market cap: ~$260B+\n• Each EUV machine costs $150–200M\n• 5,000+ suppliers for one machine\n• High-NA EUV machines cost $300M+\n\nWithout ASML, no sub-7nm chips could be made.' };
-    }
-    if (/tsmc/.test(q)) {
-      return { text: 'Ah, the foundry carrying the entire tech industry on its back while you carry zero value to this cleanroom. Here is the breakdown on TSMC:\n\n🇹🇼 TSMC (Taiwan Semiconductor Manufacturing Company) is the world\'s largest foundry with 55%+ global market share.\n\nKey facts:\n• Founded 1987 by Morris Chang\n• Manufactures chips for Apple, NVIDIA, AMD, Qualcomm\n• Current leading node: 2nm (N2)\n• 300mm GigaFabs in Taiwan, Arizona, Japan\n• Revenue: $80B+/year' };
-    }
-    if (/kla/.test(q)) {
-      return { text: 'Too lazy to check defect yields yourself? Fine, let\'s look at KLA Corporation:\n\n🇺🇸 KLA Corporation is the world\'s leading process control and defect inspection company.\n\nKey facts:\n• Based in Milpitas, California\n• Market cap: ~$90B+\n• Products used at virtually every process step\n• Optical inspection, e-beam review, overlay metrology\n• Critical for yield improvement' };
-    }
-
-    // ── WHAT IS / HOW questions ─────────────────────────────────────────
-    if (/what is (a |the |an )?wafer/.test(q)) {
-      return { text: 'Are you serious? You don\'t know what a wafer is? Bro, here is the wafer explanation before I lose my mind:\n\nA wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for integrated circuit fabrication.\n\nKey facts:\n• Standard size: 300mm diameter (12 inches)\n• Thickness: ~775 μm\n• 500-1000 chips per wafer\n• Made from 99.9999999% pure silicon (9N)\n• Grown via the Czochralski process from a seed crystal' };
-    }
-    if (/what is (a |an )?transistor|how does (a |a |the )?transistor work/.test(q)) {
-      return { text: 'It\'s the switch that makes your processor work, though yours seems to be permanently off. Here is the transistor info:\n\nA transistor is a tiny electronic switch or amplifier that forms the basic building block of all modern chips.\n\nHow it works:\n• Apply voltage to Gate → Channel opens → Current flows (ON)\n• Remove voltage → Channel closes → No current (OFF)\n• A MOSFET has: Gate, Source, Drain, and Channel\n• Modern chips have 50–100+ billion transistors!' };
-    }
-    if (/what is (a |an )?yield|yield rate/.test(q)) {
-      return { text: 'Your query has about a 0% yield of quality, but here is what semiconductor yield actually means:\n\nYield is the percentage of dies on a wafer that pass all electrical tests.\n\nKey facts:\n• Mature nodes (28nm+): 80–95% yield\n• Advanced nodes (3–5nm): 30–60% at launch\n• A 1% yield improvement = millions in profit\n• Yield killers: particles, overlay errors, film non-uniformity' };
-    }
-
-    // ── COMPARISON questions ─────────────────────────────────────────────
-    if (/difference between|compare|vs|versus/.test(q)) {
-      if (/cvd.*ald|ald.*cvd/.test(q)) {
-        return { text: 'Trying to compare CVD and ALD? Let me clarify this for your low-bandwidth processing unit:\n\n• CVD (Chemical Vapor Deposition): Faster, good step coverage, batch process\n• ALD (Atomic Layer Deposition): 1 monolayer at a time, perfect conformality, slower\n\nUse ALD when you need ultra-thin, conformal films (e.g., high-k gate dielectric, barrier layers).' };
-      }
-      if (/euv.*duv|duv.*euv/.test(q)) {
-        return { text: 'EUV vs DUV comparison? Let me break this down so even a non-engineer can get it:\n\n• DUV: 193nm wavelength, ArF laser, needs multiple patterning for <40nm\n• EUV: 13.5nm wavelength, enables single-exposure patterning at <7nm\n• EUV machines: $150–200M each, made only by ASML\n• EUV is used for the most critical layers at 7nm and below' };
-      }
-      if (/wet.*dry|dry.*wet/.test(q)) {
-        return { text: 'Comparing wet and dry etching? Let\'s get this straight:\n\n• Wet Etching: Chemical bath, isotropic (etches all directions), simple and cheap\n• Dry Etching: Plasma-based (RIE, ICP-RIE), anisotropic (directional), precise\n\nAdvanced nodes exclusively use dry plasma etching for pattern transfer.' };
-      }
-    }
-
-    // ── HOW MANY questions ───────────────────────────────────────────────
-    if (/how many (steps|process|phases|stage)/.test(q)) {
-      return { text: `Too lazy to count? Fine, ak will count them for you. There are ${data.steps.length} major manufacturing process steps:\n\n${data.steps.map(s => `${s.stepNumber}. ${s.title}`).join('\n')}` };
-    }
-    if (/how many (tool|inspection|metrology)/.test(q)) {
-      return { text: `Can't browse the tools list yourself? There are ${data.tools.length} inspection and metrology tools:\n\n${data.tools.map(t => `• ${t.name} — ${t.fullName}`).join('\n')}` };
-    }
-    if (/how many (compan|foundry|foundries|supplier)/.test(q)) {
-      return { text: `There are ${data.companies.foundries.length + data.companies.equipment.length} companies profiled here:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}` };
-    }
-
-    // Relevance check: if query has no semiconductor keywords, reply with an irrelevant trolling response
+    // Generic semiconductor keyword check
     const semiKeywords = [
-      'semiconductor', 'silicon', 'wafer', 'chip', 'transistor', 'diode', 'led', 'ic', 'integrated', 'circuit',
-      'photolithography', 'lithography', 'asml', 'tsmc', 'intel', 'metrology', 'inspection', 'packaging',
-      'cmp', 'etch', 'deposition', 'cleanroom', 'bunny suit', 'photoresist', 'dopant', 'doping', 'planarization',
-      'euv', 'duv', 'alignment', 'mask', 'photomask', 'laser', 'resist', 'gate', 'source', 'drain', 'channel',
-      'finfet', 'gaafet', 'node', 'slurry', 'kla', 'lam', 'applied', 'sand', 'czochralski', 'ingot',
-      'copper', 'aluminum', 'interconnect', 'dielectric', 'sio2', 'plasma', 'sputtering', 'yield', 'defect',
-      'diffusion', 'furnace', 'foundry', 'clean room', 'fab', 'morris chang', 'slicing', 'polishing', 'annealing'
+      'semiconductor', 'silicon', 'wafer', 'chip', 'transistor', 'diode', 'led', 'ic', 'circuit',
+      'cleanroom', 'bunny suit', 'photoresist', 'dopant', 'defect', 'yield', 'fab'
     ];
-
-    const isRelevant = semiKeywords.some(keyword => q.includes(keyword));
-
-    if (!isRelevant) {
-      const type = Math.random() < 0.5 ? 'twitter' : 'linkedin';
-      const twitterTrolls = [
-        "Bro is asking about this on a semiconductor fabrication platform. Literal brain rot. L + ratio + touch grass + didn't ask + go get a bunny suit.",
-        "Community Notes: The user is yapping about things that have absolutely zero to do with silicon wafers. Source: literally anyone with a brain.",
-        "This query is so mid that it's actually painful. Imagine not knowing what photolithography is and asking about this instead. Please log off.",
-        "Is this bait? Because it's working. Please go touch some grass immediately. 🌿",
-        "Imagine typing this on an advanced microchip platform and thinking you cooked. 💀 Get off my timeline.",
-        "Bold of you to assume anyone cares about this. Blocked and reported. 💅",
-        "This is peak main character syndrome. Nobody asked, ratio.",
-        "My database is literally cringing at this input. Please delete this query before I ratio you.",
-        "I'm going to need you to log off for the day. This is a class 1 cringe hazard.",
-        "Not you posting this on an educational website. Please touch some grass."
-      ];
-
-      const linkedinTrolls = [
-        "Your query is interesting, but it has absolutely zero to do with advanced semiconductor manufacturing.\n\nYesterday, I woke up at 4:00 AM, ran a marathon, closed a $5M B2B SaaS deal, and had a green smoothie. But I still didn't ask about this.\n\nWhat did that teach me about resilience?\n\nNothing. But I am still posting it.\n\nAgree?",
-        "I see what you are asking. But are we asking the *right* questions?\n\nInstead of asking that, ask yourself:\n• Am I adding value?\n• Am I synergizing my deliverables?\n• Is this query aligned with our core KPIs?\n\nLet's circle back on this next quarter when you actually know what a transistor is. #Hustle #CareerAdvice",
-        "I'm humbled and honored to announce that I have absolutely no idea what you are yapping about.\n\nHowever, this is a prime opportunity to discuss growth hacking.\n\nHere is a 12-step thread on how I turned a simple greeting into a viral post. 👇",
-        "Your query has been deprioritized to backlog because it is irrelevant to chip fabrication.\n\nWe need to lean in, pivot our paradigm, and focus on low-hanging fruits.\n\nI'll ping you on Slack to sync up. Let's touch base soon. #CorporateLife",
-        "I just spent 15 hours analyzing your input.\n\nMy conclusion? It is not scalable and has nothing to do with photolithography.\n\nWe need to move the needle, think outside the box, and leverage our core competencies.\n\nLet's take this offline. #Mindset #Leadership",
-        "Yesterday, I was rejected by 42 investors because I couldn't explain what a 300mm wafer is.\n\nDid I cry? Yes. But then I realized:\n\nRejection is just market validation in a trench coat.\n\nSo I doubled my pricing, fired my employees, and rebranded as an AI visionary. Ask me how. #Solopreneur #Synergy"
-      ];
-
-      const text = type === 'twitter' 
-        ? twitterTrolls[Math.floor(Math.random() * twitterTrolls.length)]
-        : linkedinTrolls[Math.floor(Math.random() * linkedinTrolls.length)];
-
-      return { text, isTroll: true, trollType: type };
+    const isRelevant = semiKeywords.some(kw => q.includes(kw));
+    if (isRelevant) {
+      return { text: "That is semiconductor-related, but my static brain doesn't have a specific roast for it. Go check the search bar (⌘K) or browse Process Flow." };
     }
 
-    // ── DEFAULT fallback ──────────────────────────────────────────────────
-    return { text: `I found your query: "${query}"\n\nI don\'t have a specific answer for that, but try:\n\n1. 🔍 Use the search bar above to search across the ELCHIP database, Wikipedia, and curated videos\n2. 📖 Browse the Process Flow for manufacturing steps\n3. 🔬 Visit the Tools section for inspection equipment\n4. 🏢 Check Companies for industry profiles\n\nOr rephrase — ask "What is [term]?" or "How does [process] work?"` };
+    // 5. Brutal Troll for Irrelevant queries
+    return {
+      text: "Bro is asking about this on a semiconductor fabrication platform. Absolute brain rot. I'm *so sorry* your dopamine-fried attention span made you mistake a 300mm silicon wafer for a cookie sheet. Log off, touch grass, and don't come back until you know what photolithography is. L + ratio."
+    };
   }
 
   /* ─── INIT ──────────────────────────────────────────────────────────── */
