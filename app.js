@@ -12,12 +12,18 @@
   /* ─── ROUTER ────────────────────────────────────────────────────────── */
   const routes = {
     '/':            () => window.renderHome(getApp()),
-    '/process-flow':() => window.renderHome(getApp()),
+    '/process-flow':() => {
+      window.renderHome(getApp());
+      setTimeout(() => {
+        const el = document.getElementById('process-flow');
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 250);
+    },
     '/process/:slug': (params) => window.renderProcess(getApp(), params.slug),
     '/tool/:slug':  (params) => window.renderTool(getApp(), params.slug),
     '/tools':       () => window.renderToolsList(getApp()),
     '/companies':   () => window.renderCompanies(getApp()),
-    '/glossary':    () => renderGlossaryPage(getApp()),
+    '/glossary':    () => render404Page(getApp()), // Glossary page removed
   };
 
   function getApp() {
@@ -103,7 +109,7 @@
     logo.textContent = 'ELCHIP';
     navEl.appendChild(logo);
 
-    // Links
+    // Links (Glossary link removed)
     const ul = document.createElement('ul');
     ul.className = 'nav-links';
     ul.id = 'nav-links';
@@ -111,8 +117,7 @@
     const navItems = [
       { label: 'Process Flow', href: '#/process-flow' },
       { label: 'Tools', href: '#/tools' },
-      { label: 'Companies', href: '#/companies' },
-      { label: 'Glossary', href: '#/glossary' },
+      { label: 'Companies', href: '#/companies' }
     ];
 
     navItems.forEach(item => {
@@ -141,7 +146,7 @@
     const searchInput = document.createElement('input');
     searchInput.type = 'search';
     searchInput.id = 'nav-search-input';
-    searchInput.placeholder = 'Search processes, tools…';
+    searchInput.placeholder = 'Query Semiconductor Knowledge Base...';
     searchInput.setAttribute('aria-label', 'Search the platform');
     searchInput.setAttribute('autocomplete', 'off');
     searchInput.setAttribute('spellcheck', 'false');
@@ -193,7 +198,7 @@
     let searchDebounce;
     searchInput.addEventListener('input', () => {
       clearTimeout(searchDebounce);
-      searchDebounce = setTimeout(() => performSearch(searchInput.value, resultsDropdown), 150);
+      searchDebounce = setTimeout(() => performSearch(searchInput.value, resultsDropdown), 300);
     });
 
     searchInput.addEventListener('focus', () => {
@@ -225,9 +230,36 @@
     updateNavActive(window.location.hash || '#/');
   }
 
+  /* ── Helper functions for header combined search ───────────────────── */
+  async function fetchWikipediaResults(query) {
+    try {
+      const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search' +
+        '&srsearch=' + encodeURIComponent(query) +
+        '&format=json&origin=*&utf8=1&srlimit=3';
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return (data.query && data.query.search) || [];
+    } catch (_e) {
+      return [];
+    }
+  }
+
+  async function fetchLiveVideos(query) {
+    try {
+      const res = await fetch('https://yewtu.be/api/v1/search?q=' + encodeURIComponent(query) + '&type=video');
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data) ? data.slice(0, 2) : [];
+      }
+      return [];
+    } catch (_e) {
+      return [];
+    }
+  }
+
   /* ─── SEARCH ENGINE ─────────────────────────────────────────────────── */
   function performSearch(rawQuery, dropdown) {
-    // Security: query is only ever inserted via textContent
     const query = rawQuery.trim().toLowerCase();
 
     if (query.length < 1) {
@@ -235,8 +267,9 @@
       return;
     }
 
+    // 1. Search internal database instantly
     const data = window.SEMI_DATA;
-    const results = [];
+    const internalResults = [];
 
     // Search processes
     data.steps.forEach(step => {
@@ -245,8 +278,8 @@
         step.shortDesc.toLowerCase().includes(query) ||
         step.slug.toLowerCase().includes(query)
       ) {
-        results.push({
-          type: 'Process', icon: '⚙️',
+        internalResults.push({
+          type: 'Process Step', icon: '⚙️',
           name: step.title,
           sub: 'Step ' + step.stepNumber,
           href: '#/process/' + step.slug
@@ -261,8 +294,8 @@
         tool.fullName.toLowerCase().includes(query) ||
         tool.slug.toLowerCase().includes(query)
       ) {
-        results.push({
-          type: 'Tool', icon: tool.icon,
+        internalResults.push({
+          type: 'Inspection Tool', icon: tool.icon || '🔬',
           name: tool.name,
           sub: tool.fullName,
           href: '#/tool/' + tool.slug
@@ -277,7 +310,7 @@
         co.specialization.toLowerCase().includes(query) ||
         co.country.toLowerCase().includes(query)
       ) {
-        results.push({
+        internalResults.push({
           type: 'Company', icon: co.flag || '🏢',
           name: co.name,
           sub: co.country + ' · ' + (co.specialization || ''),
@@ -292,71 +325,139 @@
         entry.term.toLowerCase().includes(query) ||
         entry.definition.toLowerCase().includes(query)
       ) {
-        results.push({
-          type: 'Glossary', icon: '📖',
+        internalResults.push({
+          type: 'Glossary Term', icon: '📖',
           name: entry.term,
           sub: entry.definition.substring(0, 50) + '…',
-          href: '#/glossary',
           glossaryTerm: entry.term,
           glossaryDef: entry.definition
         });
       }
     });
 
-    renderSearchResults(results.slice(0, 8), dropdown);
+    // Curated videos matching query
+    const matchedCuratedVideos = CURATED_VIDEOS.filter(v => {
+      return v.title.toLowerCase().includes(query) || 
+             v.desc.toLowerCase().includes(query) ||
+             v.tags.some(tag => tag.includes(query));
+    }).map(v => ({
+      type: 'Video Guide', icon: '▶',
+      name: v.title,
+      sub: v.channel + ' — Curated Video',
+      videoId: v.videoId,
+      videoTitle: v.title,
+      videoChannel: v.channel
+    }));
+
+    let combinedResults = [...internalResults, ...matchedCuratedVideos];
+
+    // Show initial local results
+    renderHeaderDropdownResults(combinedResults.slice(0, 6), dropdown, rawQuery, true);
+
+    // 2. Fetch external results asynchronously
+    const currentInputToken = query;
+    Promise.allSettled([
+      fetchWikipediaResults(query),
+      fetchLiveVideos(query)
+    ]).then(outputs => {
+      const inputVal = document.getElementById('nav-search-input')?.value.trim().toLowerCase();
+      if (inputVal !== currentInputToken) return;
+
+      const wikiHits = outputs[0].status === 'fulfilled' ? outputs[0].value : [];
+      const videoHits = outputs[1].status === 'fulfilled' ? outputs[1].value : [];
+
+      wikiHits.forEach(hit => {
+        combinedResults.push({
+          type: 'Wikipedia', icon: '📖',
+          name: hit.title,
+          sub: 'Read encyclopedia article in-site',
+          wikiTitle: hit.title
+        });
+      });
+
+      videoHits.forEach(hit => {
+        combinedResults.push({
+          type: 'Video', icon: '▶',
+          name: hit.title,
+          sub: 'Watch video guide in-site',
+          videoId: hit.videoId,
+          videoTitle: hit.title,
+          videoChannel: hit.author || 'YouTube'
+        });
+      });
+
+      renderHeaderDropdownResults(combinedResults.slice(0, 8), dropdown, rawQuery, false);
+    });
   }
 
-  function renderSearchResults(results, dropdown) {
-    // Security: All content set via textContent — no innerHTML with user-controlled data
+  function renderHeaderDropdownResults(results, dropdown, query, isLoadingExternal) {
     dropdown.replaceChildren();
 
-    if (results.length === 0) {
+    if (results.length === 0 && !isLoadingExternal) {
       const empty = document.createElement('div');
       empty.className = 'search-empty';
-      empty.textContent = 'No results found';
+      empty.textContent = 'No matching information found. Press Enter to search everywhere.';
       dropdown.appendChild(empty);
       dropdown.classList.add('visible');
       return;
     }
 
     results.forEach(result => {
-      const item = document.createElement('a');
+      const item = document.createElement('div');
       item.className = 'search-result-item';
-      item.href = result.href;
       item.setAttribute('role', 'option');
-      item.setAttribute('aria-label', result.type + ': ' + result.name);
+      item.setAttribute('tabindex', '0');
 
-      const iconEl = document.createElement('div');
+      const iconEl = document.createElement('span');
       iconEl.className = 'search-result-icon';
-      iconEl.textContent = result.icon; // textContent — emoji only
+      iconEl.textContent = result.icon;
 
       const text = document.createElement('div');
       text.className = 'search-result-text';
 
       const name = document.createElement('div');
       name.className = 'search-result-name';
-      name.textContent = result.name; // textContent — safe
+      name.textContent = result.name;
 
       const sub = document.createElement('div');
       sub.className = 'search-result-type';
-      sub.textContent = result.type + ' · ' + result.sub; // textContent — safe
+      sub.textContent = result.type + ' · ' + result.sub;
 
       text.append(name, sub);
       item.append(iconEl, text);
 
-      item.addEventListener('click', () => {
+      const handleSelect = () => {
         dropdown.classList.remove('visible');
         const input = document.getElementById('nav-search-input');
         if (input) input.value = '';
-        if (result.glossaryTerm) {
-          setTimeout(() => window.openGlossary(result.glossaryTerm, result.glossaryDef), 300);
-        }
-      });
 
+        if (result.href) {
+          window.location.hash = result.href;
+        } else if (result.glossaryTerm) {
+          window.openGlossary(result.glossaryTerm, result.glossaryDef);
+        } else if (result.wikiTitle) {
+          openSearchOverlay(query);
+          _switchTab('wikipedia', query);
+          setTimeout(() => _openWikiReader(result.wikiTitle), 350);
+        } else if (result.videoId) {
+          openSearchOverlay(query);
+          _switchTab('videos', query);
+          setTimeout(() => _playVideoInApp(result.videoId, result.videoTitle, result.videoChannel), 350);
+        }
+      };
+
+      item.addEventListener('click', handleSelect);
+      item.addEventListener('keydown', e => { if (e.key === 'Enter') handleSelect(); });
       dropdown.appendChild(item);
     });
 
-    // Footer: "Search everywhere" — opens full overlay with Wikipedia + YouTube tabs
+    if (isLoadingExternal) {
+      const loader = document.createElement('div');
+      loader.className = 'dropdown-external-loader';
+      loader.textContent = 'Searching Wikipedia & YouTube...';
+      dropdown.appendChild(loader);
+    }
+
     const evBtn = document.createElement('div');
     evBtn.className = 'search-everywhere-btn';
     evBtn.setAttribute('role', 'button');
@@ -368,16 +469,14 @@
 
     const evQuery = document.createElement('span');
     evQuery.className = 'search-everywhere-query';
-    const navInput = document.getElementById('nav-search-input');
-    evQuery.textContent = navInput ? '\u201c' + navInput.value.trim() + '\u201d \u2192' : '\u2192';
+    evQuery.textContent = '“' + query + '” →';
 
     evBtn.append(evLabel, evQuery);
     evBtn.addEventListener('click', () => {
-      const q = navInput ? navInput.value.trim() : '';
-      if (q.length > 0) {
-        dropdown.classList.remove('visible');
-        openSearchOverlay(q);
-      }
+      dropdown.classList.remove('visible');
+      const input = document.getElementById('nav-search-input');
+      if (input) input.value = '';
+      openSearchOverlay(query);
     });
     evBtn.addEventListener('keypress', e => { if (e.key === 'Enter') evBtn.click(); });
     dropdown.appendChild(evBtn);
@@ -418,73 +517,7 @@
     document.body.style.overflow = '';
   }
 
-  /* ─── GLOSSARY PAGE ─────────────────────────────────────────────────── */
-  function renderGlossaryPage(container) {
-    const data = window.SEMI_DATA;
-    const frag = document.createDocumentFragment();
 
-    const hero = document.createElement('div');
-    hero.style.cssText = 'padding:5rem 0 3rem; border-bottom:1px solid rgba(255,255,255,0.06);';
-    const heroInner = document.createElement('div');
-    heroInner.className = 'container page-enter';
-    const lbl = document.createElement('span');
-    lbl.className = 'section-label';
-    lbl.textContent = 'Quick Reference';
-    const h1 = document.createElement('h1');
-    h1.style.cssText = 'font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:-0.03em; margin-bottom:1rem;';
-    h1.textContent = 'Semiconductor Glossary';
-    const sub = document.createElement('p');
-    sub.style.cssText = 'font-size:1rem; color:rgba(255,255,255,0.55); max-width:520px; line-height:1.75;';
-    sub.textContent = 'Essential terminology for understanding IC fabrication processes, metrology, and the semiconductor supply chain.';
-    heroInner.append(lbl, h1, sub);
-    hero.appendChild(heroInner);
-    frag.appendChild(hero);
-
-    const main = document.createElement('main');
-    main.className = 'container page-enter';
-    main.style.cssText = 'padding-top:3rem; padding-bottom:4rem;';
-
-    const grid = document.createElement('div');
-    grid.style.cssText = 'display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1rem;';
-
-    data.glossary.forEach(entry => {
-      const card = document.createElement('div');
-      card.style.cssText = 'background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:1.25rem; cursor:pointer; transition:all 0.2s ease;';
-      card.setAttribute('role', 'button');
-      card.setAttribute('tabindex', '0');
-      card.setAttribute('aria-label', 'Definition of ' + entry.term);
-
-      const termEl = document.createElement('div');
-      termEl.style.cssText = 'font-size:1rem; font-weight:700; color:#fff; margin-bottom:0.5rem; font-family:var(--mono); letter-spacing:-0.01em;';
-      termEl.textContent = entry.term; // textContent — safe
-
-      const defEl = document.createElement('div');
-      defEl.style.cssText = 'font-size:0.85rem; color:rgba(255,255,255,0.55); line-height:1.65;';
-      defEl.textContent = entry.definition; // textContent — safe
-
-      card.append(termEl, defEl);
-
-      card.addEventListener('mouseenter', () => {
-        card.style.borderColor = 'rgba(103,232,249,0.25)';
-        card.style.background = 'rgba(255,255,255,0.07)';
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.borderColor = 'rgba(255,255,255,0.1)';
-        card.style.background = 'rgba(255,255,255,0.04)';
-      });
-      card.addEventListener('click', () => window.openGlossary(entry.term, entry.definition));
-      card.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') window.openGlossary(entry.term, entry.definition);
-      });
-
-      grid.appendChild(card);
-    });
-
-    main.appendChild(grid);
-    frag.appendChild(main);
-    frag.appendChild(window._buildFooter());
-    container.appendChild(frag);
-  }
 
   /* ─── 404 PAGE ──────────────────────────────────────────────────────── */
   function render404Page(container) {

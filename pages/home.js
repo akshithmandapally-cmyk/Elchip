@@ -30,7 +30,7 @@ window.renderHome = function (container) {
     p.style.cssText = `
       width:${size}px; height:${size}px;
       left:${Math.random() * 100}%;
-      background:${Math.random() > 0.5 ? 'rgba(79,142,247,0.6)' : 'rgba(103,232,249,0.5)'};
+      background:${Math.random() > 0.5 ? 'rgba(255,255,255,0.4)' : 'rgba(200,200,200,0.2)'};
       animation-duration:${8 + Math.random() * 12}s;
       animation-delay:${Math.random() * 8}s;
     `;
@@ -296,59 +296,6 @@ window.renderHome = function (container) {
   coSection.appendChild(coInner);
   frag.appendChild(coSection);
 
-  /* ── GLOSSARY PREVIEW ──────────────────────────────────────────────── */
-  const glossSection = document.createElement('section');
-  glossSection.style.borderTop = '1px solid rgba(255,255,255,0.06)';
-
-  const glossInner = document.createElement('div');
-  glossInner.className = 'container';
-
-  const glossLabel = document.createElement('span');
-  glossLabel.className = 'section-label';
-  glossLabel.textContent = 'Quick Reference';
-
-  const glossTitle = document.createElement('h2');
-  glossTitle.className = 'section-title';
-  glossTitle.textContent = 'Semiconductor Glossary';
-
-  const glossDivider = document.createElement('div');
-  glossDivider.className = 'section-divider';
-
-  const glossGrid = document.createElement('div');
-  glossGrid.className = 'two-col';
-  glossGrid.style.gap = '0.75rem';
-
-  data.glossary.forEach(entry => {
-    const item = document.createElement('div');
-    item.className = 'glass-card';
-    item.style.padding = '1rem 1.25rem';
-    item.style.cursor = 'pointer';
-    item.setAttribute('role', 'button');
-    item.setAttribute('tabindex', '0');
-    item.setAttribute('aria-label', 'Definition of ' + entry.term);
-
-    const term = document.createElement('div');
-    term.className = 'glossary-trigger';
-    term.style.cssText = 'font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:0.35rem;';
-    term.textContent = entry.term;
-
-    const def = document.createElement('div');
-    def.style.cssText = 'font-size:0.82rem; color:rgba(255,255,255,0.55); line-height:1.6;';
-    def.textContent = entry.definition.substring(0, 90) + '…';
-
-    item.append(term, def);
-
-    // Security: Event listener instead of inline onclick
-    const openGloss = () => window.openGlossary(entry.term, entry.definition);
-    item.addEventListener('click', openGloss);
-    item.addEventListener('keypress', e => { if (e.key === 'Enter') openGloss(); });
-    glossGrid.appendChild(item);
-  });
-
-  glossInner.append(glossLabel, glossTitle, glossDivider, glossGrid);
-  glossSection.appendChild(glossInner);
-  frag.appendChild(glossSection);
-
   // ─── FOOTER ────────────────────────────────────────────────────────────
   const footer = buildFooter();
   frag.appendChild(footer);
@@ -376,14 +323,14 @@ function buildFooter() {
   brandDesc.textContent = 'Interactive educational platform for semiconductor manufacturing and IC fabrication processes.';
   brand.append(brandName, brandDesc);
 
-  // Quick links
+  // Quick links (Glossary removed)
   const links = document.createElement('div');
   const linksHeading = document.createElement('span');
   linksHeading.className = 'footer-heading';
   linksHeading.textContent = 'Navigation';
   const linksList = document.createElement('ul');
   linksList.className = 'footer-links';
-  [['Process Flow', '#/process-flow'], ['Inspection Tools', '#/tools'], ['Companies', '#/companies'], ['Glossary', '#/glossary']].forEach(([text, href]) => {
+  [['Process Flow', '#/process-flow'], ['Inspection Tools', '#/tools'], ['Companies', '#/companies']].forEach(([text, href]) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = href;

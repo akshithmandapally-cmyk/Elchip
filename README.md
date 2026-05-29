@@ -14,9 +14,9 @@ A single-page application (SPA) built with pure HTML, CSS, and vanilla JavaScrip
 - 13 fully detailed IC fabrication process pages
 - 10 inspection & metrology tool pages with SVG schematic diagrams
 - 16 company profiles (foundries + equipment suppliers)
-- Live search across all content
-- Animated 300mm silicon wafer visualization
-- Semiconductor glossary with popup definitions
+- Combined live internal/external search (with Wikipedia reader & video player)
+- Animated 300mm monochrome silicon wafer visualization
+- Semiconductor glossary terms searchable with in-app definition popups
 - Fully responsive — works on mobile, tablet, and desktop
 
 ---
@@ -33,7 +33,7 @@ elechip/
 │   └── semiconductor.js               # All platform data — 13 steps, 10 tools, 16 companies (72KB)
 │
 ├── components/
-│   └── wafer-canvas.js               # Canvas 2D wafer animation + glossary overlay
+│   └── wafer-canvas.js               # Canvas 2D wafer animation
 │
 ├── pages/
 │   ├── home.js                        # Landing page — hero, timeline, tool & company previews
@@ -106,9 +106,12 @@ Plus a **Fab Economics** section covering EUV tool costs, wafer prices, yield ra
 
 ---
 
-### 🔍 Live Search
+### 🔍 Combined Live & External Search
 
-Real-time debounced search (150ms) across all 13 steps, 10 tools, 16 companies, and 15 glossary terms. Results appear in a dropdown — no page reload.
+Real-time debounced search (300ms) across all 13 steps, 10 tools, 16 companies, and 15 glossary terms. It also queries live external APIs (Wikipedia, DuckDuckGo web summary, and Invidious videos) asynchronously.
+- **In-site Wikipedia Reader**: View parsed encyclopedia article sections directly within the website overlay.
+- **In-site Video Player**: Watch semiconductor video tutorials and guides inside the application using a clean, custom `youtube-nocookie` video player wrapper.
+- **Funny Search Placeholders**: The search bar cycles through various humorous semiconductor-related prompts (e.g. *"Why does my code compile but my wafer has defects?"*).
 
 ---
 
@@ -127,11 +130,11 @@ Canvas 2D animation of a 300mm silicon wafer with:
 | Category | Technology |
 |----------|-----------| 
 | Markup | HTML5 (semantic, accessible) |
-| Styling | Vanilla CSS — design tokens, glassmorphism, `clamp()`, CSS Grid |
-| Logic | Vanilla JavaScript (ES6+) — zero dependencies, no framework |
+| Styling | Vanilla CSS — design tokens, glassmorphism, monochrome theme, `clamp()`, CSS Grid |
+| Logic | Vanilla JavaScript (ES6+) — zero dependencies, no framework, external API integrations (Wikipedia/Invidious) |
 | Routing | Custom hash-based SPA router (`app.js`) |
 | Animation | Canvas 2D API + CSS keyframe animations |
-| Fonts | [Inter](https://fonts.google.com/specimen/Inter) + [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) via Google Fonts |
+| Fonts | Tahoma (system font, bold for headings, normal for body/UI) |
 | Scroll FX | [AOS v2.3.1](https://michalsnik.github.io/aos/) — Animate On Scroll |
 | Hosting | GitHub Pages |
 
@@ -162,7 +165,7 @@ Then visit `http://localhost:8080`.
 | Hash Route | Page |
 |-----------|------|
 | `#/` | Home — hero + process timeline |
-| `#/process-flow` | Scroll to process timeline |
+| `#/process-flow` | Smooth scroll to process timeline |
 | `#/process/wafer-preparation` | Silicon Wafer Preparation |
 | `#/process/photolithography` | Photolithography |
 | `#/process/etching` | Etching |
@@ -171,7 +174,7 @@ Then visit `http://localhost:8080`.
 | `#/tool/cd-sem` | CD-SEM detail |
 | `#/tool/<slug>` | Any of the 10 tools |
 | `#/companies` | Companies + fab economics |
-| `#/glossary` | Semiconductor glossary |
+| `#/glossary` | Removed (Glossary terms are searchable and open in-site definitions via popups) |
 
 ---
 
@@ -191,7 +194,7 @@ Then visit `http://localhost:8080`.
 |---------|--------|
 | **XSS Prevention** | All dynamic content set via `textContent` — zero `innerHTML` with user data |
 | **SVG Safety** | All SVG diagrams built via `DOMParser` (not `innerHTML`) |
-| **CSP** | `Content-Security-Policy` meta tag restricts scripts to `self` + unpkg.com |
+| **CSP** | `Content-Security-Policy` meta tag restricts scripts to `self` + unpkg.com, and allows connections to Wikipedia, DuckDuckGo, and Invidious APIs. |
 | **Clickjacking** | `X-Frame-Options: DENY` |
 | **MIME Sniffing** | `X-Content-Type-Options: nosniff` |
 | **Event Listeners** | All events via `addEventListener` — no inline `onclick` attributes |
@@ -200,11 +203,11 @@ Then visit `http://localhost:8080`.
 
 ## 🎨 Design System
 
-- **Palette:** Pure black (`#000`) background → white text with blue (`#4f8ef7`) and cyan (`#67e8f9`) accents
+- **Palette:** Strict monochrome black-and-white theme — pure black (`#000`) background and white/gray text and accents (no colors).
 - **Glassmorphism:** `backdrop-filter: blur(12–24px)` + semi-transparent borders throughout
-- **Typography:** Inter (UI) + JetBrains Mono (labels, code, badges)
-- **Gradient text:** Hero and logo use white → cyan gradient via `-webkit-background-clip: text`
-- **Micro-animations:** Page transitions (fade + translate), card hover lifts, canvas wafer, particle field
+- **Typography:** Tahoma (system font, no external load latency) — Tahoma bold for headings, Tahoma normal for body and code blocks.
+- **Gradient text/elements:** Hero, logo, and highlights use white to gray/light-gray gradients.
+- **Micro-animations:** Page transitions (fade + translate), card hover lifts, monochrome canvas wafer, and floating particles.
 
 ---
 

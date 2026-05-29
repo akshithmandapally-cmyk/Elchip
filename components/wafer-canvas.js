@@ -31,7 +31,7 @@ window.initWaferCanvas = function(canvasId) {
 
     // ── Outer wafer circle glow ────────────────────────────────────────
     const glowGrad = ctx.createRadialGradient(cx, cy, R * 0.6, cx, cy, R * 1.1);
-    glowGrad.addColorStop(0, 'rgba(79,142,247,0.04)');
+    glowGrad.addColorStop(0, 'rgba(255,255,255,0.02)');
     glowGrad.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.beginPath();
     ctx.arc(cx, cy, R * 1.1, 0, Math.PI * 2);
@@ -50,7 +50,7 @@ window.initWaferCanvas = function(canvasId) {
     ctx.arc(cx, cy, R, 0, Math.PI * 2);
     const waferGrad = ctx.createRadialGradient(cx - R * 0.2, cy - R * 0.2, 0, cx, cy, R);
     waferGrad.addColorStop(0, 'rgba(255,255,255,0.04)');
-    waferGrad.addColorStop(0.7, 'rgba(79,142,247,0.03)');
+    waferGrad.addColorStop(0.7, 'rgba(255,255,255,0.02)');
     waferGrad.addColorStop(1, 'rgba(0,0,0,0.5)');
     ctx.fillStyle = waferGrad;
     ctx.fill();
@@ -65,7 +65,7 @@ window.initWaferCanvas = function(canvasId) {
 
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(79,142,247,${alpha})`;
+      ctx.strokeStyle = `rgba(255,255,255,${alpha * 0.8})`;
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 6]);
       ctx.lineDashOffset = angle * 50;
@@ -82,14 +82,14 @@ window.initWaferCanvas = function(canvasId) {
 
         ctx.beginPath();
         ctx.arc(nx, ny, 2 + pulse * 1.5, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(103,232,249,${0.2 + pulse * 0.4})`;
+        ctx.fillStyle = `rgba(255,255,255,${0.15 + pulse * 0.25})`;
         ctx.fill();
 
         // Glow on active nodes
         if (pulse > 0.8) {
           ctx.beginPath();
           ctx.arc(nx, ny, 5 + pulse * 3, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(103,232,249,${(pulse - 0.8) * 0.3})`;
+          ctx.fillStyle = `rgba(255,255,255,${(pulse - 0.8) * 0.2})`;
           ctx.fill();
         }
       }
@@ -119,13 +119,13 @@ window.initWaferCanvas = function(canvasId) {
         const isActive = phase > 0.75 && dist < 0.7;
 
         ctx.strokeStyle = isActive
-          ? `rgba(79,142,247,${0.25 + phase * 0.2})`
+          ? `rgba(255,255,255,${0.12 + phase * 0.1})`
           : `rgba(255,255,255,0.04)`;
         ctx.lineWidth = 0.5;
         ctx.strokeRect(x + 0.5, y + 0.5, dieSize - 1, dieSize - 1);
 
         if (isActive) {
-          ctx.fillStyle = `rgba(79,142,247,${(phase - 0.75) * 0.15})`;
+          ctx.fillStyle = `rgba(255,255,255,${(phase - 0.75) * 0.08})`;
           ctx.fillRect(x + 0.5, y + 0.5, dieSize - 1, dieSize - 1);
         }
       }
@@ -139,9 +139,9 @@ window.initWaferCanvas = function(canvasId) {
       cx + Math.cos(scanAngle) * R,
       cy + Math.sin(scanAngle) * R
     );
-    scanGrad.addColorStop(0, 'rgba(103,232,249,0)');
-    scanGrad.addColorStop(0.6, 'rgba(103,232,249,0.15)');
-    scanGrad.addColorStop(1, 'rgba(103,232,249,0)');
+    scanGrad.addColorStop(0, 'rgba(255,255,255,0)');
+    scanGrad.addColorStop(0.6, 'rgba(255,255,255,0.08)');
+    scanGrad.addColorStop(1, 'rgba(255,255,255,0)');
 
     ctx.save();
     ctx.beginPath();
@@ -155,7 +155,7 @@ window.initWaferCanvas = function(canvasId) {
 
     // ── Center crosshair ───────────────────────────────────────────────
     const crossSize = 12;
-    ctx.strokeStyle = 'rgba(103,232,249,0.4)';
+    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(cx - crossSize, cy);
@@ -166,7 +166,7 @@ window.initWaferCanvas = function(canvasId) {
 
     ctx.beginPath();
     ctx.arc(cx, cy, 4, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(103,232,249,0.6)';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fill();
 
     // ── Flat indicator (wafer orientation notch) ───────────────────────
@@ -184,7 +184,7 @@ window.initWaferCanvas = function(canvasId) {
     const pulse2 = Math.sin(t * 0.04) * 0.5 + 0.5;
     ctx.beginPath();
     ctx.arc(cx, cy, R + 4 + pulse2 * 6, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(79,142,247,${0.05 + pulse2 * 0.1})`;
+    ctx.strokeStyle = `rgba(255,255,255,${0.04 + pulse2 * 0.06})`;
     ctx.lineWidth = pulse2 * 3 + 1;
     ctx.stroke();
 
