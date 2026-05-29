@@ -534,13 +534,127 @@
   let _activeTab = 'internal';
   let _currentQuery = '';
 
+  const FUNNY_PLACEHOLDERS = [
+    "Why does my code compile but my wafer has defects?",
+    "How to explain EUV lithography to a 5-year-old without crying",
+    "Can I clean my processor with soap?",
+    "Is sand really that expensive or are we just paying for the spice?",
+    "Will AI replace chip designers or just make them drink more coffee?",
+    "How to get into a cleanroom if I have a beard?",
+    "Why ASML machines look like time travel devices",
+    "Can I run Crysis on a silicon wafer?",
+    "Looking for silicon valley but found actual silicon",
+    "Is photoresist edible? (No, absolutely not)",
+    "What happens if a dust particle lands on a wafer? (Total disaster)",
+    "How many transistors can fit on a pinhead?"
+  ];
+
+  const CURATED_VIDEOS = [
+    {
+      title: "How Microchips are Made",
+      videoId: "g8SCA-3_p_0",
+      channel: "Branch Education",
+      desc: "A highly detailed, 3D animated walkthrough of the entire semiconductor fabrication process, explaining photolithography, deposition, and etching.",
+      tags: ["process", "fabrication", "how", "made", "transistor", "lithography", "silicon", "microchip", "overview"]
+    },
+    {
+      title: "The Extreme Physics of EUV Lithography",
+      videoId: "5Ge2R8l8oJk",
+      channel: "Asianometry",
+      desc: "An in-depth look at ASML's Extreme Ultraviolet (EUV) lithography systems, explaining how liquid tin droplets and lasers create 13.5nm light.",
+      tags: ["euv", "lithography", "asml", "light", "exposure", "physics", "lens", "mirror"]
+    },
+    {
+      title: "How does a Transistor Work?",
+      videoId: "IcrBqCFLHIY",
+      channel: "Veritasium",
+      desc: "A clear and visual explanation of semiconductors, p-n junctions, and how silicon transistors act as electronic switches.",
+      tags: ["transistor", "semiconductor", "pn junction", "physics", "silicon", "switch", "mosfet"]
+    },
+    {
+      title: "Inside a Silicon Wafer Fab: Cleanroom Tour",
+      videoId: "gXN-7rLp66w",
+      channel: "Intel Corporation",
+      desc: "Take a look inside Intel's state-of-the-art D1X factory in Oregon, showing the automated transport systems (AMHS) and cleanroom clothing.",
+      tags: ["fab", "cleanroom", "intel", "wafer", "factory", "automation", "tour"]
+    },
+    {
+      title: "Silicon Wafer Production: How Sand Becomes Wafers",
+      videoId: "AMg4mX368L0",
+      channel: "Shin-Etsu Silicon",
+      desc: "Shows the step-by-step process of growing a single-crystal silicon ingot (Czochralski process) and slicing it into 300mm wafers.",
+      tags: ["wafer", "silicon", "ingot", "czochralski", "slicing", "polishing", "crystal"]
+    },
+    {
+      title: "What is Photolithography? Semiconductor Manufacturing 101",
+      videoId: "7qJ4n3b_V8k",
+      channel: "Applied Materials",
+      desc: "A foundational introduction to the photolithography process: photoresist spin-coating, exposure through a photomask, and development.",
+      tags: ["lithography", "photolithography", "photoresist", "mask", "exposure", "spin coating"]
+    },
+    {
+      title: "Chemical Mechanical Planarization (CMP) Explained",
+      videoId: "3rR_rWc9T7s",
+      channel: "Applied Materials",
+      desc: "An educational animation demonstrating how chemical slurries and polishing pads planarize wafer surfaces to atomic flatness.",
+      tags: ["cmp", "planarization", "polishing", "slurry", "chemical mechanical planarization"]
+    },
+    {
+      title: "Dry Etching and Wet Etching Processes",
+      videoId: "T4bL8B4SjX0",
+      channel: "Lam Research",
+      desc: "A detailed breakdown of isotropic wet etching and anisotropic dry plasma etching processes used to carve microchip patterns.",
+      tags: ["etching", "etch", "plasma", "dry etching", "wet etching", "anisotropic", "isotropic"]
+    },
+    {
+      title: "Chemical Vapor Deposition (CVD) and Atomic Layer Deposition (ALD)",
+      videoId: "kO3Q_JbE_bA",
+      channel: "Lam Research",
+      desc: "Explains how gaseous precursors react at wafer surfaces to deposit ultra-thin, conformal oxide and metal layers down to the atomic scale.",
+      tags: ["deposition", "cvd", "ald", "thin film", "atomic layer deposition", "chemical vapor deposition"]
+    },
+    {
+      title: "Semiconductor Metrology & Inspection Systems",
+      videoId: "9H5H3rXy6sQ",
+      channel: "KLA Corporation",
+      desc: "How optical and electron beam inspection systems detect sub-nanometer defects in high-volume semiconductor manufacturing.",
+      tags: ["metrology", "inspection", "defect", "kla", "optical", "e-beam", "measuring"]
+    },
+    {
+      title: "Advanced IC Packaging & Heterogeneous Integration",
+      videoId: "u9S0e4Uv4a0",
+      channel: "ASE Group",
+      desc: "Explains advanced packaging methods like system-in-package (SiP), 2.5D/3D stacking, and micro-bumps that connect multiple chiplets.",
+      tags: ["packaging", "package", "chiplet", "wire bonding", "die", "stacking", "3d", "sip"]
+    },
+    {
+      title: "How ASML Builds the World's Most Complex Machines",
+      videoId: "dqV5U2iP514",
+      channel: "CNBC",
+      desc: "A documentary on the supply chain, precision engineering, and business strategy behind ASML's monopoly on lithography equipment.",
+      tags: ["asml", "lithography", "euv", "duv", "company", "supply chain", "monopoly"]
+    },
+    {
+      title: "Taiwan Semiconductor Manufacturing Company (TSMC) Fab Tour",
+      videoId: "y1vA7W2O2Jk",
+      channel: "TSMC",
+      desc: "A look inside TSMC's GigaFabs, highlighting cleanroom automation, robotic wafer routing, and the scale of modern contract manufacturing.",
+      tags: ["tsmc", "foundry", "fab", "gigafab", "taiwan", "contract manufacturing"]
+    }
+  ];
+
   function openSearchOverlay(query) {
     if (!_searchOverlayEl) _buildSearchOverlay();
     _currentQuery = query;
 
-    // Pre-fill input — value property is safe (not innerHTML)
+    // Pre-fill input
     const input = _searchOverlayEl.querySelector('#overlay-search-input');
-    if (input) input.value = query;
+    if (input) {
+      input.value = query;
+      // Set random funny placeholder
+      const rand = FUNNY_PLACEHOLDERS[Math.floor(Math.random() * FUNNY_PLACEHOLDERS.length)];
+      input.placeholder = rand;
+    }
 
     _searchOverlayEl.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -570,11 +684,53 @@
     const activePanel = _searchOverlayEl.querySelector('#panel-' + tab);
     if (activePanel) activePanel.classList.add('active');
 
-    if (!query || query.length < 1) return;
+    // If query is empty, show funny suggestions
+    if (!query || query.trim().length < 1) {
+      if (activePanel) _showFunnySuggestions(activePanel);
+      return;
+    }
 
-    if (tab === 'internal') _showInternalResults(query);
-    else if (tab === 'wikipedia') _showWikiResults(query);
-    else if (tab === 'videos') _showVideoResults(query);
+    const trimmedQuery = query.trim();
+    if (tab === 'internal') _showInternalResults(trimmedQuery);
+    else if (tab === 'wikipedia') _showWikiResults(trimmedQuery);
+    else if (tab === 'web') _showWebResults(trimmedQuery);
+    else if (tab === 'videos') _showVideoResults(trimmedQuery);
+  }
+
+  function _showFunnySuggestions(panel) {
+    panel.replaceChildren();
+
+    const container = document.createElement('div');
+    container.className = 'suggestions-container';
+
+    const title = document.createElement('h3');
+    title.className = 'suggestions-title';
+    title.textContent = "Need search inspiration? Try one of these:";
+
+    const grid = document.createElement('div');
+    grid.className = 'suggestions-grid';
+
+    // Pick 4 random funny lines
+    const shuffled = [...FUNNY_PLACEHOLDERS].sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, 4);
+
+    selected.forEach(line => {
+      const btn = document.createElement('button');
+      btn.className = 'suggestion-bubble';
+      btn.textContent = "⚡ " + line;
+      btn.addEventListener('click', () => {
+        const input = document.getElementById('overlay-search-input');
+        if (input) {
+          input.value = line;
+          _currentQuery = line;
+          _switchTab(_activeTab, line);
+        }
+      });
+      grid.appendChild(btn);
+    });
+
+    container.append(title, grid);
+    panel.appendChild(container);
   }
 
   function _buildSearchOverlay() {
@@ -603,7 +759,7 @@
     input.type = 'search';
     input.id = 'overlay-search-input';
     input.className = 'search-overlay-input';
-    input.placeholder = 'Search processes, tools, companies, or any semiconductor topic…';
+    input.placeholder = 'Search semiconductor topics…';
     input.setAttribute('autocomplete', 'off');
     input.setAttribute('spellcheck', 'false');
     input.setAttribute('aria-label', 'Search query');
@@ -613,7 +769,7 @@
       clearTimeout(_overlayDebounce);
       _overlayDebounce = setTimeout(() => {
         _currentQuery = input.value.trim();
-        if (_currentQuery.length > 0) _switchTab(_activeTab, _currentQuery);
+        _switchTab(_activeTab, _currentQuery);
       }, 400);
     });
     input.addEventListener('keydown', e => {
@@ -635,6 +791,7 @@
     [
       { id: 'internal', label: 'This Site', emoji: '⚡' },
       { id: 'wikipedia', label: 'Wikipedia', emoji: '📖' },
+      { id: 'web',      label: 'Web Search', emoji: '🌐' },
       { id: 'videos',   label: 'Videos',    emoji: '▶' },
     ].forEach(t => {
       const btn = document.createElement('button');
@@ -652,7 +809,7 @@
     const body = document.createElement('div');
     body.className = 'search-overlay-body';
 
-    ['internal', 'wikipedia', 'videos'].forEach(id => {
+    ['internal', 'wikipedia', 'web', 'videos'].forEach(id => {
       const panel = document.createElement('div');
       panel.className = 'search-panel' + (id === _activeTab ? ' active' : '');
       panel.id = 'panel-' + id;
@@ -674,14 +831,13 @@
     _searchOverlayEl = overlay;
   }
 
-  /* ── Wikipedia search via REST API ────────────────────────────────── */
+  /* ── Wikipedia search via Query API ───────────────────────────────── */
   async function _showWikiResults(query) {
     const panel = document.getElementById('panel-wikipedia');
     if (!panel) return;
     _setLoading(panel, 'Searching Wikipedia');
 
     try {
-      // Security: encodeURIComponent sanitizes query for URL use
       const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search' +
         '&srsearch=' + encodeURIComponent(query) +
         '&format=json&origin=*&utf8=1&srlimit=6';
@@ -706,7 +862,6 @@
 
   async function _buildWikiCard(title) {
     try {
-      // Wikipedia Summary REST API — CORS-enabled, no API key needed
       const res = await fetch(
         'https://en.wikipedia.org/api/rest_v1/page/summary/' + encodeURIComponent(title)
       );
@@ -716,12 +871,11 @@
       const card = document.createElement('div');
       card.className = 'wiki-result-card';
 
-      // Thumbnail — grayscale via CSS
       if (d.thumbnail && d.thumbnail.source) {
         const img = document.createElement('img');
         img.className = 'wiki-result-thumb';
-        img.src = d.thumbnail.source; // trusted Wikipedia API URL
-        img.alt = title; // textContent equivalent for alt
+        img.src = d.thumbnail.source;
+        img.alt = title;
         img.loading = 'lazy';
         img.width = 68;
         img.height = 68;
@@ -733,24 +887,30 @@
 
       const titleEl = document.createElement('div');
       titleEl.className = 'wiki-result-title';
-      titleEl.textContent = d.title || title; // textContent — XSS safe
+      titleEl.textContent = d.title || title;
 
       const extract = document.createElement('div');
       extract.className = 'wiki-result-extract';
-      extract.textContent = d.extract || ''; // textContent — XSS safe
+      extract.textContent = d.extract || '';
 
       const footer = document.createElement('div');
       footer.className = 'wiki-result-footer';
 
-      const wikiLink = document.createElement('a');
-      wikiLink.className = 'wiki-result-link';
-      const pageUrl = (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || '#';
-      wikiLink.href = pageUrl;
-      wikiLink.target = '_blank';
-      wikiLink.rel = 'noopener noreferrer';
-      wikiLink.textContent = 'Read on Wikipedia →'; // textContent — safe
+      const readBtn = document.createElement('button');
+      readBtn.className = 'wiki-read-btn';
+      readBtn.textContent = '📖 Read in Site';
+      readBtn.addEventListener('click', () => {
+        _openWikiReader(d.title || title);
+      });
 
-      footer.appendChild(wikiLink);
+      const extLink = document.createElement('a');
+      extLink.className = 'wiki-result-link';
+      extLink.href = (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || '#';
+      extLink.target = '_blank';
+      extLink.rel = 'noopener noreferrer';
+      extLink.textContent = 'Open Page ↗';
+
+      footer.append(readBtn, extLink);
       textEl.append(titleEl, extract, footer);
       card.appendChild(textEl);
       return card;
@@ -759,39 +919,366 @@
     }
   }
 
-  /* ── YouTube embedded search ───────────────────────────────────────── */
-  function _showVideoResults(query) {
+  /* ── Wikipedia In-App Reader ──────────────────────────────────────── */
+  async function _openWikiReader(title) {
+    const panel = document.getElementById('panel-wikipedia');
+    if (!panel) return;
+    _setLoading(panel, 'Loading Wikipedia article...');
+
+    try {
+      const url = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
+        '&titles=' + encodeURIComponent(title) +
+        '&format=json&origin=*';
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      
+      const pages = (data.query && data.query.pages) || {};
+      const pageId = Object.keys(pages)[0];
+      const page = pages[pageId];
+
+      if (!page || !page.extract || page.extract.trim().length === 0) {
+        throw new Error('Article content is empty');
+      }
+
+      panel.replaceChildren();
+
+      const reader = document.createElement('div');
+      reader.className = 'wiki-reader';
+
+      const backBtn = document.createElement('button');
+      backBtn.className = 'btn btn-ghost wiki-reader-back';
+      backBtn.textContent = '← Back to articles';
+      backBtn.addEventListener('click', () => {
+        _switchTab('wikipedia', _currentQuery);
+      });
+
+      const header = document.createElement('div');
+      header.className = 'wiki-reader-header';
+
+      const hTitle = document.createElement('h2');
+      hTitle.className = 'wiki-reader-title';
+      hTitle.textContent = page.title;
+
+      const credit = document.createElement('div');
+      credit.className = 'wiki-reader-credit';
+      credit.textContent = 'Encyclopedia Entry';
+
+      const sourceLink = document.createElement('a');
+      sourceLink.className = 'wiki-reader-source';
+      sourceLink.href = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(page.title);
+      sourceLink.target = '_blank';
+      sourceLink.rel = 'noopener noreferrer';
+      sourceLink.textContent = 'Open Wikipedia Webpage ↗';
+
+      header.append(hTitle, credit, sourceLink);
+
+      const content = document.createElement('div');
+      content.className = 'wiki-reader-content';
+
+      const lines = page.extract.split('\n');
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.length === 0) return;
+
+        if (trimmed.startsWith('==') && trimmed.endsWith('==')) {
+          let level = 0;
+          while (trimmed[level] === '=') {
+            level++;
+          }
+          const headingText = trimmed.replace(/={2,}/g, '').trim();
+          let hTag = 'h3';
+          if (level === 2) hTag = 'h3';
+          else if (level === 3) hTag = 'h4';
+          else hTag = 'h5';
+
+          const heading = document.createElement(hTag);
+          heading.className = 'wiki-reader-heading';
+          heading.textContent = headingText;
+          content.appendChild(heading);
+        } else if (trimmed.startsWith('* ')) {
+          const li = document.createElement('li');
+          li.className = 'wiki-reader-list-item';
+          li.textContent = trimmed.substring(2);
+          content.appendChild(li);
+        } else {
+          const p = document.createElement('p');
+          p.className = 'wiki-reader-paragraph';
+          p.textContent = trimmed;
+          content.appendChild(p);
+        }
+      });
+
+      reader.append(backBtn, header, content);
+      panel.appendChild(reader);
+      panel.scrollTop = 0;
+    } catch (err) {
+      panel.replaceChildren();
+      const wrap = document.createElement('div');
+      wrap.className = 'search-empty-state';
+      const icon = document.createElement('span');
+      icon.className = 'icon';
+      icon.textContent = '⚠️';
+      const msg = document.createElement('p');
+      msg.textContent = 'Could not load article: ' + err.message;
+      const back = document.createElement('button');
+      back.className = 'btn btn-ghost';
+      back.style.marginTop = '1rem';
+      back.textContent = '← Back';
+      back.addEventListener('click', () => _switchTab('wikipedia', _currentQuery));
+      wrap.append(icon, msg, back);
+      panel.appendChild(wrap);
+    }
+  }
+
+  /* ── DuckDuckGo Web Search ────────────────────────────────────────── */
+  async function _showWebResults(query) {
+    const panel = document.getElementById('panel-web');
+    if (!panel) return;
+    _setLoading(panel, 'Searching the Web');
+
+    try {
+      const url = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&origin=*';
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+
+      panel.replaceChildren();
+
+      const container = document.createElement('div');
+      container.className = 'web-results-container';
+
+      if (data.AbstractText && data.AbstractText.trim().length > 0) {
+        const answerCard = document.createElement('div');
+        answerCard.className = 'web-answer-card';
+
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-white';
+        badge.style.marginBottom = '0.5rem';
+        badge.textContent = 'Web Summary';
+
+        const title = document.createElement('div');
+        title.className = 'web-answer-title';
+        title.textContent = data.Heading || query;
+
+        const body = document.createElement('p');
+        body.className = 'web-answer-body';
+        body.textContent = data.AbstractText;
+
+        const source = document.createElement('div');
+        source.className = 'web-answer-source';
+        const sourceLink = document.createElement('a');
+        sourceLink.href = data.AbstractURL || '#';
+        sourceLink.target = '_blank';
+        sourceLink.rel = 'noopener noreferrer';
+        sourceLink.textContent = 'Source: ' + (data.AbstractSource || 'DuckDuckGo') + ' ↗';
+        source.appendChild(sourceLink);
+
+        answerCard.append(badge, title, body, source);
+        container.appendChild(answerCard);
+      }
+
+      const topics = data.RelatedTopics || [];
+      const validTopics = topics.filter(t => t.Text && t.FirstURL);
+
+      if (validTopics.length > 0) {
+        const listTitle = document.createElement('h3');
+        listTitle.className = 'web-list-title';
+        listTitle.textContent = 'Related Search Results';
+        container.appendChild(listTitle);
+
+        validTopics.slice(0, 5).forEach(topic => {
+          const card = document.createElement('div');
+          card.className = 'web-result-card';
+
+          const text = document.createElement('p');
+          text.className = 'web-result-text';
+          text.textContent = topic.Text;
+
+          const link = document.createElement('a');
+          link.className = 'web-result-link';
+          link.href = topic.FirstURL;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.textContent = 'Link ↗';
+
+          card.append(text, link);
+          container.appendChild(card);
+        });
+      }
+
+      if (!data.AbstractText && validTopics.length === 0) {
+        _setEmpty(panel, '🌐', 'No instant web results found. Try other tabs.');
+        return;
+      }
+
+      panel.appendChild(container);
+    } catch (_err) {
+      panel.replaceChildren();
+      _setEmpty(panel, '⚠️', 'Could not reach DuckDuckGo. Check your internet connection.');
+    }
+  }
+
+  /* ── In-App Video Search & Player ─────────────────────────────────── */
+  async function _showVideoResults(query) {
+    const panel = document.getElementById('panel-videos');
+    if (!panel) return;
+    _setLoading(panel, 'Searching Videos');
+
+    try {
+      const q = query.toLowerCase();
+      // Search local curated videos
+      const localHits = CURATED_VIDEOS.filter(v => {
+        return v.title.toLowerCase().includes(q) || 
+               v.desc.toLowerCase().includes(q) ||
+               v.tags.some(tag => tag.includes(q));
+      });
+
+      // Fetch live results from Invidious API
+      let apiHits = [];
+      try {
+        const apiInstances = [
+          'https://yewtu.be',
+          'https://invidious.projectsegfau.lt'
+        ];
+        const res = await fetch(apiInstances[0] + '/api/v1/search?q=' + encodeURIComponent(query) + '&type=video');
+        if (res.ok) {
+          const resData = await res.json();
+          apiHits = Array.isArray(resData) ? resData : [];
+        }
+      } catch (_e) {
+        console.warn("Invidious API fetch failed, using local curated videos fallback.");
+      }
+
+      panel.replaceChildren();
+
+      // Combine lists and deduplicate
+      const seenIds = new Set();
+      const combined = [];
+
+      localHits.forEach(v => {
+        seenIds.add(v.videoId);
+        combined.push({
+          videoId: v.videoId,
+          title: v.title,
+          channel: v.channel,
+          desc: v.desc
+        });
+      });
+
+      apiHits.forEach(v => {
+        if (!seenIds.has(v.videoId)) {
+          seenIds.add(v.videoId);
+          combined.push({
+            videoId: v.videoId,
+            title: v.title,
+            channel: v.author || 'YouTube Video',
+            desc: v.description || 'Watch semiconductor video guides.'
+          });
+        }
+      });
+
+      if (combined.length === 0) {
+        _setEmpty(panel, '▶', 'No video results found. Search for terms like: EUV, lithography, wafer, transistor.');
+        return;
+      }
+
+      const grid = document.createElement('div');
+      grid.className = 'video-results-grid';
+
+      combined.slice(0, 10).forEach(video => {
+        const card = document.createElement('div');
+        card.className = 'video-result-card';
+
+        const imgWrap = document.createElement('div');
+        imgWrap.className = 'video-card-img-wrap';
+
+        const img = document.createElement('img');
+        img.className = 'video-card-thumb';
+        img.src = 'https://img.youtube.com/vi/' + video.videoId + '/mqdefault.jpg';
+        img.alt = video.title;
+        img.loading = 'lazy';
+
+        const overlay = document.createElement('div');
+        overlay.className = 'video-play-overlay';
+        overlay.textContent = '▶';
+
+        imgWrap.append(img, overlay);
+
+        const info = document.createElement('div');
+        info.className = 'video-card-info';
+
+        const title = document.createElement('div');
+        title.className = 'video-card-title';
+        title.textContent = video.title;
+
+        const channel = document.createElement('div');
+        channel.className = 'video-card-channel';
+        channel.textContent = video.channel;
+
+        const desc = document.createElement('p');
+        desc.className = 'video-card-desc';
+        desc.textContent = video.desc.substring(0, 80) + (video.desc.length > 80 ? '…' : '');
+
+        info.append(title, channel, desc);
+        card.append(imgWrap, info);
+
+        card.addEventListener('click', () => {
+          _playVideoInApp(video.videoId, video.title, video.channel);
+        });
+
+        grid.appendChild(card);
+      });
+
+      panel.appendChild(grid);
+    } catch (_err) {
+      panel.replaceChildren();
+      _setEmpty(panel, '⚠️', 'Could not load videos. Check your internet connection.');
+    }
+  }
+
+  function _playVideoInApp(videoId, title, channel) {
     const panel = document.getElementById('panel-videos');
     if (!panel) return;
     panel.replaceChildren();
 
-    const lbl = document.createElement('span');
-    lbl.className = 'video-section-label';
-    lbl.textContent = 'YouTube — ' + query; // textContent — safe
+    const playerContainer = document.createElement('div');
+    playerContainer.className = 'video-player-container';
 
-    const container = document.createElement('div');
-    container.className = 'video-embed-container';
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn-ghost video-player-back';
+    backBtn.textContent = '← Back to videos';
+    backBtn.addEventListener('click', () => {
+      _showVideoResults(_currentQuery);
+    });
+
+    const iframeWrap = document.createElement('div');
+    iframeWrap.className = 'video-iframe-wrap';
 
     const iframe = document.createElement('iframe');
-    // Security: URL built with encodeURIComponent — no user HTML injected
-    iframe.src = 'https://www.youtube.com/embed?listType=search&list=' +
-      encodeURIComponent(query) + '&hl=en&rel=0';
-    iframe.title = 'YouTube search: ' + query; // safe attribute assignment
+    iframe.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(videoId) + '?autoplay=1&rel=0';
+    iframe.title = title;
     iframe.setAttribute('allowfullscreen', '');
     iframe.setAttribute('allow', 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
-    iframe.setAttribute('loading', 'lazy');
 
-    container.appendChild(iframe);
+    iframeWrap.appendChild(iframe);
 
-    // Fallback button in case YouTube blocks the embed
-    const fallbackLink = document.createElement('a');
-    fallbackLink.className = 'video-fallback-btn';
-    fallbackLink.href = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(query);
-    fallbackLink.target = '_blank';
-    fallbackLink.rel = 'noopener noreferrer';
-    fallbackLink.textContent = '▶  Open YouTube Search in new tab';
+    const info = document.createElement('div');
+    info.className = 'video-player-info';
 
-    panel.append(lbl, container, fallbackLink);
+    const titleEl = document.createElement('h3');
+    titleEl.className = 'video-player-title';
+    titleEl.textContent = title;
+
+    const channelEl = document.createElement('div');
+    channelEl.className = 'video-player-channel';
+    channelEl.textContent = 'Channel: ' + channel;
+
+    info.append(titleEl, channelEl);
+    playerContainer.append(backBtn, iframeWrap, info);
+    panel.appendChild(playerContainer);
+    panel.scrollTop = 0;
   }
 
   /* ── Internal site search (grouped) ───────────────────────────────── */

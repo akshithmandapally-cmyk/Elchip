@@ -19,17 +19,17 @@
 
   <!-- Content Security Policy
        - script-src: self + unpkg.com (AOS)
-       - connect-src: Wikipedia REST API for search results
-       - frame-src: YouTube for embedded video search
-       - img-src: Wikipedia thumbnail images
+       - connect-src: Wikipedia API, DuckDuckGo API, and Invidious API
+       - frame-src: YouTube for embedded video players
+       - img-src: Wikipedia and YouTube thumbnails
        - style-src: unsafe-inline required for AOS CDN styles -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
              script-src 'self' https://unpkg.com;
              style-src 'self' 'unsafe-inline';
              font-src 'self';
-             img-src 'self' data: https://upload.wikimedia.org https://en.wikipedia.org;
-             connect-src 'self' https://en.wikipedia.org;
+             img-src 'self' data: https://upload.wikimedia.org https://en.wikipedia.org https://img.youtube.com;
+             connect-src 'self' https://en.wikipedia.org https://api.duckduckgo.com https://yewtu.be;
              frame-src https://www.youtube.com https://www.youtube-nocookie.com;
              object-src 'none';
              frame-ancestors 'none';">

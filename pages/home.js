@@ -42,16 +42,9 @@ window.renderHome = function (container) {
   heroInner.style.position = 'relative';
   heroInner.style.zIndex = '1';
 
-  const eyebrow = document.createElement('span');
-  eyebrow.className = 'hero-eyebrow anim-fade-up';
-
   const h1 = document.createElement('h1');
   h1.className = 'hero-title anim-fade-up-d1';
   h1.textContent = 'Deep Dive into Semiconductor Manufacturing';
-
-  const subtitle = document.createElement('p');
-  subtitle.className = 'hero-subtitle anim-fade-up-d2';
-
 
   const cta = document.createElement('div');
   cta.className = 'hero-cta anim-fade-up-d3';
@@ -94,7 +87,7 @@ window.renderHome = function (container) {
     statsRow.appendChild(item);
   });
 
-  heroInner.append(eyebrow, h1, subtitle, cta, statsRow);
+  heroInner.append(h1, cta, statsRow);
   hero.appendChild(heroInner);
 
   const scrollCue = document.createElement('div');
