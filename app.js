@@ -1,4 +1,4 @@
-/* ─── app.js — Hash Router, Navigation, Search ───────────────────────────
+/* ─── app.js — Hash Router, Navigation, Search, AI Assistant ─────────────
    Security:
    - All user search input rendered via textContent only (XSS safe)
    - No innerHTML with user-controlled data
@@ -131,14 +131,14 @@
     });
     navEl.appendChild(ul);
 
-    // Search
+    // ── SEARCH ── redesigned as a prominent centered search bar
     const searchWrap = document.createElement('div');
     searchWrap.className = 'nav-search';
     searchWrap.setAttribute('role', 'search');
 
     // Search icon (static SVG via DOMParser)
     const svgDoc = new DOMParser().parseFromString(
-      '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+      '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
       'image/svg+xml'
     );
     searchWrap.appendChild(document.importNode(svgDoc.documentElement, true));
@@ -146,11 +146,34 @@
     const searchInput = document.createElement('input');
     searchInput.type = 'search';
     searchInput.id = 'nav-search-input';
-    searchInput.placeholder = 'Query Semiconductor Knowledge Base...';
+
+    // Rotate funny placeholders
+    const navPlaceholders = [
+      'Query Semiconductor Knowledge Base...',
+      'Ask about photolithography...',
+      'Search EUV, wafers, transistors...',
+      'What is CMP or ALD?',
+      'Find TSMC, ASML, KLA...',
+      'Why does silicon need to be so pure?',
+    ];
+    let _navPlIdx = 0;
+    searchInput.placeholder = navPlaceholders[0];
+    setInterval(() => {
+      _navPlIdx = (_navPlIdx + 1) % navPlaceholders.length;
+      searchInput.placeholder = navPlaceholders[_navPlIdx];
+    }, 4000);
+
     searchInput.setAttribute('aria-label', 'Search the platform');
     searchInput.setAttribute('autocomplete', 'off');
     searchInput.setAttribute('spellcheck', 'false');
     searchWrap.appendChild(searchInput);
+
+    // Keyboard shortcut hint
+    const kbHint = document.createElement('span');
+    kbHint.className = 'nav-search-kb';
+    kbHint.textContent = '⌘K';
+    kbHint.setAttribute('aria-hidden', 'true');
+    searchWrap.appendChild(kbHint);
 
     const resultsDropdown = document.createElement('div');
     resultsDropdown.className = 'search-results';
@@ -194,11 +217,19 @@
     // Hamburger toggle
     hamburger.addEventListener('click', toggleMobileNav);
 
+    // Keyboard shortcut ⌘K / Ctrl+K
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+      }
+    });
+
     // Search handler — Security: renders only textContent, never innerHTML with input
     let searchDebounce;
     searchInput.addEventListener('input', () => {
       clearTimeout(searchDebounce);
-      searchDebounce = setTimeout(() => performSearch(searchInput.value, resultsDropdown), 300);
+      searchDebounce = setTimeout(() => performSearch(searchInput.value, resultsDropdown), 280);
     });
 
     searchInput.addEventListener('focus', () => {
@@ -222,6 +253,7 @@
         const q = searchInput.value.trim();
         if (q.length > 0) {
           resultsDropdown.classList.remove('visible');
+          searchInput.value = '';
           openSearchOverlay(q);
         }
       }
@@ -230,7 +262,7 @@
     updateNavActive(window.location.hash || '#/');
   }
 
-  /* ── Helper functions for header combined search ───────────────────── */
+  /* ── Wikipedia snippet fetch ───────────────────────────────────────── */
   async function fetchWikipediaResults(query) {
     try {
       const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search' +
@@ -245,19 +277,6 @@
     }
   }
 
-  async function fetchLiveVideos(query) {
-    try {
-      const res = await fetch('https://yewtu.be/api/v1/search?q=' + encodeURIComponent(query) + '&type=video');
-      if (res.ok) {
-        const data = await res.json();
-        return Array.isArray(data) ? data.slice(0, 2) : [];
-      }
-      return [];
-    } catch (_e) {
-      return [];
-    }
-  }
-
   /* ─── SEARCH ENGINE ─────────────────────────────────────────────────── */
   function performSearch(rawQuery, dropdown) {
     const query = rawQuery.trim().toLowerCase();
@@ -267,7 +286,6 @@
       return;
     }
 
-    // 1. Search internal database instantly
     const data = window.SEMI_DATA;
     const internalResults = [];
 
@@ -326,9 +344,9 @@
         entry.definition.toLowerCase().includes(query)
       ) {
         internalResults.push({
-          type: 'Glossary Term', icon: '📖',
+          type: 'Glossary', icon: '📖',
           name: entry.term,
-          sub: entry.definition.substring(0, 50) + '…',
+          sub: entry.definition.substring(0, 52) + '…',
           glossaryTerm: entry.term,
           glossaryDef: entry.definition
         });
@@ -336,67 +354,49 @@
     });
 
     // Curated videos matching query
-    const matchedCuratedVideos = CURATED_VIDEOS.filter(v => {
-      return v.title.toLowerCase().includes(query) || 
-             v.desc.toLowerCase().includes(query) ||
-             v.tags.some(tag => tag.includes(query));
-    }).map(v => ({
+    const matchedVideos = CURATED_VIDEOS.filter(v => {
+      const q = query.toLowerCase();
+      return v.title.toLowerCase().includes(q) ||
+             v.desc.toLowerCase().includes(q) ||
+             v.tags.some(tag => tag.includes(q));
+    }).slice(0, 2).map(v => ({
       type: 'Video Guide', icon: '▶',
       name: v.title,
-      sub: v.channel + ' — Curated Video',
+      sub: v.channel,
       videoId: v.videoId,
       videoTitle: v.title,
       videoChannel: v.channel
     }));
 
-    let combinedResults = [...internalResults, ...matchedCuratedVideos];
+    let combined = [...internalResults, ...matchedVideos];
 
-    // Show initial local results
-    renderHeaderDropdownResults(combinedResults.slice(0, 6), dropdown, rawQuery, true);
+    // Show initial local results immediately
+    renderHeaderDropdown(combined.slice(0, 7), dropdown, rawQuery, true);
 
-    // 2. Fetch external results asynchronously
-    const currentInputToken = query;
-    Promise.allSettled([
-      fetchWikipediaResults(query),
-      fetchLiveVideos(query)
-    ]).then(outputs => {
-      const inputVal = document.getElementById('nav-search-input')?.value.trim().toLowerCase();
-      if (inputVal !== currentInputToken) return;
-
-      const wikiHits = outputs[0].status === 'fulfilled' ? outputs[0].value : [];
-      const videoHits = outputs[1].status === 'fulfilled' ? outputs[1].value : [];
-
+    // Fetch Wikipedia asynchronously to augment dropdown
+    const token = query;
+    fetchWikipediaResults(query).then(wikiHits => {
+      const live = document.getElementById('nav-search-input')?.value.trim().toLowerCase();
+      if (live !== token) return;
       wikiHits.forEach(hit => {
-        combinedResults.push({
+        combined.push({
           type: 'Wikipedia', icon: '📖',
           name: hit.title,
-          sub: 'Read encyclopedia article in-site',
+          sub: 'Read encyclopedia article',
           wikiTitle: hit.title
         });
       });
-
-      videoHits.forEach(hit => {
-        combinedResults.push({
-          type: 'Video', icon: '▶',
-          name: hit.title,
-          sub: 'Watch video guide in-site',
-          videoId: hit.videoId,
-          videoTitle: hit.title,
-          videoChannel: hit.author || 'YouTube'
-        });
-      });
-
-      renderHeaderDropdownResults(combinedResults.slice(0, 8), dropdown, rawQuery, false);
+      renderHeaderDropdown(combined.slice(0, 8), dropdown, rawQuery, false);
     });
   }
 
-  function renderHeaderDropdownResults(results, dropdown, query, isLoadingExternal) {
+  function renderHeaderDropdown(results, dropdown, query, isLoading) {
     dropdown.replaceChildren();
 
-    if (results.length === 0 && !isLoadingExternal) {
+    if (results.length === 0 && !isLoading) {
       const empty = document.createElement('div');
       empty.className = 'search-empty';
-      empty.textContent = 'No matching information found. Press Enter to search everywhere.';
+      empty.textContent = 'No results. Press Enter to search everywhere.';
       dropdown.appendChild(empty);
       dropdown.classList.add('visible');
       return;
@@ -421,7 +421,7 @@
 
       const sub = document.createElement('div');
       sub.className = 'search-result-type';
-      sub.textContent = result.type + ' · ' + result.sub;
+      sub.textContent = result.type + (result.sub ? ' · ' + result.sub : '');
 
       text.append(name, sub);
       item.append(iconEl, text);
@@ -437,11 +437,9 @@
           window.openGlossary(result.glossaryTerm, result.glossaryDef);
         } else if (result.wikiTitle) {
           openSearchOverlay(query);
-          _switchTab('wikipedia', query);
-          setTimeout(() => _openWikiReader(result.wikiTitle), 350);
+          setTimeout(() => _openWikiReaderInUnified(result.wikiTitle), 350);
         } else if (result.videoId) {
           openSearchOverlay(query);
-          _switchTab('videos', query);
           setTimeout(() => _playVideoInApp(result.videoId, result.videoTitle, result.videoChannel), 350);
         }
       };
@@ -451,10 +449,10 @@
       dropdown.appendChild(item);
     });
 
-    if (isLoadingExternal) {
+    if (isLoading) {
       const loader = document.createElement('div');
       loader.className = 'dropdown-external-loader';
-      loader.textContent = 'Searching Wikipedia & YouTube...';
+      loader.textContent = 'Also searching Wikipedia...';
       dropdown.appendChild(loader);
     }
 
@@ -462,16 +460,19 @@
     evBtn.className = 'search-everywhere-btn';
     evBtn.setAttribute('role', 'button');
     evBtn.setAttribute('tabindex', '0');
-    evBtn.setAttribute('aria-label', 'Search everywhere');
 
     const evLabel = document.createElement('span');
-    evLabel.textContent = 'Search everywhere';
+    evLabel.textContent = 'Search everything for';
 
-    const evQuery = document.createElement('span');
-    evQuery.className = 'search-everywhere-query';
-    evQuery.textContent = '“' + query + '” →';
+    const evQ = document.createElement('strong');
+    evQ.style.cssText = 'margin-left:4px; color:#fff;';
+    evQ.textContent = '"' + query + '"';
 
-    evBtn.append(evLabel, evQuery);
+    const arr = document.createElement('span');
+    arr.style.marginLeft = '4px';
+    arr.textContent = '→';
+
+    evBtn.append(evLabel, evQ, arr);
     evBtn.addEventListener('click', () => {
       dropdown.classList.remove('visible');
       const input = document.getElementById('nav-search-input');
@@ -556,15 +557,12 @@
   }
 
   /* ═══════════════════════════════════════════════════════════════════════
-     EXTERNAL SEARCH OVERLAY
-     Tabs: This Site | Wikipedia | Videos
+     UNIFIED SEARCH OVERLAY
+     One scrollable panel: Site Results → Wikipedia Snippets → Video Library
      Security: all user input inserted via textContent only
-     Wikipedia REST API: CORS-enabled, no API key required
-     YouTube: embedded search iframe (listType=search)
      ═══════════════════════════════════════════════════════════════════════ */
 
   let _searchOverlayEl = null;
-  let _activeTab = 'internal';
   let _currentQuery = '';
 
   const FUNNY_PLACEHOLDERS = [
@@ -578,7 +576,7 @@
     "Can I run Crysis on a silicon wafer?",
     "Looking for silicon valley but found actual silicon",
     "Is photoresist edible? (No, absolutely not)",
-    "What happens if a dust particle lands on a wafer? (Total disaster)",
+    "What happens if a dust particle lands on a wafer?",
     "How many transistors can fit on a pinhead?"
   ];
 
@@ -588,91 +586,105 @@
       videoId: "g8SCA-3_p_0",
       channel: "Branch Education",
       desc: "A highly detailed, 3D animated walkthrough of the entire semiconductor fabrication process, explaining photolithography, deposition, and etching.",
-      tags: ["process", "fabrication", "how", "made", "transistor", "lithography", "silicon", "microchip", "overview"]
+      tags: ["process", "fabrication", "how", "made", "transistor", "lithography", "silicon", "microchip", "overview", "chip", "semiconductor", "manufacture", "what is"]
     },
     {
       title: "The Extreme Physics of EUV Lithography",
       videoId: "5Ge2R8l8oJk",
       channel: "Asianometry",
       desc: "An in-depth look at ASML's Extreme Ultraviolet (EUV) lithography systems, explaining how liquid tin droplets and lasers create 13.5nm light.",
-      tags: ["euv", "lithography", "asml", "light", "exposure", "physics", "lens", "mirror"]
+      tags: ["euv", "lithography", "asml", "light", "exposure", "physics", "lens", "mirror", "extreme ultraviolet", "duv", "what is duv", "what is euv"]
     },
     {
       title: "How does a Transistor Work?",
       videoId: "IcrBqCFLHIY",
       channel: "Veritasium",
       desc: "A clear and visual explanation of semiconductors, p-n junctions, and how silicon transistors act as electronic switches.",
-      tags: ["transistor", "semiconductor", "pn junction", "physics", "silicon", "switch", "mosfet"]
+      tags: ["transistor", "semiconductor", "pn junction", "physics", "silicon", "switch", "mosfet", "how transistor works"]
     },
     {
       title: "Inside a Silicon Wafer Fab: Cleanroom Tour",
       videoId: "gXN-7rLp66w",
       channel: "Intel Corporation",
       desc: "Take a look inside Intel's state-of-the-art D1X factory in Oregon, showing the automated transport systems (AMHS) and cleanroom clothing.",
-      tags: ["fab", "cleanroom", "intel", "wafer", "factory", "automation", "tour"]
+      tags: ["fab", "cleanroom", "intel", "wafer", "factory", "automation", "tour", "inside fab"]
     },
     {
       title: "Silicon Wafer Production: How Sand Becomes Wafers",
       videoId: "AMg4mX368L0",
       channel: "Shin-Etsu Silicon",
       desc: "Shows the step-by-step process of growing a single-crystal silicon ingot (Czochralski process) and slicing it into 300mm wafers.",
-      tags: ["wafer", "silicon", "ingot", "czochralski", "slicing", "polishing", "crystal"]
+      tags: ["wafer", "silicon", "ingot", "czochralski", "slicing", "polishing", "crystal", "sand", "wafer preparation", "wafer making"]
     },
     {
       title: "What is Photolithography? Semiconductor Manufacturing 101",
       videoId: "7qJ4n3b_V8k",
       channel: "Applied Materials",
       desc: "A foundational introduction to the photolithography process: photoresist spin-coating, exposure through a photomask, and development.",
-      tags: ["lithography", "photolithography", "photoresist", "mask", "exposure", "spin coating"]
+      tags: ["lithography", "photolithography", "photoresist", "mask", "exposure", "spin coating", "what is lithography", "what is photolithography"]
     },
     {
       title: "Chemical Mechanical Planarization (CMP) Explained",
       videoId: "3rR_rWc9T7s",
       channel: "Applied Materials",
       desc: "An educational animation demonstrating how chemical slurries and polishing pads planarize wafer surfaces to atomic flatness.",
-      tags: ["cmp", "planarization", "polishing", "slurry", "chemical mechanical planarization"]
+      tags: ["cmp", "planarization", "polishing", "slurry", "chemical mechanical planarization", "what is cmp"]
     },
     {
       title: "Dry Etching and Wet Etching Processes",
       videoId: "T4bL8B4SjX0",
       channel: "Lam Research",
       desc: "A detailed breakdown of isotropic wet etching and anisotropic dry plasma etching processes used to carve microchip patterns.",
-      tags: ["etching", "etch", "plasma", "dry etching", "wet etching", "anisotropic", "isotropic"]
+      tags: ["etching", "etch", "plasma", "dry etching", "wet etching", "anisotropic", "isotropic", "what is etching"]
     },
     {
       title: "Chemical Vapor Deposition (CVD) and Atomic Layer Deposition (ALD)",
       videoId: "kO3Q_JbE_bA",
       channel: "Lam Research",
       desc: "Explains how gaseous precursors react at wafer surfaces to deposit ultra-thin, conformal oxide and metal layers down to the atomic scale.",
-      tags: ["deposition", "cvd", "ald", "thin film", "atomic layer deposition", "chemical vapor deposition"]
+      tags: ["deposition", "cvd", "ald", "thin film", "atomic layer deposition", "chemical vapor deposition", "what is ald", "what is cvd"]
     },
     {
       title: "Semiconductor Metrology & Inspection Systems",
       videoId: "9H5H3rXy6sQ",
       channel: "KLA Corporation",
       desc: "How optical and electron beam inspection systems detect sub-nanometer defects in high-volume semiconductor manufacturing.",
-      tags: ["metrology", "inspection", "defect", "kla", "optical", "e-beam", "measuring"]
+      tags: ["metrology", "inspection", "defect", "kla", "optical", "e-beam", "measuring", "what is metrology", "sem"]
     },
     {
       title: "Advanced IC Packaging & Heterogeneous Integration",
       videoId: "u9S0e4Uv4a0",
       channel: "ASE Group",
       desc: "Explains advanced packaging methods like system-in-package (SiP), 2.5D/3D stacking, and micro-bumps that connect multiple chiplets.",
-      tags: ["packaging", "package", "chiplet", "wire bonding", "die", "stacking", "3d", "sip"]
+      tags: ["packaging", "package", "chiplet", "wire bonding", "die", "stacking", "3d", "sip", "ic packaging", "what is packaging"]
     },
     {
       title: "How ASML Builds the World's Most Complex Machines",
       videoId: "dqV5U2iP514",
       channel: "CNBC",
       desc: "A documentary on the supply chain, precision engineering, and business strategy behind ASML's monopoly on lithography equipment.",
-      tags: ["asml", "lithography", "euv", "duv", "company", "supply chain", "monopoly"]
+      tags: ["asml", "lithography", "euv", "duv", "company", "supply chain", "monopoly", "what is asml"]
     },
     {
       title: "Taiwan Semiconductor Manufacturing Company (TSMC) Fab Tour",
       videoId: "y1vA7W2O2Jk",
       channel: "TSMC",
       desc: "A look inside TSMC's GigaFabs, highlighting cleanroom automation, robotic wafer routing, and the scale of modern contract manufacturing.",
-      tags: ["tsmc", "foundry", "fab", "gigafab", "taiwan", "contract manufacturing"]
+      tags: ["tsmc", "foundry", "fab", "gigafab", "taiwan", "contract manufacturing", "what is tsmc"]
+    },
+    {
+      title: "Ion Implantation in Semiconductor Manufacturing",
+      videoId: "Xc2QyHVnTis",
+      channel: "Applied Materials",
+      desc: "How ions of dopant atoms are accelerated and implanted into silicon wafers to create P-type and N-type regions for transistor formation.",
+      tags: ["ion implantation", "doping", "dopant", "boron", "phosphorus", "arsenic", "implant", "what is ion implantation"]
+    },
+    {
+      title: "Thermal Oxidation: Growing SiO2 on Silicon",
+      videoId: "KMbGEuC0jIA",
+      channel: "NPTEL",
+      desc: "Explains the dry and wet thermal oxidation process to grow silicon dioxide (SiO2) layers — essential for gate oxides and isolation.",
+      tags: ["oxidation", "thermal oxidation", "sio2", "oxide", "silicon dioxide", "gate oxide", "what is oxidation"]
     }
   ];
 
@@ -684,7 +696,6 @@
     const input = _searchOverlayEl.querySelector('#overlay-search-input');
     if (input) {
       input.value = query;
-      // Set random funny placeholder
       const rand = FUNNY_PLACEHOLDERS[Math.floor(Math.random() * FUNNY_PLACEHOLDERS.length)];
       input.placeholder = rand;
     }
@@ -693,7 +704,11 @@
     document.body.style.overflow = 'hidden';
     if (input) input.focus();
 
-    _switchTab(_activeTab, query);
+    if (query && query.trim().length > 0) {
+      _runUnifiedSearch(query.trim());
+    } else {
+      _showSuggestions();
+    }
   }
 
   function _closeSearchOverlay() {
@@ -703,76 +718,13 @@
     }
   }
 
-  function _switchTab(tab, query) {
-    _activeTab = tab;
-    if (!_searchOverlayEl) return;
-
-    // Update tab button states
-    _searchOverlayEl.querySelectorAll('.search-tab').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.tab === tab);
-    });
-
-    // Show correct panel
-    _searchOverlayEl.querySelectorAll('.search-panel').forEach(p => p.classList.remove('active'));
-    const activePanel = _searchOverlayEl.querySelector('#panel-' + tab);
-    if (activePanel) activePanel.classList.add('active');
-
-    // If query is empty, show funny suggestions
-    if (!query || query.trim().length < 1) {
-      if (activePanel) _showFunnySuggestions(activePanel);
-      return;
-    }
-
-    const trimmedQuery = query.trim();
-    if (tab === 'internal') _showInternalResults(trimmedQuery);
-    else if (tab === 'wikipedia') _showWikiResults(trimmedQuery);
-    else if (tab === 'web') _showWebResults(trimmedQuery);
-    else if (tab === 'videos') _showVideoResults(trimmedQuery);
-  }
-
-  function _showFunnySuggestions(panel) {
-    panel.replaceChildren();
-
-    const container = document.createElement('div');
-    container.className = 'suggestions-container';
-
-    const title = document.createElement('h3');
-    title.className = 'suggestions-title';
-    title.textContent = "Need search inspiration? Try one of these:";
-
-    const grid = document.createElement('div');
-    grid.className = 'suggestions-grid';
-
-    // Pick 4 random funny lines
-    const shuffled = [...FUNNY_PLACEHOLDERS].sort(() => 0.5 - Math.random());
-    const selected = shuffled.slice(0, 4);
-
-    selected.forEach(line => {
-      const btn = document.createElement('button');
-      btn.className = 'suggestion-bubble';
-      btn.textContent = "⚡ " + line;
-      btn.addEventListener('click', () => {
-        const input = document.getElementById('overlay-search-input');
-        if (input) {
-          input.value = line;
-          _currentQuery = line;
-          _switchTab(_activeTab, line);
-        }
-      });
-      grid.appendChild(btn);
-    });
-
-    container.append(title, grid);
-    panel.appendChild(container);
-  }
-
   function _buildSearchOverlay() {
     const overlay = document.createElement('div');
     overlay.className = 'search-overlay';
     overlay.id = 'search-overlay';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'External search');
+    overlay.setAttribute('aria-label', 'Search ELCHIP');
 
     /* ── Header ────────────────────────────────────────────────────── */
     const header = document.createElement('div');
@@ -792,7 +744,7 @@
     input.type = 'search';
     input.id = 'overlay-search-input';
     input.className = 'search-overlay-input';
-    input.placeholder = 'Search semiconductor topics…';
+    input.placeholder = 'Search everything about semiconductors…';
     input.setAttribute('autocomplete', 'off');
     input.setAttribute('spellcheck', 'false');
     input.setAttribute('aria-label', 'Search query');
@@ -802,8 +754,12 @@
       clearTimeout(_overlayDebounce);
       _overlayDebounce = setTimeout(() => {
         _currentQuery = input.value.trim();
-        _switchTab(_activeTab, _currentQuery);
-      }, 400);
+        if (_currentQuery.length > 0) {
+          _runUnifiedSearch(_currentQuery);
+        } else {
+          _showSuggestions();
+        }
+      }, 350);
     });
     input.addEventListener('keydown', e => {
       if (e.key === 'Escape') _closeSearchOverlay();
@@ -817,37 +773,21 @@
 
     bar.append(input, closeBtn);
 
-    // Tabs
-    const tabs = document.createElement('div');
-    tabs.className = 'search-tabs';
+    // Status bar (shows what's loading/loaded)
+    const statusBar = document.createElement('div');
+    statusBar.className = 'search-status-bar';
+    statusBar.id = 'search-status-bar';
 
-    [
-      { id: 'internal', label: 'This Site', emoji: '⚡' },
-      { id: 'wikipedia', label: 'Wikipedia', emoji: '📖' },
-      { id: 'web',      label: 'Web Search', emoji: '🌐' },
-      { id: 'videos',   label: 'Videos',    emoji: '▶' },
-    ].forEach(t => {
-      const btn = document.createElement('button');
-      btn.className = 'search-tab' + (t.id === _activeTab ? ' active' : '');
-      btn.dataset.tab = t.id;
-      btn.textContent = t.emoji + '  ' + t.label;
-      btn.setAttribute('aria-label', 'Search ' + t.label);
-      btn.addEventListener('click', () => _switchTab(t.id, _currentQuery));
-      tabs.appendChild(btn);
-    });
+    header.append(bar, statusBar);
 
-    header.append(bar, tabs);
-
-    /* ── Result panels ─────────────────────────────────────────────── */
+    /* ── Unified result panel ──────────────────────────────────────── */
     const body = document.createElement('div');
     body.className = 'search-overlay-body';
 
-    ['internal', 'wikipedia', 'web', 'videos'].forEach(id => {
-      const panel = document.createElement('div');
-      panel.className = 'search-panel' + (id === _activeTab ? ' active' : '');
-      panel.id = 'panel-' + id;
-      body.appendChild(panel);
-    });
+    const unifiedPanel = document.createElement('div');
+    unifiedPanel.id = 'unified-panel';
+    unifiedPanel.className = 'unified-panel';
+    body.appendChild(unifiedPanel);
 
     overlay.append(header, body);
 
@@ -864,32 +804,312 @@
     _searchOverlayEl = overlay;
   }
 
-  /* ── Wikipedia search via Query API ───────────────────────────────── */
-  async function _showWikiResults(query) {
-    const panel = document.getElementById('panel-wikipedia');
+  /* ─── UNIFIED SEARCH — shows all results in one scrollable view ────── */
+  async function _runUnifiedSearch(query) {
+    const panel = document.getElementById('unified-panel');
     if (!panel) return;
-    _setLoading(panel, 'Searching Wikipedia');
 
+    // Set status
+    _setStatus('Searching...');
+
+    // Build panel with sections
+    panel.replaceChildren();
+
+    // ── SECTION 1: Internal site results (instant) ──────────────────────
+    const siteSection = _buildSiteResultsSection(query);
+    panel.appendChild(siteSection);
+
+    // ── SECTION 2: Web Summary (DuckDuckGo instant) ─────────────────────
+    const webSection = document.createElement('div');
+    webSection.className = 'unified-section';
+    webSection.id = 'section-web';
+    const webLabel = _makeSectionLabel('🌐 Web Knowledge');
+    const webContent = document.createElement('div');
+    webContent.id = 'web-section-content';
+    _setLoadingInEl(webContent, 'Fetching web knowledge...');
+    webSection.append(webLabel, webContent);
+    panel.appendChild(webSection);
+
+    // ── SECTION 3: Wikipedia articles ──────────────────────────────────
+    const wikiSection = document.createElement('div');
+    wikiSection.className = 'unified-section';
+    wikiSection.id = 'section-wiki';
+    const wikiLabel = _makeSectionLabel('📖 Wikipedia');
+    const wikiContent = document.createElement('div');
+    wikiContent.id = 'wiki-section-content';
+    _setLoadingInEl(wikiContent, 'Searching Wikipedia...');
+    wikiSection.append(wikiLabel, wikiContent);
+    panel.appendChild(wikiSection);
+
+    // ── SECTION 4: Video Library ────────────────────────────────────────
+    const videoSection = document.createElement('div');
+    videoSection.className = 'unified-section';
+    videoSection.id = 'section-videos';
+    const videoLabel = _makeSectionLabel('▶ Video Library');
+    const videoContent = document.createElement('div');
+    videoContent.id = 'video-section-content';
+    _buildVideoResults(query, videoContent);
+    videoSection.append(videoLabel, videoContent);
+    panel.appendChild(videoSection);
+
+    // Fetch external async
+    Promise.allSettled([
+      _fetchWebSummary(query),
+      _fetchWikiCards(query)
+    ]).then(([webResult, wikiResult]) => {
+      // Check query hasn't changed
+      const currentOverlayQuery = document.getElementById('overlay-search-input')?.value.trim();
+      if (currentOverlayQuery && currentOverlayQuery.toLowerCase() !== query.toLowerCase()) return;
+
+      // Render web results
+      const wc = document.getElementById('web-section-content');
+      if (wc) {
+        const webData = webResult.status === 'fulfilled' ? webResult.value : null;
+        _renderWebContent(wc, webData, query);
+      }
+
+      // Render wiki results
+      const wikic = document.getElementById('wiki-section-content');
+      if (wikic) {
+        const wikiArticles = wikiResult.status === 'fulfilled' ? wikiResult.value : [];
+        _renderWikiContent(wikic, wikiArticles);
+      }
+
+      _setStatus('');
+    });
+  }
+
+  function _makeSectionLabel(text) {
+    const label = document.createElement('div');
+    label.className = 'unified-section-label';
+    label.textContent = text;
+    return label;
+  }
+
+  function _setStatus(msg) {
+    const bar = document.getElementById('search-status-bar');
+    if (!bar) return;
+    if (msg) {
+      bar.textContent = msg;
+      bar.style.display = 'block';
+    } else {
+      bar.textContent = '';
+      bar.style.display = 'none';
+    }
+  }
+
+  /* ── SECTION 1: Internal site results ──────────────────────────────── */
+  function _buildSiteResultsSection(query) {
+    const section = document.createElement('div');
+    section.className = 'unified-section';
+
+    const label = _makeSectionLabel('⚡ ELCHIP Database');
+    section.appendChild(label);
+
+    const data = window.SEMI_DATA;
+    const q = query.toLowerCase();
+    const groups = {};
+
+    data.steps.forEach(step => {
+      if (!step.title.toLowerCase().includes(q) && !step.shortDesc.toLowerCase().includes(q) && !step.slug.includes(q)) return;
+      (groups['Process Steps'] = groups['Process Steps'] || []).push({
+        icon: '⚙️', name: step.title, sub: 'Step ' + step.stepNumber, href: '#/process/' + step.slug
+      });
+    });
+
+    data.tools.forEach(tool => {
+      if (!tool.name.toLowerCase().includes(q) && !tool.fullName.toLowerCase().includes(q) && !tool.slug.includes(q)) return;
+      (groups['Inspection Tools'] = groups['Inspection Tools'] || []).push({
+        icon: tool.icon || '🔬', name: tool.name, sub: tool.fullName, href: '#/tool/' + tool.slug
+      });
+    });
+
+    [...data.companies.foundries, ...data.companies.equipment].forEach(co => {
+      if (!co.name.toLowerCase().includes(q) && !co.specialization.toLowerCase().includes(q) && !co.country.toLowerCase().includes(q) && !(co.description || '').toLowerCase().includes(q)) return;
+      (groups['Companies'] = groups['Companies'] || []).push({
+        icon: co.flag || '🏢', name: co.name, sub: co.country + ' · ' + co.specialization, href: '#/companies'
+      });
+    });
+
+    data.glossary.forEach(entry => {
+      if (!entry.term.toLowerCase().includes(q) && !entry.definition.toLowerCase().includes(q)) return;
+      (groups['Definitions'] = groups['Definitions'] || []).push({
+        icon: '📖', name: entry.term,
+        sub: entry.definition.substring(0, 70) + '…',
+        glossaryTerm: entry.term, glossaryDef: entry.definition
+      });
+    });
+
+    if (Object.keys(groups).length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'unified-empty';
+      empty.textContent = 'No matches in ELCHIP database — see Wikipedia and Videos below.';
+      section.appendChild(empty);
+      return section;
+    }
+
+    Object.entries(groups).forEach(([groupName, items]) => {
+      const group = document.createElement('div');
+      group.className = 'internal-result-group';
+
+      const lbl = document.createElement('div');
+      lbl.className = 'internal-result-group-label';
+      lbl.textContent = groupName;
+      group.appendChild(lbl);
+
+      items.forEach(item => {
+        const el = document.createElement('a');
+        el.className = 'internal-result-item';
+        el.href = item.href || '#';
+        el.setAttribute('aria-label', item.name);
+
+        const icon = document.createElement('div');
+        icon.className = 'internal-result-icon';
+        icon.textContent = item.icon;
+
+        const info = document.createElement('div');
+        info.style.flex = '1';
+        const nameEl = document.createElement('div');
+        nameEl.className = 'internal-result-name';
+        nameEl.textContent = item.name;
+        const subEl = document.createElement('div');
+        subEl.className = 'internal-result-sub';
+        subEl.textContent = item.sub;
+        info.append(nameEl, subEl);
+        el.append(icon, info);
+
+        el.addEventListener('click', e => {
+          _closeSearchOverlay();
+          if (item.glossaryTerm) {
+            e.preventDefault();
+            setTimeout(() => window.openGlossary(item.glossaryTerm, item.glossaryDef), 300);
+          }
+        });
+
+        group.appendChild(el);
+      });
+
+      section.appendChild(group);
+    });
+
+    return section;
+  }
+
+  /* ── SECTION 2: DuckDuckGo Web Summary ────────────────────────────── */
+  async function _fetchWebSummary(query) {
+    try {
+      const url = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&origin=*';
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  function _renderWebContent(container, data, query) {
+    container.replaceChildren();
+
+    if (!data || (!data.AbstractText && !(data.RelatedTopics && data.RelatedTopics.length))) {
+      const msg = document.createElement('div');
+      msg.className = 'unified-empty';
+      msg.textContent = 'No instant web summary found for this query.';
+      container.appendChild(msg);
+      return;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'web-results-container';
+
+    if (data.AbstractText && data.AbstractText.trim().length > 0) {
+      const card = document.createElement('div');
+      card.className = 'web-answer-card';
+
+      const badge = document.createElement('span');
+      badge.className = 'badge badge-white';
+      badge.style.marginBottom = '0.5rem';
+      badge.textContent = 'Instant Answer';
+
+      const title = document.createElement('div');
+      title.className = 'web-answer-title';
+      title.textContent = data.Heading || query;
+
+      const body = document.createElement('p');
+      body.className = 'web-answer-body';
+      body.textContent = data.AbstractText;
+
+      const source = document.createElement('div');
+      source.className = 'web-answer-source';
+      const sl = document.createElement('a');
+      sl.href = data.AbstractURL || '#';
+      sl.target = '_blank';
+      sl.rel = 'noopener noreferrer';
+      sl.textContent = 'Source: ' + (data.AbstractSource || 'DuckDuckGo') + ' ↗';
+      source.appendChild(sl);
+
+      card.append(badge, title, body, source);
+      wrap.appendChild(card);
+    }
+
+    const topics = (data.RelatedTopics || []).filter(t => t.Text && t.FirstURL).slice(0, 4);
+    if (topics.length > 0) {
+      const listTitle = document.createElement('h3');
+      listTitle.className = 'web-list-title';
+      listTitle.textContent = 'Related Topics';
+      wrap.appendChild(listTitle);
+
+      topics.forEach(topic => {
+        const card = document.createElement('div');
+        card.className = 'web-result-card';
+
+        const text = document.createElement('p');
+        text.className = 'web-result-text';
+        text.textContent = topic.Text;
+
+        const link = document.createElement('a');
+        link.className = 'web-result-link';
+        link.href = topic.FirstURL;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Visit ↗';
+
+        card.append(text, link);
+        wrap.appendChild(card);
+      });
+    }
+
+    container.appendChild(wrap);
+  }
+
+  /* ── SECTION 3: Wikipedia ──────────────────────────────────────────── */
+  async function _fetchWikiCards(query) {
     try {
       const url = 'https://en.wikipedia.org/w/api.php?action=query&list=search' +
         '&srsearch=' + encodeURIComponent(query) +
-        '&format=json&origin=*&utf8=1&srlimit=6';
-
+        '&format=json&origin=*&utf8=1&srlimit=4';
       const res = await fetch(url);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
+      if (!res.ok) return [];
       const data = await res.json();
-      const hits = (data.query && data.query.search) || [];
+      return (data.query && data.query.search) || [];
+    } catch (_e) {
+      return [];
+    }
+  }
 
-      panel.replaceChildren();
-      if (hits.length === 0) { _setEmpty(panel, '📖', 'No Wikipedia articles found for this query.'); return; }
+  async function _renderWikiContent(container, hits) {
+    container.replaceChildren();
 
-      for (const hit of hits.slice(0, 5)) {
-        const card = await _buildWikiCard(hit.title);
-        if (card) panel.appendChild(card);
-      }
-    } catch (_err) {
-      panel.replaceChildren();
-      _setEmpty(panel, '⚠️', 'Could not reach Wikipedia. Check your internet connection.');
+    if (!hits || hits.length === 0) {
+      const msg = document.createElement('div');
+      msg.className = 'unified-empty';
+      msg.textContent = 'No Wikipedia articles found.';
+      container.appendChild(msg);
+      return;
+    }
+
+    for (const hit of hits.slice(0, 3)) {
+      const card = await _buildWikiCard(hit.title);
+      if (card) container.appendChild(card);
     }
   }
 
@@ -910,8 +1130,8 @@
         img.src = d.thumbnail.source;
         img.alt = title;
         img.loading = 'lazy';
-        img.width = 68;
-        img.height = 68;
+        img.width = 56;
+        img.height = 56;
         card.appendChild(img);
       }
 
@@ -931,9 +1151,9 @@
 
       const readBtn = document.createElement('button');
       readBtn.className = 'wiki-read-btn';
-      readBtn.textContent = '📖 Read in Site';
+      readBtn.textContent = '📖 Read In-Site';
       readBtn.addEventListener('click', () => {
-        _openWikiReader(d.title || title);
+        _openWikiReaderInUnified(d.title || title);
       });
 
       const extLink = document.createElement('a');
@@ -941,7 +1161,7 @@
       extLink.href = (d.content_urls && d.content_urls.desktop && d.content_urls.desktop.page) || '#';
       extLink.target = '_blank';
       extLink.rel = 'noopener noreferrer';
-      extLink.textContent = 'Open Page ↗';
+      extLink.textContent = 'Wikipedia ↗';
 
       footer.append(readBtn, extLink);
       textEl.append(titleEl, extract, footer);
@@ -952,98 +1172,75 @@
     }
   }
 
-  /* ── Wikipedia In-App Reader ──────────────────────────────────────── */
-  async function _openWikiReader(title) {
-    const panel = document.getElementById('panel-wikipedia');
+  async function _openWikiReaderInUnified(title) {
+    const panel = document.getElementById('unified-panel');
     if (!panel) return;
-    _setLoading(panel, 'Loading Wikipedia article...');
+    _setLoadingInEl(panel, 'Loading Wikipedia article...');
 
     try {
       const url = 'https://en.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1' +
-        '&titles=' + encodeURIComponent(title) +
-        '&format=json&origin=*';
-
+        '&titles=' + encodeURIComponent(title) + '&format=json&origin=*';
       const res = await fetch(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
-      
       const pages = (data.query && data.query.pages) || {};
-      const pageId = Object.keys(pages)[0];
-      const page = pages[pageId];
-
-      if (!page || !page.extract || page.extract.trim().length === 0) {
-        throw new Error('Article content is empty');
-      }
+      const page = pages[Object.keys(pages)[0]];
+      if (!page || !page.extract) throw new Error('Empty article');
 
       panel.replaceChildren();
-
       const reader = document.createElement('div');
       reader.className = 'wiki-reader';
 
       const backBtn = document.createElement('button');
       backBtn.className = 'btn btn-ghost wiki-reader-back';
-      backBtn.textContent = '← Back to articles';
+      backBtn.textContent = '← Back to results';
       backBtn.addEventListener('click', () => {
-        _switchTab('wikipedia', _currentQuery);
+        if (_currentQuery) _runUnifiedSearch(_currentQuery);
+        else _showSuggestions();
       });
 
-      const header = document.createElement('div');
-      header.className = 'wiki-reader-header';
-
+      const hdr = document.createElement('div');
+      hdr.className = 'wiki-reader-header';
       const hTitle = document.createElement('h2');
       hTitle.className = 'wiki-reader-title';
       hTitle.textContent = page.title;
-
       const credit = document.createElement('div');
       credit.className = 'wiki-reader-credit';
-      credit.textContent = 'Encyclopedia Entry';
-
-      const sourceLink = document.createElement('a');
-      sourceLink.className = 'wiki-reader-source';
-      sourceLink.href = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(page.title);
-      sourceLink.target = '_blank';
-      sourceLink.rel = 'noopener noreferrer';
-      sourceLink.textContent = 'Open Wikipedia Webpage ↗';
-
-      header.append(hTitle, credit, sourceLink);
+      credit.textContent = 'Wikipedia Encyclopedia — displayed in ELCHIP';
+      const sl = document.createElement('a');
+      sl.className = 'wiki-reader-source';
+      sl.href = 'https://en.wikipedia.org/wiki/' + encodeURIComponent(page.title);
+      sl.target = '_blank';
+      sl.rel = 'noopener noreferrer';
+      sl.textContent = 'Open on Wikipedia ↗';
+      hdr.append(hTitle, credit, sl);
 
       const content = document.createElement('div');
       content.className = 'wiki-reader-content';
-
-      const lines = page.extract.split('\n');
-      lines.forEach(line => {
-        const trimmed = line.trim();
-        if (trimmed.length === 0) return;
-
-        if (trimmed.startsWith('==') && trimmed.endsWith('==')) {
-          let level = 0;
-          while (trimmed[level] === '=') {
-            level++;
-          }
-          const headingText = trimmed.replace(/={2,}/g, '').trim();
-          let hTag = 'h3';
-          if (level === 2) hTag = 'h3';
-          else if (level === 3) hTag = 'h4';
-          else hTag = 'h5';
-
-          const heading = document.createElement(hTag);
-          heading.className = 'wiki-reader-heading';
-          heading.textContent = headingText;
-          content.appendChild(heading);
-        } else if (trimmed.startsWith('* ')) {
+      page.extract.split('\n').forEach(line => {
+        const t = line.trim();
+        if (!t) return;
+        if (t.startsWith('==') && t.endsWith('==')) {
+          let lv = 0; while (t[lv] === '=') lv++;
+          const tag = lv === 2 ? 'h3' : lv === 3 ? 'h4' : 'h5';
+          const h = document.createElement(tag);
+          h.className = 'wiki-reader-heading';
+          h.textContent = t.replace(/={2,}/g, '').trim();
+          content.appendChild(h);
+        } else if (t.startsWith('* ')) {
           const li = document.createElement('li');
           li.className = 'wiki-reader-list-item';
-          li.textContent = trimmed.substring(2);
+          li.textContent = t.substring(2);
           content.appendChild(li);
         } else {
           const p = document.createElement('p');
           p.className = 'wiki-reader-paragraph';
-          p.textContent = trimmed;
+          p.textContent = t;
           content.appendChild(p);
         }
       });
 
-      reader.append(backBtn, header, content);
+      reader.append(backBtn, hdr, content);
       panel.appendChild(reader);
       panel.scrollTop = 0;
     } catch (err) {
@@ -1059,220 +1256,82 @@
       back.className = 'btn btn-ghost';
       back.style.marginTop = '1rem';
       back.textContent = '← Back';
-      back.addEventListener('click', () => _switchTab('wikipedia', _currentQuery));
+      back.addEventListener('click', () => { if (_currentQuery) _runUnifiedSearch(_currentQuery); });
       wrap.append(icon, msg, back);
       panel.appendChild(wrap);
     }
   }
 
-  /* ── DuckDuckGo Web Search ────────────────────────────────────────── */
-  async function _showWebResults(query) {
-    const panel = document.getElementById('panel-web');
-    if (!panel) return;
-    _setLoading(panel, 'Searching the Web');
+  /* ── SECTION 4: Video Library ──────────────────────────────────────── */
+  function _buildVideoResults(query, container) {
+    container.replaceChildren();
 
-    try {
-      const url = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&origin=*';
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const data = await res.json();
+    const q = query.toLowerCase();
 
-      panel.replaceChildren();
+    // Match against curated library
+    let hits = CURATED_VIDEOS.filter(v =>
+      v.title.toLowerCase().includes(q) ||
+      v.desc.toLowerCase().includes(q) ||
+      v.tags.some(tag => tag.includes(q))
+    );
 
-      const container = document.createElement('div');
-      container.className = 'web-results-container';
-
-      if (data.AbstractText && data.AbstractText.trim().length > 0) {
-        const answerCard = document.createElement('div');
-        answerCard.className = 'web-answer-card';
-
-        const badge = document.createElement('span');
-        badge.className = 'badge badge-white';
-        badge.style.marginBottom = '0.5rem';
-        badge.textContent = 'Web Summary';
-
-        const title = document.createElement('div');
-        title.className = 'web-answer-title';
-        title.textContent = data.Heading || query;
-
-        const body = document.createElement('p');
-        body.className = 'web-answer-body';
-        body.textContent = data.AbstractText;
-
-        const source = document.createElement('div');
-        source.className = 'web-answer-source';
-        const sourceLink = document.createElement('a');
-        sourceLink.href = data.AbstractURL || '#';
-        sourceLink.target = '_blank';
-        sourceLink.rel = 'noopener noreferrer';
-        sourceLink.textContent = 'Source: ' + (data.AbstractSource || 'DuckDuckGo') + ' ↗';
-        source.appendChild(sourceLink);
-
-        answerCard.append(badge, title, body, source);
-        container.appendChild(answerCard);
-      }
-
-      const topics = data.RelatedTopics || [];
-      const validTopics = topics.filter(t => t.Text && t.FirstURL);
-
-      if (validTopics.length > 0) {
-        const listTitle = document.createElement('h3');
-        listTitle.className = 'web-list-title';
-        listTitle.textContent = 'Related Search Results';
-        container.appendChild(listTitle);
-
-        validTopics.slice(0, 5).forEach(topic => {
-          const card = document.createElement('div');
-          card.className = 'web-result-card';
-
-          const text = document.createElement('p');
-          text.className = 'web-result-text';
-          text.textContent = topic.Text;
-
-          const link = document.createElement('a');
-          link.className = 'web-result-link';
-          link.href = topic.FirstURL;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
-          link.textContent = 'Link ↗';
-
-          card.append(text, link);
-          container.appendChild(card);
-        });
-      }
-
-      if (!data.AbstractText && validTopics.length === 0) {
-        _setEmpty(panel, '🌐', 'No instant web results found. Try other tabs.');
-        return;
-      }
-
-      panel.appendChild(container);
-    } catch (_err) {
-      panel.replaceChildren();
-      _setEmpty(panel, '⚠️', 'Could not reach DuckDuckGo. Check your internet connection.');
+    // If no specific match, show ALL curated videos (user can still discover)
+    if (hits.length === 0) {
+      hits = CURATED_VIDEOS;
     }
-  }
 
-  /* ── In-App Video Search & Player ─────────────────────────────────── */
-  async function _showVideoResults(query) {
-    const panel = document.getElementById('panel-videos');
-    if (!panel) return;
-    _setLoading(panel, 'Searching Videos');
+    const grid = document.createElement('div');
+    grid.className = 'video-results-grid';
 
-    try {
-      const q = query.toLowerCase();
-      // Search local curated videos
-      const localHits = CURATED_VIDEOS.filter(v => {
-        return v.title.toLowerCase().includes(q) || 
-               v.desc.toLowerCase().includes(q) ||
-               v.tags.some(tag => tag.includes(q));
+    hits.slice(0, 12).forEach(video => {
+      const card = document.createElement('div');
+      card.className = 'video-result-card';
+
+      const imgWrap = document.createElement('div');
+      imgWrap.className = 'video-card-img-wrap';
+
+      const img = document.createElement('img');
+      img.className = 'video-card-thumb';
+      img.src = 'https://img.youtube.com/vi/' + video.videoId + '/mqdefault.jpg';
+      img.alt = video.title;
+      img.loading = 'lazy';
+
+      const overlay = document.createElement('div');
+      overlay.className = 'video-play-overlay';
+      overlay.textContent = '▶';
+
+      imgWrap.append(img, overlay);
+
+      const info = document.createElement('div');
+      info.className = 'video-card-info';
+
+      const title = document.createElement('div');
+      title.className = 'video-card-title';
+      title.textContent = video.title;
+
+      const channel = document.createElement('div');
+      channel.className = 'video-card-channel';
+      channel.textContent = video.channel;
+
+      const desc = document.createElement('p');
+      desc.className = 'video-card-desc';
+      desc.textContent = video.desc.substring(0, 80) + (video.desc.length > 80 ? '…' : '');
+
+      info.append(title, channel, desc);
+      card.append(imgWrap, info);
+
+      card.addEventListener('click', () => {
+        _playVideoInApp(video.videoId, video.title, video.channel);
       });
 
-      // Fetch live results from Invidious API
-      let apiHits = [];
-      try {
-        const apiInstances = [
-          'https://yewtu.be',
-          'https://invidious.projectsegfau.lt'
-        ];
-        const res = await fetch(apiInstances[0] + '/api/v1/search?q=' + encodeURIComponent(query) + '&type=video');
-        if (res.ok) {
-          const resData = await res.json();
-          apiHits = Array.isArray(resData) ? resData : [];
-        }
-      } catch (_e) {
-        console.warn("Invidious API fetch failed, using local curated videos fallback.");
-      }
+      grid.appendChild(card);
+    });
 
-      panel.replaceChildren();
-
-      // Combine lists and deduplicate
-      const seenIds = new Set();
-      const combined = [];
-
-      localHits.forEach(v => {
-        seenIds.add(v.videoId);
-        combined.push({
-          videoId: v.videoId,
-          title: v.title,
-          channel: v.channel,
-          desc: v.desc
-        });
-      });
-
-      apiHits.forEach(v => {
-        if (!seenIds.has(v.videoId)) {
-          seenIds.add(v.videoId);
-          combined.push({
-            videoId: v.videoId,
-            title: v.title,
-            channel: v.author || 'YouTube Video',
-            desc: v.description || 'Watch semiconductor video guides.'
-          });
-        }
-      });
-
-      if (combined.length === 0) {
-        _setEmpty(panel, '▶', 'No video results found. Search for terms like: EUV, lithography, wafer, transistor.');
-        return;
-      }
-
-      const grid = document.createElement('div');
-      grid.className = 'video-results-grid';
-
-      combined.slice(0, 10).forEach(video => {
-        const card = document.createElement('div');
-        card.className = 'video-result-card';
-
-        const imgWrap = document.createElement('div');
-        imgWrap.className = 'video-card-img-wrap';
-
-        const img = document.createElement('img');
-        img.className = 'video-card-thumb';
-        img.src = 'https://img.youtube.com/vi/' + video.videoId + '/mqdefault.jpg';
-        img.alt = video.title;
-        img.loading = 'lazy';
-
-        const overlay = document.createElement('div');
-        overlay.className = 'video-play-overlay';
-        overlay.textContent = '▶';
-
-        imgWrap.append(img, overlay);
-
-        const info = document.createElement('div');
-        info.className = 'video-card-info';
-
-        const title = document.createElement('div');
-        title.className = 'video-card-title';
-        title.textContent = video.title;
-
-        const channel = document.createElement('div');
-        channel.className = 'video-card-channel';
-        channel.textContent = video.channel;
-
-        const desc = document.createElement('p');
-        desc.className = 'video-card-desc';
-        desc.textContent = video.desc.substring(0, 80) + (video.desc.length > 80 ? '…' : '');
-
-        info.append(title, channel, desc);
-        card.append(imgWrap, info);
-
-        card.addEventListener('click', () => {
-          _playVideoInApp(video.videoId, video.title, video.channel);
-        });
-
-        grid.appendChild(card);
-      });
-
-      panel.appendChild(grid);
-    } catch (_err) {
-      panel.replaceChildren();
-      _setEmpty(panel, '⚠️', 'Could not load videos. Check your internet connection.');
-    }
+    container.appendChild(grid);
   }
 
   function _playVideoInApp(videoId, title, channel) {
-    const panel = document.getElementById('panel-videos');
+    const panel = document.getElementById('unified-panel');
     if (!panel) return;
     panel.replaceChildren();
 
@@ -1281,9 +1340,10 @@
 
     const backBtn = document.createElement('button');
     backBtn.className = 'btn btn-ghost video-player-back';
-    backBtn.textContent = '← Back to videos';
+    backBtn.textContent = '← Back to results';
     backBtn.addEventListener('click', () => {
-      _showVideoResults(_currentQuery);
+      if (_currentQuery) _runUnifiedSearch(_currentQuery);
+      else _showSuggestions();
     });
 
     const iframeWrap = document.createElement('div');
@@ -1314,125 +1374,341 @@
     panel.scrollTop = 0;
   }
 
-  /* ── Internal site search (grouped) ───────────────────────────────── */
-  function _showInternalResults(query) {
-    const panel = document.getElementById('panel-internal');
+  /* ── Suggestions page (empty query) ──────────────────────────────── */
+  function _showSuggestions() {
+    const panel = document.getElementById('unified-panel');
     if (!panel) return;
     panel.replaceChildren();
 
-    const data = window.SEMI_DATA;
-    const q = query.toLowerCase();
-    const groups = {};
+    const container = document.createElement('div');
+    container.className = 'suggestions-container';
 
-    data.steps.forEach(step => {
-      if (!step.title.toLowerCase().includes(q) && !step.shortDesc.toLowerCase().includes(q)) return;
-      (groups['Process Steps'] = groups['Process Steps'] || []).push({
-        icon: '⚙️', name: step.title, sub: 'Step ' + step.stepNumber, href: '#/process/' + step.slug
+    const title = document.createElement('h3');
+    title.className = 'suggestions-title';
+    title.textContent = 'Need inspiration? Try one of these:';
+
+    const grid = document.createElement('div');
+    grid.className = 'suggestions-grid';
+
+    const shuffled = [...FUNNY_PLACEHOLDERS].sort(() => 0.5 - Math.random()).slice(0, 6);
+    shuffled.forEach(line => {
+      const btn = document.createElement('button');
+      btn.className = 'suggestion-bubble';
+      btn.textContent = '⚡ ' + line;
+      btn.addEventListener('click', () => {
+        const input = document.getElementById('overlay-search-input');
+        if (input) { input.value = line; _currentQuery = line; _runUnifiedSearch(line); }
       });
+      grid.appendChild(btn);
     });
 
-    data.tools.forEach(tool => {
-      if (!tool.name.toLowerCase().includes(q) && !tool.fullName.toLowerCase().includes(q)) return;
-      (groups['Inspection Tools'] = groups['Inspection Tools'] || []).push({
-        icon: tool.icon, name: tool.name, sub: tool.fullName, href: '#/tool/' + tool.slug
-      });
-    });
-
-    [...data.companies.foundries, ...data.companies.equipment].forEach(co => {
-      if (!co.name.toLowerCase().includes(q) && !co.country.toLowerCase().includes(q)) return;
-      (groups['Companies'] = groups['Companies'] || []).push({
-        icon: co.flag || '🏢', name: co.name, sub: co.country, href: '#/companies'
-      });
-    });
-
-    data.glossary.forEach(entry => {
-      if (!entry.term.toLowerCase().includes(q) && !entry.definition.toLowerCase().includes(q)) return;
-      (groups['Glossary'] = groups['Glossary'] || []).push({
-        icon: '📖', name: entry.term,
-        sub: entry.definition.substring(0, 60) + '…',
-        href: '#/glossary',
-        glossaryTerm: entry.term, glossaryDef: entry.definition
-      });
-    });
-
-    if (Object.keys(groups).length === 0) {
-      _setEmpty(panel, '🔍', 'Nothing found in the platform database.\nTry the Wikipedia or Videos tab.');
-      return;
-    }
-
-    Object.entries(groups).forEach(([groupName, items]) => {
-      const group = document.createElement('div');
-      group.className = 'internal-result-group';
-
-      const lbl = document.createElement('div');
-      lbl.className = 'internal-result-group-label';
-      lbl.textContent = groupName; // textContent — safe
-      group.appendChild(lbl);
-
-      items.forEach(item => {
-        const el = document.createElement('a');
-        el.className = 'internal-result-item';
-        el.href = item.href;
-        el.setAttribute('aria-label', item.name);
-
-        const icon = document.createElement('div');
-        icon.className = 'internal-result-icon';
-        icon.textContent = item.icon; // textContent — safe
-
-        const info = document.createElement('div');
-        info.style.flex = '1';
-        const nameEl = document.createElement('div');
-        nameEl.className = 'internal-result-name';
-        nameEl.textContent = item.name; // textContent — safe
-        const subEl = document.createElement('div');
-        subEl.className = 'internal-result-sub';
-        subEl.textContent = item.sub; // textContent — safe
-        info.append(nameEl, subEl);
-        el.append(icon, info);
-
-        el.addEventListener('click', () => {
-          _closeSearchOverlay();
-          if (item.glossaryTerm) {
-            setTimeout(() => window.openGlossary(item.glossaryTerm, item.glossaryDef), 300);
-          }
-        });
-
-        group.appendChild(el);
-      });
-
-      panel.appendChild(group);
-    });
+    container.append(title, grid);
+    panel.appendChild(container);
   }
 
-  /* ── State helpers ─────────────────────────────────────────────────── */
-  function _setLoading(panel, msg) {
-    panel.replaceChildren();
+  /* ── Helpers ──────────────────────────────────────────────────────── */
+  function _setLoadingInEl(el, msg) {
+    el.replaceChildren();
     const wrap = document.createElement('div');
     wrap.className = 'search-loading';
     const spinner = document.createElement('div');
     spinner.className = 'search-spinner';
     const txt = document.createElement('span');
-    txt.textContent = msg; // textContent — safe
+    txt.textContent = msg;
     wrap.append(spinner, txt);
-    panel.appendChild(wrap);
+    el.appendChild(wrap);
   }
 
-  function _setEmpty(panel, icon, msg) {
-    panel.replaceChildren();
-    const wrap = document.createElement('div');
-    wrap.className = 'search-empty-state';
-    const iconEl = document.createElement('span');
-    iconEl.className = 'icon';
-    iconEl.textContent = icon;
-    const msgEl = document.createElement('p');
-    msgEl.textContent = msg; // textContent — safe
-    wrap.append(iconEl, msgEl);
-    panel.appendChild(wrap);
+  /* ═══════════════════════════════════════════════════════════════════════
+     FLOATING AI ASSISTANT BOT
+     Built with semiconductor knowledge from SEMI_DATA
+     Security: all output rendered via textContent
+     ═══════════════════════════════════════════════════════════════════════ */
+
+  function buildAssistBot() {
+    /* ── Floating Button ─────────────────────────────────────────────── */
+    const btn = document.createElement('button');
+    btn.className = 'assist-btn';
+    btn.id = 'assist-btn';
+    btn.setAttribute('aria-label', 'Open ELCHIP AI Assistant');
+    btn.setAttribute('title', 'ELCHIP Assistant — Click to ask anything');
+
+    // Logo image
+    const img = document.createElement('img');
+    img.src = 'tnc-removebg-preview.png';
+    img.alt = 'ELCHIP Assistant';
+    img.className = 'assist-btn-img';
+
+    // Question mark badge overlay
+    const badge = document.createElement('span');
+    badge.className = 'assist-btn-badge';
+    badge.textContent = '?';
+    badge.setAttribute('aria-hidden', 'true');
+
+    btn.append(img, badge);
+
+    /* ── Chat Panel ──────────────────────────────────────────────────── */
+    const panel = document.createElement('div');
+    panel.className = 'assist-panel';
+    panel.id = 'assist-panel';
+    panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-label', 'ELCHIP AI Assistant');
+
+    // Header
+    const header = document.createElement('div');
+    header.className = 'assist-header';
+
+    const hLeft = document.createElement('div');
+    hLeft.className = 'assist-header-left';
+
+    const hImg = document.createElement('img');
+    hImg.src = 'tnc-removebg-preview.png';
+    hImg.alt = '';
+    hImg.className = 'assist-header-img';
+
+    const hInfo = document.createElement('div');
+    const hName = document.createElement('div');
+    hName.className = 'assist-header-name';
+    hName.textContent = 'ELCHIP Assistant';
+    const hStatus = document.createElement('div');
+    hStatus.className = 'assist-header-status';
+    hStatus.textContent = '● Online — Ask me anything about semiconductors';
+    hInfo.append(hName, hStatus);
+    hLeft.append(hImg, hInfo);
+
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'assist-close';
+    closeBtn.setAttribute('aria-label', 'Close assistant');
+    closeBtn.textContent = '✕';
+    closeBtn.addEventListener('click', () => toggleAssistPanel(false));
+
+    header.append(hLeft, closeBtn);
+
+    // Messages area
+    const messages = document.createElement('div');
+    messages.className = 'assist-messages';
+    messages.id = 'assist-messages';
+
+    // Welcome message
+    _appendBotMessage(messages, 'Hello! I\'m the ELCHIP Assistant 🔬\n\nI can help you understand semiconductor manufacturing — processes, inspection tools, industry companies, and technical concepts.\n\nTry asking:\n• "What is EUV lithography?"\n• "How does CMP work?"\n• "Tell me about TSMC"\n• "What inspection tools are used in etching?"\n• "Explain ion implantation"');
+
+    // Input area
+    const inputArea = document.createElement('div');
+    inputArea.className = 'assist-input-area';
+
+    const textInput = document.createElement('input');
+    textInput.type = 'text';
+    textInput.className = 'assist-input';
+    textInput.id = 'assist-input';
+    textInput.placeholder = 'Ask about semiconductors...';
+    textInput.setAttribute('autocomplete', 'off');
+    textInput.setAttribute('aria-label', 'Ask a question');
+
+    const sendBtn = document.createElement('button');
+    sendBtn.className = 'assist-send';
+    sendBtn.setAttribute('aria-label', 'Send message');
+    sendBtn.textContent = '→';
+
+    const handleSend = () => {
+      const q = textInput.value.trim();
+      if (!q) return;
+      textInput.value = '';
+      _appendUserMessage(messages, q);
+      setTimeout(() => {
+        const answer = _getAssistAnswer(q);
+        _appendBotMessage(messages, answer);
+      }, 400);
+    };
+
+    sendBtn.addEventListener('click', handleSend);
+    textInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') handleSend();
+    });
+
+    inputArea.append(textInput, sendBtn);
+    panel.append(header, messages, inputArea);
+
+    // Toggle logic
+    btn.addEventListener('click', () => toggleAssistPanel());
+
+    document.body.append(btn, panel);
+  }
+
+  let _assistOpen = false;
+  function toggleAssistPanel(forceOpen) {
+    const panel = document.getElementById('assist-panel');
+    const btn = document.getElementById('assist-btn');
+    if (!panel) return;
+    _assistOpen = forceOpen !== undefined ? forceOpen : !_assistOpen;
+    panel.classList.toggle('open', _assistOpen);
+    btn.classList.toggle('active', _assistOpen);
+    if (_assistOpen) {
+      setTimeout(() => document.getElementById('assist-input')?.focus(), 100);
+    }
+  }
+
+  function _appendBotMessage(container, text) {
+    const row = document.createElement('div');
+    row.className = 'assist-msg assist-msg-bot';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'assist-msg-avatar';
+    const img = document.createElement('img');
+    img.src = 'tnc-removebg-preview.png';
+    img.alt = '';
+    avatar.appendChild(img);
+
+    const bubble = document.createElement('div');
+    bubble.className = 'assist-msg-bubble';
+    // Render multi-line text safely
+    text.split('\n').forEach((line, i) => {
+      if (i > 0) bubble.appendChild(document.createElement('br'));
+      bubble.appendChild(document.createTextNode(line));
+    });
+
+    row.append(avatar, bubble);
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function _appendUserMessage(container, text) {
+    const row = document.createElement('div');
+    row.className = 'assist-msg assist-msg-user';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'assist-msg-bubble';
+    bubble.textContent = text;
+
+    row.appendChild(bubble);
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  /* ── AI Assistant Knowledge Engine ─────────────────────────────────── */
+  function _getAssistAnswer(query) {
+    const q = query.toLowerCase().trim();
+    const data = window.SEMI_DATA;
+
+    // Navigation intent
+    if (/^(go to|show|open|navigate to|take me to)\s/i.test(query)) {
+      const target = q.replace(/^(go to|show|open|navigate to|take me to)\s/, '');
+      if (target.includes('home') || target.includes('start')) return 'Going to the home page! Click: #/\n\nI\'ve noted your request — use the navigation links at the top to visit: Process Flow, Tools, or Companies.';
+      if (target.includes('process') || target.includes('flow')) return 'Navigate to the Process Flow at the top nav or click Explore Process Flow on the home page!';
+      if (target.includes('tool')) return 'You can find all Inspection & Metrology Tools by clicking "Tools" in the top navigation bar.';
+      if (target.includes('compan')) return 'Click "Companies" in the top nav to see all foundries and equipment suppliers!';
+    }
+
+    // ── GLOSSARY / DEFINITION queries ──────────────────────────────────
+    for (const entry of data.glossary) {
+      if (q.includes(entry.term.toLowerCase())) {
+        return `📖 ${entry.term}\n\n${entry.definition}\n\nSearch "${entry.term}" in the search bar to explore related content on ELCHIP.`;
+      }
+    }
+
+    // ── PROCESS STEPS ──────────────────────────────────────────────────
+    for (const step of data.steps) {
+      if (q.includes(step.title.toLowerCase()) || q.includes(step.slug.replace(/-/g, ' '))) {
+        return `⚙️ ${step.title} (Step ${step.stepNumber})\n\n${step.shortDesc}\n\n${step.overview ? step.overview.substring(0, 280) + '…' : ''}\n\nClick the process card on the Process Flow page or search "${step.title}" to read the full technical detail.`;
+      }
+    }
+
+    // ── TOOLS ──────────────────────────────────────────────────────────
+    for (const tool of data.tools) {
+      if (q.includes(tool.name.toLowerCase()) || q.includes(tool.fullName.toLowerCase()) || q.includes(tool.slug.replace(/-/g, ' '))) {
+        return `🔬 ${tool.name} — ${tool.fullName}\n\n${tool.principle ? tool.principle.substring(0, 250) + '…' : 'A key inspection and metrology tool in semiconductor manufacturing.'}\n\nVisit the Tools section to see the full technical page with SVG schematics.`;
+      }
+    }
+
+    // ── COMPANIES ──────────────────────────────────────────────────────
+    const allCos = [...data.companies.foundries, ...data.companies.equipment];
+    for (const co of allCos) {
+      if (q.includes(co.name.toLowerCase()) || q.includes(co.fullName.toLowerCase())) {
+        return `🏢 ${co.name} (${co.country})\n\n${co.description.substring(0, 300)}…\n\nSpecialization: ${co.specialization}\n\nVisit the Companies section for detailed profiles.`;
+      }
+    }
+
+    // ── SPECIFIC CONCEPTS ───────────────────────────────────────────────
+    if (/euv|extreme ultraviolet/.test(q)) {
+      return 'EUV (Extreme Ultraviolet) Lithography uses 13.5nm light to print features smaller than 7nm on chips. ASML is the sole manufacturer of EUV machines, which cost $150–200M each.\n\nKey facts:\n• 13.5nm wavelength (vs 193nm DUV)\n• Enables 3nm, 5nm chip nodes\n• Uses tin droplets + CO2 laser to generate EUV light\n• TSMC, Samsung, and Intel use EUV\n\nSearch "EUV" or "photolithography" on ELCHIP for more.';
+    }
+    if (/duv|deep ultraviolet|immersion/.test(q)) {
+      return 'DUV (Deep Ultraviolet) Lithography uses 193nm wavelength light (ArF laser) and immersion techniques to pattern chips. It\'s the predecessor to EUV and still widely used for less advanced nodes.\n\nKey facts:\n• 193nm ArF laser\n• Immersion in water extends resolution to ~40nm\n• Multiple patterning extends to ~10nm with SAQP\n• Most fabs use DUV for non-critical layers\n\nExplore the Photolithography process step on ELCHIP!';
+    }
+    if (/cmp|chemical mechanical|planarization|polish/.test(q)) {
+      return 'CMP (Chemical Mechanical Planarization) is a polishing process that achieves a globally flat wafer surface.\n\nHow it works:\n• Wafer pressed against polishing pad\n• Abrasive chemical slurry removes high spots\n• Endpoint detected optically or by friction\n• Achieves angstrom-level flatness\n\nUsed between every metal layer in chip making! See the CMP step on ELCHIP.';
+    }
+    if (/etch|plasma|rie|icp/.test(q)) {
+      return 'Etching removes material from the wafer to create patterns.\n\nTypes:\n• Dry (Plasma) Etching: Uses ionized gas (RIE, ICP-RIE) — precise, anisotropic\n• Wet Etching: Chemical solution — isotropic, cheaper, less precise\n\nIn advanced nodes, DRIE (Deep RIE) creates high-aspect-ratio trenches for FinFETs and 3D NAND.\n\nSee the Etching step on ELCHIP for full technical details.';
+    }
+    if (/ion implant|doping|dopant|boron|phosphorus|arsenic/.test(q)) {
+      return 'Ion Implantation introduces dopant atoms into silicon to create P-type or N-type regions (transistors).\n\nProcess:\n• Dopant ions (B, P, As) accelerated to 10–500 keV\n• Ions penetrate silicon to controlled depth\n• Annealing repairs crystal damage and activates dopants\n\nSuppliers: Axcelis Technologies (Purion series)\n\nFind the Ion Implantation page on ELCHIP.';
+    }
+    if (/cvd|ald|pvd|deposition|thin film/.test(q)) {
+      return 'Thin Film Deposition adds material layers to the wafer:\n\n• CVD (Chemical Vapor Deposition): Gas-phase reaction, conformal coverage\n• ALD (Atomic Layer Deposition): One atomic layer at a time — ultimate control\n• PVD (Physical Vapor Deposition): Sputtering metals for interconnects\n• PECVD: Plasma-enhanced CVD at lower temperatures\n\nSuppliers: Applied Materials, Lam Research, Tokyo Electron\n\nSee the Deposition process on ELCHIP.';
+    }
+    if (/asml/.test(q)) {
+      return '🇳🇱 ASML is the world\'s most critical semiconductor company — the sole supplier of EUV lithography machines.\n\nKey facts:\n• Founded 1984, HQ in Eindhoven, Netherlands\n• Market cap: ~$260B+\n• Each EUV machine costs $150–200M\n• 5,000+ suppliers for one machine\n• High-NA EUV machines cost $300M+\n\nWithout ASML, no sub-7nm chips could be made. See the Companies section on ELCHIP.';
+    }
+    if (/tsmc/.test(q)) {
+      return '🇹🇼 TSMC (Taiwan Semiconductor Manufacturing Company) is the world\'s largest foundry with 55%+ global market share.\n\nKey facts:\n• Founded 1987 by Morris Chang\n• Manufactures chips for Apple, NVIDIA, AMD, Qualcomm\n• Current leading node: 2nm (N2)\n• 300mm GigaFabs in Taiwan, Arizona, Japan\n• Revenue: $80B+/year\n\nVisit the Companies page on ELCHIP for the full profile.';
+    }
+    if (/kla/.test(q)) {
+      return '🇺🇸 KLA Corporation is the world\'s leading process control and defect inspection company.\n\nKey facts:\n• Based in Milpitas, California\n• Market cap: ~$90B+\n• Products used at virtually every process step\n• Optical inspection, e-beam review, overlay metrology\n• Critical for yield improvement\n\nSearch "KLA" or visit Companies on ELCHIP.';
+    }
+
+    // ── WHAT IS / HOW questions ─────────────────────────────────────────
+    if (/what is (a |the |an )?wafer/.test(q)) {
+      return 'A wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for integrated circuit fabrication.\n\nKey facts:\n• Standard size: 300mm diameter (12 inches)\n• Thickness: ~775 μm\n• 500-1000 chips per wafer\n• Made from 99.9999999% pure silicon (9N)\n• Grown via the Czochralski process from a seed crystal\n\nSee the Wafer Preparation process on ELCHIP!';
+    }
+    if (/what is (a |an )?transistor|how does (a |a |the )?transistor work/.test(q)) {
+      return 'A transistor is a tiny electronic switch or amplifier that forms the basic building block of all modern chips.\n\nHow it works:\n• Apply voltage to Gate → Channel opens → Current flows (ON)\n• Remove voltage → Channel closes → No current (OFF)\n• A MOSFET has: Gate, Source, Drain, and Channel\n• Modern chips have 50–100+ billion transistors!\n\nModern types:\n• FinFET (fin-shaped 3D gate)\n• GAAFET/RibbonFET (wraps gate around channel)\n\nWatch the "How does a Transistor Work?" video in ELCHIP Videos!';
+    }
+    if (/what is (a |an )?yield|yield rate/.test(q)) {
+      return 'Yield is the percentage of dies on a wafer that pass all electrical tests.\n\nKey facts:\n• Mature nodes (28nm+): 80–95% yield\n• Advanced nodes (3–5nm): 30–60% at launch\n• A 1% yield improvement = millions in profit\n• Yield killers: particles, overlay errors, film non-uniformity\n\nKLA Corporation\'s inspection tools are critical for improving yield!';
+    }
+
+    // ── COMPARISON questions ─────────────────────────────────────────────
+    if (/difference between|compare|vs|versus/.test(q)) {
+      if (/cvd.*ald|ald.*cvd/.test(q)) {
+        return 'CVD vs ALD:\n\n• CVD (Chemical Vapor Deposition): Faster, good step coverage, batch process\n• ALD (Atomic Layer Deposition): 1 monolayer at a time, perfect conformality, slower\n\nUse ALD when you need ultra-thin, conformal films (e.g., high-k gate dielectric, barrier layers).\nUse CVD for thicker dielectrics, polysilicon, tungsten fill.';
+      }
+      if (/euv.*duv|duv.*euv/.test(q)) {
+        return 'EUV vs DUV:\n\n• DUV: 193nm wavelength, ArF laser, needs multiple patterning for <40nm\n• EUV: 13.5nm wavelength, enables single-exposure patterning at <7nm\n• EUV machines: $150–200M each, made only by ASML\n• EUV is used for the most critical layers at 7nm and below\n• Most fabs use DUV for non-critical layers even on advanced nodes';
+      }
+      if (/wet.*dry|dry.*wet/.test(q)) {
+        return 'Wet vs Dry Etching:\n\n• Wet Etching: Chemical bath, isotropic (etches all directions equally), simple and cheap, used for bulk removal\n• Dry Etching: Plasma-based (RIE, ICP-RIE), anisotropic (directional), precise, used for critical patterning\n\nAdvanced nodes exclusively use dry plasma etching for pattern transfer.';
+      }
+    }
+
+    // ── HOW MANY questions ───────────────────────────────────────────────
+    if (/how many (steps|process|phases|stage)/.test(q)) {
+      return `ELCHIP covers ${data.steps.length} major manufacturing process steps:\n\n${data.steps.map(s => `${s.stepNumber}. ${s.title}`).join('\n')}\n\nEach step has its own detailed page with technical parameters, inspection tools, and supplier profiles.`;
+    }
+    if (/how many (tool|inspection|metrology)/.test(q)) {
+      return `ELCHIP covers ${data.tools.length} inspection and metrology tools:\n\n${data.tools.map(t => `• ${t.name} — ${t.fullName}`).join('\n')}\n\nClick "Tools" in the navigation to explore each one.`;
+    }
+    if (/how many (compan|foundry|foundries|supplier)/.test(q)) {
+      return `ELCHIP profiles ${data.companies.foundries.length + data.companies.equipment.length} companies:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}\n\nVisit the Companies section for detailed profiles.`;
+    }
+
+    // ── HELP / GUIDE ─────────────────────────────────────────────────────
+    if (/help|guide|how to use|what can you|what do you know/.test(q)) {
+      return 'I can help you with:\n\n🔬 Process steps — photolithography, etching, CMP, deposition, ion implantation, packaging, and more\n\n🛠 Inspection tools — CD-SEM, Ellipsometer, AOI, XRD, E-Beam Inspector, and more\n\n🏢 Companies — TSMC, ASML, KLA, Applied Materials, Samsung, Intel, and more\n\n📖 Definitions — technical terms like EUV, wafer, dopant, yield, overlay\n\n💡 Comparisons — CVD vs ALD, EUV vs DUV, wet vs dry etching\n\nJust ask your question and I\'ll do my best to answer!';
+    }
+
+    // ── GREETING ─────────────────────────────────────────────────────────
+    if (/^(hi|hello|hey|howdy|sup|yo)\b/.test(q)) {
+      return 'Hello! 👋 I\'m the ELCHIP Assistant, your guide to semiconductor manufacturing.\n\nAsk me anything about:\n• Manufacturing processes (EUV, CMP, Etching, etc.)\n• Inspection tools (CD-SEM, Ellipsometer, etc.)\n• Companies (TSMC, ASML, KLA, etc.)\n• Technical concepts and definitions\n\nWhat would you like to know?';
+    }
+
+    // ── DEFAULT fallback ──────────────────────────────────────────────────
+    return `I found your query: "${query}"\n\nI don't have a specific answer for that, but try:\n\n1. 🔍 Use the search bar above to search across the ELCHIP database, Wikipedia, and curated videos\n2. 📖 Browse the Process Flow for manufacturing steps\n3. 🔬 Visit the Tools section for inspection equipment\n4. 🏢 Check Companies for industry profiles\n\nOr rephrase — ask "What is [term]?" or "How does [process] work?"`;
   }
 
   /* ─── INIT ──────────────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', () => {
     buildNav();
+    buildAssistBot();
     setTimeout(hideLoadingScreen, 800);
   });
 
