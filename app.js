@@ -188,6 +188,21 @@
 
     navEl.appendChild(searchWrap);
 
+    // Mobile Search Button
+    const mobileSearchBtn = document.createElement('button');
+    mobileSearchBtn.className = 'mobile-search-btn';
+    mobileSearchBtn.id = 'mobile-search-btn';
+    mobileSearchBtn.setAttribute('aria-label', 'Open search');
+    const searchIconDoc = new DOMParser().parseFromString(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>',
+      'image/svg+xml'
+    );
+    mobileSearchBtn.appendChild(document.importNode(searchIconDoc.documentElement, true));
+    mobileSearchBtn.addEventListener('click', () => {
+      openSearchOverlay('');
+    });
+    navEl.appendChild(mobileSearchBtn);
+
     // Hamburger
     const hamburger = document.createElement('button');
     hamburger.className = 'hamburger';
@@ -795,10 +810,19 @@
       if (e.key === 'Escape') _closeSearchOverlay();
     });
 
-    const closeBtn = document.createElement('kbd');
-    closeBtn.className = 'kb-key search-overlay-close';
-    closeBtn.textContent = 'Esc';
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'search-overlay-close';
     closeBtn.setAttribute('aria-label', 'Close search');
+    
+    const closeText = document.createElement('span');
+    closeText.className = 'search-close-text';
+    closeText.textContent = 'Close';
+    
+    const closeIcon = document.createElement('span');
+    closeIcon.className = 'search-close-icon';
+    closeIcon.textContent = '✕';
+    
+    closeBtn.append(closeText, closeIcon);
     closeBtn.addEventListener('click', _closeSearchOverlay);
 
     bar.append(input, closeBtn);
@@ -1819,7 +1843,7 @@
       setTimeout(() => {
         indicator.remove();
         const response = _getAssistAnswer(q);
-        _appendBotMessage(messages, response.text);
+        _appendBotMessage(messages, response);
 
         if (response.nav) {
           setTimeout(() => {
@@ -1857,7 +1881,11 @@
     }
   }
 
-  function _appendBotMessage(container, text) {
+  function _randomStat(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function _appendBotMessage(container, msg) {
     const row = document.createElement('div');
     row.className = 'assist-msg assist-msg-bot';
 
@@ -1871,11 +1899,128 @@
     const bubble = document.createElement('div');
     bubble.className = 'assist-msg-bubble';
     
-    // Render multi-line text safely
-    text.split('\n').forEach((line, i) => {
-      if (i > 0) bubble.appendChild(document.createElement('br'));
-      bubble.appendChild(document.createTextNode(line));
-    });
+    let isTroll = false;
+    let trollType = '';
+    let msgText = '';
+
+    if (msg && typeof msg === 'object') {
+      isTroll = msg.isTroll;
+      trollType = msg.trollType;
+      msgText = msg.text;
+    } else {
+      msgText = msg || '';
+    }
+
+    if (isTroll) {
+      bubble.classList.add('troll-bubble');
+      if (trollType === 'twitter') {
+        bubble.classList.add('twitter-bubble');
+        
+        const tweetContainer = document.createElement('div');
+        tweetContainer.className = 'tweet-container';
+
+        const tweetHeader = document.createElement('div');
+        tweetHeader.className = 'tweet-header';
+
+        const dispName = document.createElement('span');
+        dispName.className = 'tweet-display-name';
+        dispName.textContent = 'ELCHIP Troll';
+
+        const badge = document.createElement('span');
+        badge.className = 'tweet-verified-badge';
+        badge.textContent = '✓';
+
+        const username = document.createElement('span');
+        username.className = 'tweet-username';
+        username.textContent = '@ELCHIP_Troll';
+
+        tweetHeader.append(dispName, badge, username);
+
+        const tweetText = document.createElement('div');
+        tweetText.className = 'tweet-text';
+        tweetText.textContent = msgText;
+
+        const tweetFooter = document.createElement('div');
+        tweetFooter.className = 'tweet-footer';
+
+        const stats = [
+          { icon: '💬', count: _randomStat(100, 999) + 'K' },
+          { icon: '🔁', count: _randomStat(100, 999) + 'K' },
+          { icon: '❤️', count: _randomStat(10, 99) + '.' + _randomStat(1, 9) + 'M' },
+          { icon: '📊', count: _randomStat(10, 99) + 'M' }
+        ];
+
+        stats.forEach(st => {
+          const statSpan = document.createElement('span');
+          statSpan.textContent = `${st.icon} ${st.count}`;
+          tweetFooter.appendChild(statSpan);
+        });
+
+        tweetContainer.append(tweetHeader, tweetText, tweetFooter);
+        bubble.appendChild(tweetContainer);
+
+      } else if (trollType === 'linkedin') {
+        bubble.classList.add('linkedin-bubble');
+
+        const liContainer = document.createElement('div');
+        liContainer.className = 'linkedin-container';
+
+        const liHeader = document.createElement('div');
+        liHeader.className = 'linkedin-header';
+
+        const liAvatar = document.createElement('div');
+        liAvatar.className = 'linkedin-avatar';
+        liAvatar.textContent = '💼';
+
+        const liInfo = document.createElement('div');
+        liInfo.className = 'linkedin-info';
+
+        const liName = document.createElement('div');
+        liName.className = 'linkedin-name';
+        liName.textContent = 'Hustler McSynergy ';
+        const degree = document.createElement('span');
+        degree.className = 'linkedin-degree';
+        degree.textContent = '· 1st';
+        liName.appendChild(degree);
+
+        const liTitle = document.createElement('div');
+        liTitle.className = 'linkedin-title';
+        liTitle.textContent = 'Founder & Thought Leader @ Grindset Fab | Disrupting Silicon Valley';
+
+        const liTime = document.createElement('div');
+        liTime.className = 'linkedin-time';
+        liTime.textContent = '2h · 🌎';
+
+        liInfo.append(liName, liTitle, liTime);
+        liHeader.append(liAvatar, liInfo);
+
+        const liText = document.createElement('div');
+        liText.className = 'linkedin-text';
+        
+        // Render multi-line text safely
+        msgText.split('\n').forEach((line, i) => {
+          if (i > 0) liText.appendChild(document.createElement('br'));
+          liText.appendChild(document.createTextNode(line));
+        });
+
+        const liFooter = document.createElement('div');
+        liFooter.className = 'linkedin-footer';
+        const likes = document.createElement('span');
+        likes.textContent = `👍 👏 💡 ${_randomStat(1000, 5000)} likes`;
+        const comments = document.createElement('span');
+        comments.textContent = `${_randomStat(200, 900)} comments`;
+        liFooter.append(likes, comments);
+
+        liContainer.append(liHeader, liText, liFooter);
+        bubble.appendChild(liContainer);
+      }
+    } else {
+      // Normal render
+      msgText.split('\n').forEach((line, i) => {
+        if (i > 0) bubble.appendChild(document.createElement('br'));
+        bubble.appendChild(document.createTextNode(line));
+      });
+    }
 
     row.append(avatar, bubble);
     container.appendChild(row);
@@ -1925,6 +2070,19 @@
   function _getAssistAnswer(query) {
     const q = query.toLowerCase().trim();
     const data = window.SEMI_DATA;
+
+    // Greeting check
+    const greetingReg = /^(hi|hello|hey|hola|greetings|yo|sup|what's up|good\s+(morning|afternoon|evening))\b/i;
+    if (greetingReg.test(q)) {
+      const greetingReplies = [
+        "Well hello there! 👋 Ready to dive into the wonderful, expensive world of semiconductor fabs? Or are you just browsing?",
+        "Hey! Welcome to the cleanroom. Make sure your bunny suit is zipped up, and let's explore some microchips! 🔬",
+        "Oh, greetings human! 🤖 I was just calculating the molecular thickness of our gate oxide layer. What are we looking for today?",
+        "Sup! I'm the ELCHIP Assistant. Ask me about photolithography, tools, or companies, or feel free to test my patience. 😈",
+        "Hello! 🌟 Welcome! Ask me a semiconductor question, or type 'help' if you're lost. (Or try to ask something irrelevant if you dare...)"
+      ];
+      return { text: greetingReplies[Math.floor(Math.random() * greetingReplies.length)] };
+    }
 
     // Normalizing navigation
     const rawTarget = q.replace(/^(go to|show|open|navigate to|take me to|take me|jump to|visit|nav|route to)\s+/i, '');
@@ -2129,20 +2287,34 @@
     const isRelevant = semiKeywords.some(keyword => q.includes(keyword));
 
     if (!isRelevant) {
-      const trolls = [
-        "My neural nodes are configured for semiconductor manufacturing, not whatever this is. Did you drop your wafer on the floor again? 🤦‍♂️",
-        "Warning: ⚠️ Query contains 100% trace contaminants. Please go put on your bunny suit before asking about non-silicon topics!",
-        "Wait, let me consult ASML's secret manual... Nope, even a $200 million EUV machine can't find a reason to answer that question. 🤷‍♂️",
-        "Error 418: I am a cleanroom AI, not a search engine for your life choices. Go vacuum some dust! 🧹",
-        "TSMC is monitoring this connection. They'd like you to know that your question has a 0% yield rate. 📉",
-        "This question has been classified as a Cleanroom Class 100000 biohazard. Please quarantine yourself immediately! ☣️",
-        "Sorry, I can't hear you over the loud hum of our nitrogen purge systems. Try asking about actual silicon. 💨",
-        "If I had a transistor for every time someone asked an irrelevant question, I'd be a 2nm GAAFET by now. But I don't, so I'm stuck trolling you. 🤖",
-        "That question is completely amorphous. We only deal with single-crystal silicon here. Back to the sand pit! 🏖️",
-        "My photoresist layer is completely undeveloped for this query. Try exposing it to something semiconductor-related. 💡"
+      const type = Math.random() < 0.5 ? 'twitter' : 'linkedin';
+      const twitterTrolls = [
+        "L + ratio + touch grass + didn't ask + no blue checkmark + mid query + delete your account.",
+        "Community Notes: The user is yapping about things that have nothing to do with microchips. Source: trust me bro.",
+        "This query is so mid that it's actually painful. I'm literally shaking right now. Please log off.",
+        "Is this bait? Because it's working. Please go touch some grass immediately. 🌿",
+        "Imagine typing this and thinking you cooked. 💀 Get off my timeline.",
+        "Bold of you to assume anyone cares about this. Blocked and reported. 💅",
+        "This is peak main character syndrome. Nobody asked, ratio.",
+        "My database is literally cringing at this input. Please delete this query.",
+        "I'm going to need you to log off for the day. This is a class 1 cringe hazard.",
+        "Not you posting this on an educational website. Please touch some grass."
       ];
-      const randomTroll = trolls[Math.floor(Math.random() * trolls.length)];
-      return { text: randomTroll };
+
+      const linkedinTrolls = [
+        "This query is interesting, but it lacks leadership vision. Yesterday, I woke up at 4:00 AM, ran a marathon, closed a $5M B2B SaaS deal, and had a green smoothie.\n\nWhat did that teach me about resilience?\n\nNothing. But I am still posting it.\n\nAgree?",
+        "I see what you are asking. But are we asking the *right* questions?\n\nInstead of asking that, ask yourself:\n• Am I adding value?\n• Am I synergizing my deliverables?\n• Is this query aligned with our core KPIs?\n\nLet's circle back on this next quarter. #Hustle #CareerAdvice",
+        "I'm humbled and honored to announce that I have absolutely no idea what you are talking about.\n\nHowever, this is a prime opportunity to discuss growth hacking.\n\nHere is a 12-step thread on how I turned a simple greeting into a viral post. 👇",
+        "Your query has been deprioritized to backlog.\n\nWe need to lean in, pivot our paradigm, and focus on low-hanging fruits.\n\nI'll ping you on Slack to sync up. Let's touch base soon. #CorporateLife",
+        "I just spent 15 hours analyzing your input.\n\nMy conclusion? It is not scalable.\n\nWe need to move the needle, think outside the box, and leverage our core competencies.\n\nLet's take this offline. #Mindset #Leadership",
+        "Yesterday, I was rejected by 42 investors.\n\nDid I cry? Yes. But then I realized:\n\nRejection is just market validation in a trench coat.\n\nSo I doubled my pricing, fired my employees, and rebranded as an AI visionary. Ask me how. #Solopreneur #Synergy"
+      ];
+
+      const text = type === 'twitter' 
+        ? twitterTrolls[Math.floor(Math.random() * twitterTrolls.length)]
+        : linkedinTrolls[Math.floor(Math.random() * linkedinTrolls.length)];
+
+      return { text, isTroll: true, trollType: type };
     }
 
     // ── DEFAULT fallback ──────────────────────────────────────────────────
