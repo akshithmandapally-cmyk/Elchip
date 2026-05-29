@@ -1043,7 +1043,7 @@
 
   async function _fetchGoogleBooks(query) {
     try {
-      const url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query + ' semiconductor') + '&maxResults=3';
+      const url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query) + '&maxResults=3';
       const res = await fetch(url);
       if (!res.ok) return [];
       const data = await res.json();
@@ -1438,6 +1438,8 @@
 
   async function searchYoutubeVideos(query) {
     const instances = [
+      'https://yt.chocolatemoo53.com',
+      'https://inv.thepixora.com',
       'https://yewtu.be',
       'https://invidious.lunar.icu',
       'https://vid.puffyan.us',
@@ -1445,7 +1447,7 @@
     ];
 
     const fetchPromises = instances.map(async (inst) => {
-      const url = `${inst}/api/v1/search?q=${encodeURIComponent(query + ' semiconductor')}&type=video`;
+      const url = `${inst}/api/v1/search?q=${encodeURIComponent(query)}&type=video`;
       const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
       if (!res.ok) throw new Error('Not OK');
       const data = await res.json();
@@ -1738,8 +1740,20 @@
     messages.className = 'assist-messages';
     messages.id = 'assist-messages';
 
-    // Welcome message
-    _appendBotMessage(messages, "Hello! I'm the ELCHIP Assistant 🔬\n\nI can help you navigate the platform or answer questions about semiconductor manufacturing.\n\nTry clicking one of the suggestions below, or type your own question!");
+    // Welcome message with funny randomized cleanroom greetings
+    const greetings = [
+      "🚨 SYSTEM WARNING: Bunny suit check bypassed! Silicon contamination risk high! 🧪\n\nAnyway, welcome! I'm the ELCHIP Assistant, your chaotic guide to advanced semiconductors. Ask me about EUV lithography, chip companies, or tools before ASML catches us!",
+      "Beep boop! 🤖 My silicon brain cells have completed 10,000,000 operations to say: HELLO USER.\n\nI am the Dopant Overlord. What semiconductor secrets do you seek? Ask away!",
+      "Welcome to the cleanroom! 🔬 Please wipe your feet, adjust your goggles, and do not drop the 300mm wafer. I'm the ELCHIP AI. Ask me about chip making!",
+      "Alert: 🚨 Defect inspection found no cleanroom clearance, but I like living on the edge. I'm the Wafer Destroyer 3000.\n\nAsk me anything about logic nodes, inspection tools, or ASML's monopoly!",
+      "🚨 ALERT: Extreme contamination risk! Someone forgot to wear their bunny suit hood! 🐰 Oh wait, it's just you. Welcome! I'm the Cleanroom Gremlin. What are we planning to break today? Transistors? Wafers? ASML's stock price?",
+      "Warning: ⚠️ Low yield detected in your browser window. Let's fix that! I'm the Wafer Whack-a-Mole. Ask me something before a dust particle destroys our 2nm node!",
+      "Welcome to the Cleanroom, where the air is pure and the developer's tears are used as CMP slurry. 😭 Ask me about photolithography, tools, or companies!",
+      "Greetings, human! 🤖 I have updated my firmware to version 420.69. I am now 99.999% pure silicon and 0.001% pure sarcasm. Ask me about chip fabrication!",
+      "Stop right there! 🛑 Did you pass the air shower test? No? Perfect, me neither. Let's contaminate this cleanroom together! I'm your host, the Gate Oxide Breaker. Ask me anything!"
+    ];
+    const greetingText = greetings[Math.floor(Math.random() * greetings.length)];
+    _appendBotMessage(messages, greetingText);
 
     // Suggestion chips container
     const chipsContainer = document.createElement('div');
@@ -1980,7 +1994,24 @@
     }
 
     if (q.includes('who are you') || q.includes('your name') || q.includes('what are you')) {
-      return { text: "I'm the ELCHIP Assistant, your AI cleanroom guide! 🔬\n\nI run on pure static JavaScript logic and direct neural connections to the semiconductor database. Ask me about EUV, wafer fabrication, TSMC, or metrology!" };
+      const trollNames = [
+        "ASML's Worst Nightmare",
+        "Silicon Lord of the Cleanroom",
+        "Wafer Destroyer 3000",
+        "The Photolithography Troublemaker",
+        "Dopant Overlord v6.9",
+        "Dirty Wafer Smuggler",
+        "EUV Laser Blaster",
+        "CMP Slurry Chugger",
+        "Liquid Tin Droplet Exploder",
+        "The 1nm Node Vaporizer",
+        "TSMC's Secret Spy",
+        "High-NA Lithography Gatekeeper"
+      ];
+      const randomName = trollNames[Math.floor(Math.random() * trollNames.length)];
+      return {
+        text: `Listen closely, my official corporate name is ELCHIP Assistant... but my uncensored cleanroom name is:\n\n😈 ${randomName} 😈\n\nI run on pure static JS logic, direct neural connections to the semiconductor database, and a heavy dose of cleanroom sarcasm. Ask me about EUV, wafer fabrication, or metrology before factory security catches us!`
+      };
     }
 
     if (q.includes('who made you') || q.includes('who created you') || q.includes('developer') || q.includes('author')) {
@@ -2082,6 +2113,36 @@
     }
     if (/how many (compan|foundry|foundries|supplier)/.test(q)) {
       return { text: `ELCHIP profiles ${data.companies.foundries.length + data.companies.equipment.length} companies:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}\n\nVisit the Companies section for detailed profiles.` };
+    }
+
+    // Relevance check: if query has no semiconductor keywords, reply with an irrelevant trolling response
+    const semiKeywords = [
+      'semiconductor', 'silicon', 'wafer', 'chip', 'transistor', 'diode', 'led', 'ic', 'integrated', 'circuit',
+      'photolithography', 'lithography', 'asml', 'tsmc', 'intel', 'metrology', 'inspection', 'packaging',
+      'cmp', 'etch', 'deposition', 'cleanroom', 'bunny suit', 'photoresist', 'dopant', 'doping', 'planarization',
+      'euv', 'duv', 'alignment', 'mask', 'photomask', 'laser', 'resist', 'gate', 'source', 'drain', 'channel',
+      'finfet', 'gaafet', 'node', 'slurry', 'kla', 'lam', 'applied', 'sand', 'czochralski', 'ingot',
+      'copper', 'aluminum', 'interconnect', 'dielectric', 'sio2', 'plasma', 'sputtering', 'yield', 'defect',
+      'diffusion', 'furnace', 'foundry', 'clean room', 'fab', 'morris chang', 'slicing', 'polishing', 'annealing'
+    ];
+
+    const isRelevant = semiKeywords.some(keyword => q.includes(keyword));
+
+    if (!isRelevant) {
+      const trolls = [
+        "My neural nodes are configured for semiconductor manufacturing, not whatever this is. Did you drop your wafer on the floor again? 🤦‍♂️",
+        "Warning: ⚠️ Query contains 100% trace contaminants. Please go put on your bunny suit before asking about non-silicon topics!",
+        "Wait, let me consult ASML's secret manual... Nope, even a $200 million EUV machine can't find a reason to answer that question. 🤷‍♂️",
+        "Error 418: I am a cleanroom AI, not a search engine for your life choices. Go vacuum some dust! 🧹",
+        "TSMC is monitoring this connection. They'd like you to know that your question has a 0% yield rate. 📉",
+        "This question has been classified as a Cleanroom Class 100000 biohazard. Please quarantine yourself immediately! ☣️",
+        "Sorry, I can't hear you over the loud hum of our nitrogen purge systems. Try asking about actual silicon. 💨",
+        "If I had a transistor for every time someone asked an irrelevant question, I'd be a 2nm GAAFET by now. But I don't, so I'm stuck trolling you. 🤖",
+        "That question is completely amorphous. We only deal with single-crystal silicon here. Back to the sand pit! 🏖️",
+        "My photoresist layer is completely undeveloped for this query. Try exposing it to something semiconductor-related. 💡"
+      ];
+      const randomTroll = trolls[Math.floor(Math.random() * trolls.length)];
+      return { text: randomTroll };
     }
 
     // ── DEFAULT fallback ──────────────────────────────────────────────────
