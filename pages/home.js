@@ -50,55 +50,28 @@ window.renderHome = function (container) {
   cta.className = 'hero-cta anim-fade-up-d3';
 
   const btnExplore = document.createElement('a');
-  btnExplore.className = 'btn btn-primary';
+  btnExplore.className = 'btn btn-primary btn-hero-explore';
   btnExplore.href = '#/process-flow';
   btnExplore.setAttribute('aria-label', 'Explore manufacturing process');
   btnExplore.textContent = 'Explore Process Flow';
+  
+  // Arrow icon SVG
+  const arrowSvg = new DOMParser().parseFromString(
+    '<svg class="btn-arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    'image/svg+xml'
+  );
+  btnExplore.appendChild(document.importNode(arrowSvg.documentElement, true));
   cta.appendChild(btnExplore);
 
   const btnCompanies = document.createElement('a');
-  btnCompanies.className = 'btn btn-ghost';
+  btnCompanies.className = 'btn btn-ghost btn-hero-companies';
   btnCompanies.href = '#/companies';
   btnCompanies.setAttribute('aria-label', 'View companies');
   btnCompanies.textContent = 'View Companies';
   cta.appendChild(btnCompanies);
 
-  // Stats
-  const statsRow = document.createElement('div');
-  statsRow.className = 'stats-row anim-fade-up-d4';
-
-  const stats = [
-    { value: '13', label: 'Process Steps' },
-    { value: '10+', label: 'Inspection Tools' },
-    { value: '30+', label: 'Industry Companies' },
-    { value: '500+', label: 'Billion $ Market' },
-  ];
-
-  stats.forEach(s => {
-    const item = document.createElement('div');
-    item.className = 'stat-item';
-    const val = document.createElement('span');
-    val.className = 'stat-value';
-    val.textContent = s.value;
-    const lbl = document.createElement('div');
-    lbl.className = 'stat-label';
-    lbl.textContent = s.label;
-    item.append(val, lbl);
-    statsRow.appendChild(item);
-  });
-
-  heroInner.append(h1, cta, statsRow);
+  heroInner.append(h1, cta);
   hero.appendChild(heroInner);
-
-  const scrollCue = document.createElement('div');
-  scrollCue.className = 'scroll-cue';
-  scrollCue.setAttribute('aria-hidden', 'true');
-  const scrollSpan = document.createElement('span');
-  scrollSpan.textContent = 'scroll';
-  const scrollArr = document.createElement('div');
-  scrollArr.className = 'scroll-arrow';
-  scrollCue.append(scrollSpan, scrollArr);
-  hero.appendChild(scrollCue);
 
   frag.appendChild(hero);
 

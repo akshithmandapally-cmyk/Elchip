@@ -153,7 +153,7 @@ nav {
   flex-shrink: 0;
   transition: all 0.25s ease;
   position: absolute;
-  left: 50%;
+  left: 42%;
   transform: translateX(-50%);
   min-width: 380px;
   max-width: 540px;
@@ -424,6 +424,50 @@ section { padding: 5rem 0; }
   background: rgba(255,255,255,0.08);
   border-color: rgba(255,255,255,0.7);
   transform: translateY(-1px);
+}
+
+/* Landing Page Custom Hero Buttons */
+.btn-hero-explore, .btn-hero-companies {
+  font-family: var(--mono) !important;
+  font-size: 0.76rem !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.55rem 1.35rem !important;
+  border-radius: 99px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.25s ease !important;
+}
+
+.btn-hero-explore {
+  background: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+}
+.btn-hero-explore:hover {
+  background: #e6e6e6;
+  border-color: #e6e6e6;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 18px rgba(255,255,255,0.2);
+}
+.btn-hero-explore .btn-arrow {
+  transition: transform 0.2s ease;
+}
+.btn-hero-explore:hover .btn-arrow {
+  transform: translateX(3px);
+}
+
+.btn-hero-companies {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.22);
+  color: #ffffff;
+}
+.btn-hero-companies:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: #ffffff;
+  transform: translateY(-2px) scale(1.02);
 }
 
 /* ─── BADGE / TAG ───────────────────────────────────────────────────────── */
