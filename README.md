@@ -2,7 +2,7 @@
 
 > An interactive educational web application that visually walks through the complete semiconductor IC fabrication process — from silicon wafer preparation to final package testing.
 
-**Live site:** [View Platform](akshithmandapally-cmyk.github.io/Elchip/) &nbsp;|&nbsp; **Author:** [Akshith Mandapally](https://linkedin.com/in/akshith-mandapally-078691280)
+**Live site:** [View Platform](https://akshithmandapally-cmyk.github.io/Elchip/) &nbsp;|&nbsp; **Author:** [Akshith Mandapally](https://linkedin.com/in/akshith-mandapally-078691280)
 
 ---
 
