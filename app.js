@@ -63,6 +63,11 @@
     const hash = window.location.hash || '#/';
     window.scrollTo({ top: 0, behavior: 'instant' });
 
+    // Close assistant panel upon route change to keep layout clean
+    if (typeof toggleAssistPanel === 'function') {
+      toggleAssistPanel(false);
+    }
+
     // Page transition fade
     const app = document.getElementById('app');
     app.style.opacity = '0';
@@ -688,6 +693,17 @@
     }
   ];
 
+  const FUNNY_SUBTITLES = [
+    "⚡ Silicon Query Processor v2.0 · Do not drop the wafer",
+    "🔬 Aligning EUV lasers to 13.5nm accuracy...",
+    "🧪 Scanning photoresist chemical formulations...",
+    "📊 Calculating wafer yield... please do not sneeze in the cleanroom",
+    "🏢 Querying ASML's secret database of EUV mirrors...",
+    "⚙️ Polishing global topography with CMP slurry...",
+    "⚡ Dopant energy levels set to 150 keV. Stand back.",
+    "🔬 Defects detected: 0. Yield: 99.8%. Coffee level: Critical."
+  ];
+
   function openSearchOverlay(query) {
     if (!_searchOverlayEl) _buildSearchOverlay();
     _currentQuery = query;
@@ -698,6 +714,13 @@
       input.value = query;
       const rand = FUNNY_PLACEHOLDERS[Math.floor(Math.random() * FUNNY_PLACEHOLDERS.length)];
       input.placeholder = rand;
+    }
+
+    // Set funny tagline
+    const tagline = _searchOverlayEl.querySelector('#search-overlay-tagline');
+    if (tagline) {
+      const randSub = FUNNY_SUBTITLES[Math.floor(Math.random() * FUNNY_SUBTITLES.length)];
+      tagline.textContent = randSub;
     }
 
     _searchOverlayEl.classList.add('open');
@@ -729,6 +752,13 @@
     /* ── Header ────────────────────────────────────────────────────── */
     const header = document.createElement('div');
     header.className = 'search-overlay-header';
+
+    // Tagline
+    const tagline = document.createElement('div');
+    tagline.className = 'search-overlay-tagline';
+    tagline.id = 'search-overlay-tagline';
+    tagline.textContent = '⚡ Silicon Query Processor v2.0 · Do not drop the wafer';
+    header.appendChild(tagline);
 
     // Search bar
     const bar = document.createElement('div');
@@ -765,9 +795,9 @@
       if (e.key === 'Escape') _closeSearchOverlay();
     });
 
-    const closeBtn = document.createElement('button');
-    closeBtn.className = 'search-overlay-close';
-    closeBtn.textContent = 'ESC';
+    const closeBtn = document.createElement('kbd');
+    closeBtn.className = 'kb-key search-overlay-close';
+    closeBtn.textContent = 'Esc';
     closeBtn.setAttribute('aria-label', 'Close search');
     closeBtn.addEventListener('click', _closeSearchOverlay);
 
@@ -819,14 +849,14 @@
     const siteSection = _buildSiteResultsSection(query);
     panel.appendChild(siteSection);
 
-    // ── SECTION 2: Web Summary (DuckDuckGo instant) ─────────────────────
+    // ── SECTION 2: Web Summary, Literature & Papers ─────────────────────
     const webSection = document.createElement('div');
     webSection.className = 'unified-section';
     webSection.id = 'section-web';
-    const webLabel = _makeSectionLabel('🌐 Web Knowledge');
+    const webLabel = _makeSectionLabel('🌐 Web Knowledge & Research');
     const webContent = document.createElement('div');
     webContent.id = 'web-section-content';
-    _setLoadingInEl(webContent, 'Fetching web knowledge...');
+    _setLoadingInEl(webContent, 'Gathering web data, literature, and papers...');
     webSection.append(webLabel, webContent);
     panel.appendChild(webSection);
 
@@ -852,11 +882,13 @@
     videoSection.append(videoLabel, videoContent);
     panel.appendChild(videoSection);
 
-    // Fetch external async
+    // Fetch external async (DuckDuckGo, Wikipedia, Google Books, ArXiv)
     Promise.allSettled([
       _fetchWebSummary(query),
-      _fetchWikiCards(query)
-    ]).then(([webResult, wikiResult]) => {
+      _fetchWikiCards(query),
+      _fetchGoogleBooks(query),
+      _fetchArxivPapers(query)
+    ]).then(([webResult, wikiResult, booksResult, arxivResult]) => {
       // Check query hasn't changed
       const currentOverlayQuery = document.getElementById('overlay-search-input')?.value.trim();
       if (currentOverlayQuery && currentOverlayQuery.toLowerCase() !== query.toLowerCase()) return;
@@ -865,7 +897,9 @@
       const wc = document.getElementById('web-section-content');
       if (wc) {
         const webData = webResult.status === 'fulfilled' ? webResult.value : null;
-        _renderWebContent(wc, webData, query);
+        const booksData = booksResult.status === 'fulfilled' ? booksResult.value : [];
+        const arxivData = arxivResult.status === 'fulfilled' ? arxivResult.value : [];
+        _renderWebContent(wc, webData, query, booksData, arxivData);
       }
 
       // Render wiki results
@@ -995,7 +1029,7 @@
     return section;
   }
 
-  /* ── SECTION 2: DuckDuckGo Web Summary ────────────────────────────── */
+  /* ── SECTION 2: In-App Web Knowledge & Research ────────────────────── */
   async function _fetchWebSummary(query) {
     try {
       const url = 'https://api.duckduckgo.com/?q=' + encodeURIComponent(query) + '&format=json&origin=*';
@@ -1007,13 +1041,64 @@
     }
   }
 
-  function _renderWebContent(container, data, query) {
+  async function _fetchGoogleBooks(query) {
+    try {
+      const url = 'https://www.googleapis.com/books/v1/volumes?q=' + encodeURIComponent(query + ' semiconductor') + '&maxResults=3';
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.items || [];
+    } catch (e) {
+      console.warn('Google Books fetch failed:', e);
+      return [];
+    }
+  }
+
+  async function _fetchArxivPapers(query) {
+    try {
+      const url = 'https://export.arxiv.org/api/query?search_query=all:' + encodeURIComponent(query) + '&max_results=3';
+      const res = await fetch(url);
+      if (!res.ok) return [];
+      const xmlText = await res.text();
+      const parser = new DOMParser();
+      const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+      const entries = xmlDoc.getElementsByTagName('entry');
+      const papers = [];
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const title = entry.getElementsByTagName('title')[0]?.textContent || 'Untitled';
+        const summary = entry.getElementsByTagName('summary')[0]?.textContent || '';
+        const id = entry.getElementsByTagName('id')[0]?.textContent || '';
+        const authorsNodes = entry.getElementsByTagName('author');
+        const authors = [];
+        for (let j = 0; j < authorsNodes.length; j++) {
+          authors.push(authorsNodes[j].getElementsByTagName('name')[0]?.textContent || '');
+        }
+        papers.push({
+          title: title.replace(/\n/g, ' ').trim(),
+          summary: summary.replace(/\n/g, ' ').trim(),
+          url: id,
+          authors
+        });
+      }
+      return papers;
+    } catch (e) {
+      console.warn('ArXiv fetch failed:', e);
+      return [];
+    }
+  }
+
+  function _renderWebContent(container, data, query, books, papers) {
     container.replaceChildren();
 
-    if (!data || (!data.AbstractText && !(data.RelatedTopics && data.RelatedTopics.length))) {
+    const hasWebData = data && (data.AbstractText || (data.RelatedTopics && data.RelatedTopics.length));
+    const hasBooks = books && books.length > 0;
+    const hasPapers = papers && papers.length > 0;
+
+    if (!hasWebData && !hasBooks && !hasPapers) {
       const msg = document.createElement('div');
       msg.className = 'unified-empty';
-      msg.textContent = 'No instant web summary found for this query.';
+      msg.textContent = 'No instant web search results found for this query.';
       container.appendChild(msg);
       return;
     }
@@ -1021,7 +1106,8 @@
     const wrap = document.createElement('div');
     wrap.className = 'web-results-container';
 
-    if (data.AbstractText && data.AbstractText.trim().length > 0) {
+    // 1. DuckDuckGo Instant Answer
+    if (data && data.AbstractText && data.AbstractText.trim().length > 0) {
       const card = document.createElement('div');
       card.className = 'web-answer-card';
 
@@ -1051,7 +1137,8 @@
       wrap.appendChild(card);
     }
 
-    const topics = (data.RelatedTopics || []).filter(t => t.Text && t.FirstURL).slice(0, 4);
+    // 2. Related Topics
+    const topics = data ? (data.RelatedTopics || []).filter(t => t.Text && t.FirstURL).slice(0, 4) : [];
     if (topics.length > 0) {
       const listTitle = document.createElement('h3');
       listTitle.className = 'web-list-title';
@@ -1074,6 +1161,93 @@
         link.textContent = 'Visit ↗';
 
         card.append(text, link);
+        wrap.appendChild(card);
+      });
+    }
+
+    // 3. Google Books
+    if (hasBooks) {
+      const listTitle = document.createElement('h3');
+      listTitle.className = 'web-list-title';
+      listTitle.textContent = '📚 Literature & Textbooks';
+      wrap.appendChild(listTitle);
+
+      books.forEach(item => {
+        const info = item.volumeInfo;
+        if (!info) return;
+
+        const card = document.createElement('div');
+        card.className = 'book-result-card';
+
+        const textWrap = document.createElement('div');
+        textWrap.className = 'book-result-text';
+
+        const title = document.createElement('div');
+        title.className = 'book-result-title';
+        title.textContent = info.title;
+
+        const authors = document.createElement('div');
+        authors.className = 'book-result-authors';
+        authors.textContent = 'By ' + (info.authors ? info.authors.join(', ') : 'Unknown Author');
+
+        const desc = document.createElement('p');
+        desc.className = 'book-result-desc';
+        desc.textContent = info.description ? (info.description.substring(0, 150) + '…') : 'No description available.';
+
+        const link = document.createElement('a');
+        link.className = 'book-result-link';
+        link.href = info.previewLink || info.infoLink || '#';
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Google Books ↗';
+
+        textWrap.append(title, authors, desc, link);
+
+        if (info.imageLinks && info.imageLinks.thumbnail) {
+          const img = document.createElement('img');
+          img.className = 'book-result-thumb';
+          img.src = info.imageLinks.thumbnail.replace('http://', 'https://');
+          img.alt = info.title;
+          img.loading = 'lazy';
+          card.append(img);
+        }
+
+        card.append(textWrap);
+        wrap.appendChild(card);
+      });
+    }
+
+    // 4. ArXiv Papers
+    if (hasPapers) {
+      const listTitle = document.createElement('h3');
+      listTitle.className = 'web-list-title';
+      listTitle.textContent = '🔬 Scientific Papers (ArXiv)';
+      wrap.appendChild(listTitle);
+
+      papers.forEach(paper => {
+        const card = document.createElement('div');
+        card.className = 'arxiv-result-card';
+
+        const title = document.createElement('div');
+        title.className = 'arxiv-result-title';
+        title.textContent = paper.title;
+
+        const authors = document.createElement('div');
+        authors.className = 'arxiv-result-authors';
+        authors.textContent = 'Authors: ' + paper.authors.join(', ');
+
+        const desc = document.createElement('p');
+        desc.className = 'arxiv-result-desc';
+        desc.textContent = paper.summary ? (paper.summary.substring(0, 180) + '…') : '';
+
+        const link = document.createElement('a');
+        link.className = 'arxiv-result-link';
+        link.href = paper.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.textContent = 'Read Paper ↗';
+
+        card.append(title, authors, desc, link);
         wrap.appendChild(card);
       });
     }
@@ -1262,28 +1436,92 @@
     }
   }
 
+  async function searchYoutubeVideos(query) {
+    const instances = [
+      'https://yewtu.be',
+      'https://invidious.lunar.icu',
+      'https://vid.puffyan.us',
+      'https://invidious.flokinet.to'
+    ];
+
+    const fetchPromises = instances.map(async (inst) => {
+      const url = `${inst}/api/v1/search?q=${encodeURIComponent(query + ' semiconductor')}&type=video`;
+      const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+      if (!res.ok) throw new Error('Not OK');
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) throw new Error('Empty');
+      return data.map(item => ({
+        title: item.title,
+        videoId: item.videoId,
+        channel: item.author,
+        desc: item.description || '',
+        tags: []
+      }));
+    });
+
+    try {
+      return await Promise.any(fetchPromises);
+    } catch (e) {
+      console.warn('All Invidious fetches failed:', e);
+      return [];
+    }
+  }
+
   /* ── SECTION 4: Video Library ──────────────────────────────────────── */
-  function _buildVideoResults(query, container) {
-    container.replaceChildren();
+  async function _buildVideoResults(query, container) {
+    _setLoadingInEl(container, 'Searching video guides...');
 
     const q = query.toLowerCase();
 
-    // Match against curated library
-    let hits = CURATED_VIDEOS.filter(v =>
+    // Match against curated library first
+    let localHits = CURATED_VIDEOS.filter(v =>
       v.title.toLowerCase().includes(q) ||
       v.desc.toLowerCase().includes(q) ||
       v.tags.some(tag => tag.includes(q))
     );
 
-    // If no specific match, show ALL curated videos (user can still discover)
-    if (hits.length === 0) {
-      hits = CURATED_VIDEOS;
+    // Fetch dynamic videos from YouTube (via Invidious)
+    let dynamicHits = [];
+    try {
+      dynamicHits = await searchYoutubeVideos(query);
+    } catch (e) {
+      console.error(e);
+    }
+
+    container.replaceChildren();
+
+    // Combine results, local first, then dynamic
+    const seenIds = new Set();
+    const combined = [];
+
+    localHits.forEach(v => {
+      if (!seenIds.has(v.videoId)) {
+        seenIds.add(v.videoId);
+        combined.push(v);
+      }
+    });
+
+    dynamicHits.forEach(v => {
+      if (!seenIds.has(v.videoId)) {
+        seenIds.add(v.videoId);
+        combined.push(v);
+      }
+    });
+
+    // Fallback if empty
+    if (combined.length === 0) {
+      CURATED_VIDEOS.forEach(v => {
+        if (!seenIds.has(v.videoId)) {
+          seenIds.add(v.videoId);
+          combined.push(v);
+        }
+      });
     }
 
     const grid = document.createElement('div');
     grid.className = 'video-results-grid';
 
-    hits.slice(0, 12).forEach(video => {
+    combined.slice(0, 12).forEach(video => {
       const card = document.createElement('div');
       card.className = 'video-result-card';
 
@@ -1472,9 +1710,19 @@
     hName.textContent = 'ELCHIP Assistant';
     const hStatus = document.createElement('div');
     hStatus.className = 'assist-header-status';
-    hStatus.textContent = '● Online — Ask me anything about semiconductors';
+    hStatus.textContent = '● Online — Ask me anything';
     hInfo.append(hName, hStatus);
     hLeft.append(hImg, hInfo);
+
+    const hActions = document.createElement('div');
+    hActions.className = 'assist-header-actions';
+
+    // Reset button
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'assist-reset';
+    resetBtn.setAttribute('aria-label', 'Reset conversation');
+    resetBtn.textContent = '↺';
+    resetBtn.setAttribute('title', 'Reset Conversation');
 
     const closeBtn = document.createElement('button');
     closeBtn.className = 'assist-close';
@@ -1482,7 +1730,8 @@
     closeBtn.textContent = '✕';
     closeBtn.addEventListener('click', () => toggleAssistPanel(false));
 
-    header.append(hLeft, closeBtn);
+    hActions.append(resetBtn, closeBtn);
+    header.append(hLeft, hActions);
 
     // Messages area
     const messages = document.createElement('div');
@@ -1490,7 +1739,42 @@
     messages.id = 'assist-messages';
 
     // Welcome message
-    _appendBotMessage(messages, 'Hello! I\'m the ELCHIP Assistant 🔬\n\nI can help you understand semiconductor manufacturing — processes, inspection tools, industry companies, and technical concepts.\n\nTry asking:\n• "What is EUV lithography?"\n• "How does CMP work?"\n• "Tell me about TSMC"\n• "What inspection tools are used in etching?"\n• "Explain ion implantation"');
+    _appendBotMessage(messages, "Hello! I'm the ELCHIP Assistant 🔬\n\nI can help you navigate the platform or answer questions about semiconductor manufacturing.\n\nTry clicking one of the suggestions below, or type your own question!");
+
+    // Suggestion chips container
+    const chipsContainer = document.createElement('div');
+    chipsContainer.className = 'assist-chips';
+    chipsContainer.id = 'assist-chips';
+
+    const suggestionList = [
+      { text: '⚙️ Go to Process Flow', query: 'go to process flow' },
+      { text: '🔬 Go to Tools', query: 'go to tools' },
+      { text: '🏢 Go to Companies', query: 'go to companies' },
+      { text: '📖 What is a wafer?', query: 'what is a wafer' },
+      { text: '💡 DUV vs EUV', query: 'compare DUV vs EUV' },
+      { text: '🤖 Tell me a Joke', query: 'tell me a joke' }
+    ];
+
+    function renderSuggestionChips() {
+      chipsContainer.replaceChildren();
+      suggestionList.forEach(item => {
+        const chip = document.createElement('button');
+        chip.className = 'assist-chip';
+        chip.textContent = item.text;
+        chip.addEventListener('click', () => {
+          handleSend(item.query);
+        });
+        chipsContainer.appendChild(chip);
+      });
+    }
+
+    renderSuggestionChips();
+
+    resetBtn.addEventListener('click', () => {
+      messages.replaceChildren();
+      _appendBotMessage(messages, "Conversation reset! How can I help you today?");
+      renderSuggestionChips();
+    });
 
     // Input area
     const inputArea = document.createElement('div');
@@ -1509,24 +1793,36 @@
     sendBtn.setAttribute('aria-label', 'Send message');
     sendBtn.textContent = '→';
 
-    const handleSend = () => {
-      const q = textInput.value.trim();
+    const handleSend = (overrideQuery) => {
+      const q = (overrideQuery || textInput.value).trim();
       if (!q) return;
       textInput.value = '';
       _appendUserMessage(messages, q);
+
+      // Typing animation
+      const indicator = _appendTypingIndicator(messages);
+
       setTimeout(() => {
-        const answer = _getAssistAnswer(q);
-        _appendBotMessage(messages, answer);
-      }, 400);
+        indicator.remove();
+        const response = _getAssistAnswer(q);
+        _appendBotMessage(messages, response.text);
+
+        if (response.nav) {
+          setTimeout(() => {
+            window.location.hash = response.nav;
+            toggleAssistPanel(false);
+          }, 1000);
+        }
+      }, 450);
     };
 
-    sendBtn.addEventListener('click', handleSend);
+    sendBtn.addEventListener('click', () => handleSend());
     textInput.addEventListener('keydown', e => {
       if (e.key === 'Enter') handleSend();
     });
 
     inputArea.append(textInput, sendBtn);
-    panel.append(header, messages, inputArea);
+    panel.append(header, messages, chipsContainer, inputArea);
 
     // Toggle logic
     btn.addEventListener('click', () => toggleAssistPanel());
@@ -1560,6 +1856,7 @@
 
     const bubble = document.createElement('div');
     bubble.className = 'assist-msg-bubble';
+    
     // Render multi-line text safely
     text.split('\n').forEach((line, i) => {
       if (i > 0) bubble.appendChild(document.createElement('br'));
@@ -1584,38 +1881,134 @@
     container.scrollTop = container.scrollHeight;
   }
 
+  function _appendTypingIndicator(container) {
+    const row = document.createElement('div');
+    row.className = 'assist-msg assist-msg-bot';
+
+    const avatar = document.createElement('div');
+    avatar.className = 'assist-msg-avatar';
+    const img = document.createElement('img');
+    img.src = 'tnc-removebg-preview.png';
+    img.alt = '';
+    avatar.appendChild(img);
+
+    const bubble = document.createElement('div');
+    bubble.className = 'assist-msg-bubble typing-bubble';
+    
+    for (let i = 0; i < 3; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'typing-dot';
+      bubble.appendChild(dot);
+    }
+
+    row.append(avatar, bubble);
+    container.appendChild(row);
+    container.scrollTop = container.scrollHeight;
+    return row;
+  }
+
   /* ── AI Assistant Knowledge Engine ─────────────────────────────────── */
   function _getAssistAnswer(query) {
     const q = query.toLowerCase().trim();
     const data = window.SEMI_DATA;
 
-    // Navigation intent
-    if (/^(go to|show|open|navigate to|take me to)\s/i.test(query)) {
-      const target = q.replace(/^(go to|show|open|navigate to|take me to)\s/, '');
-      if (target.includes('home') || target.includes('start')) return 'Going to the home page! Click: #/\n\nI\'ve noted your request — use the navigation links at the top to visit: Process Flow, Tools, or Companies.';
-      if (target.includes('process') || target.includes('flow')) return 'Navigate to the Process Flow at the top nav or click Explore Process Flow on the home page!';
-      if (target.includes('tool')) return 'You can find all Inspection & Metrology Tools by clicking "Tools" in the top navigation bar.';
-      if (target.includes('compan')) return 'Click "Companies" in the top nav to see all foundries and equipment suppliers!';
+    // Normalizing navigation
+    const rawTarget = q.replace(/^(go to|show|open|navigate to|take me to|take me|jump to|visit|nav|route to)\s+/i, '');
+    const isNav = /^(go to|show|open|navigate to|take me to|take me|jump to|visit|nav|route to)\b/i.test(query);
+
+    if (isNav || q.includes('page') || q.includes('section')) {
+      const target = rawTarget.trim();
+
+      if (/home|main|start/i.test(target)) {
+        return {
+          text: "Opening the ELCHIP homepage... 🚀",
+          nav: "#/"
+        };
+      }
+      if (/process|flow|journey|steps|timeline/i.test(target)) {
+        return {
+          text: "Navigating to the Semiconductor Manufacturing Process Flow... ⚙️",
+          nav: "#/process-flow"
+        };
+      }
+      if (/tools|metrology|inspection|equipment/i.test(target) && !/step/i.test(target)) {
+        return {
+          text: "Navigating to the Inspection & Metrology Tools section... 🔬",
+          nav: "#/tools"
+        };
+      }
+      if (/companies|foundries|suppliers|industry/i.test(target)) {
+        return {
+          text: "Navigating to the Industry Ecosystem & Companies section... 🏢",
+          nav: "#/companies"
+        };
+      }
+
+      // Specific step matches
+      for (const step of data.steps) {
+        if (target.includes(step.title.toLowerCase()) || step.title.toLowerCase().includes(target)) {
+          return {
+            text: `Opening process step: ${step.title}... ⚙️`,
+            nav: `#/process/${step.slug}`
+          };
+        }
+      }
+
+      // Specific tool matches
+      for (const tool of data.tools) {
+        if (target.includes(tool.name.toLowerCase()) || tool.name.toLowerCase().includes(target)) {
+          return {
+            text: `Opening tool details for: ${tool.name}... 🔬`,
+            nav: `#/tool/${tool.slug}`
+          };
+        }
+      }
+    }
+
+    // Jokes easter egg
+    if (q.includes('joke') || q.includes('funny') || q.includes('laugh')) {
+      const jokes = [
+        "Why did the transistor break up with the resistor?\n\nIt felt too much resistance. 😂",
+        "Why are silicon wafers bad at keeping secrets?\n\nBecause they have too many chips! 😭",
+        "What is a semiconductor's favorite music genre?\n\nMetal-Oxide-Semiconductor rock! 🎸",
+        "Why was the photolithography machine so expensive?\n\nBecause ASML had a laser focus on its margins! 💸",
+        "What do you call a cleanroom engineer who forgot their bunny suit?\n\nA defect! 🙅‍♂️",
+        "Why are transistors such good team players?\n\nBecause they know how to gatekeep and switch responsibilities! 🔌"
+      ];
+      const joke = jokes[Math.floor(Math.random() * jokes.length)];
+      return { text: joke };
+    }
+
+    if (q.includes('who are you') || q.includes('your name') || q.includes('what are you')) {
+      return { text: "I'm the ELCHIP Assistant, your AI cleanroom guide! 🔬\n\nI run on pure static JavaScript logic and direct neural connections to the semiconductor database. Ask me about EUV, wafer fabrication, TSMC, or metrology!" };
+    }
+
+    if (q.includes('who made you') || q.includes('who created you') || q.includes('developer') || q.includes('author')) {
+      return { text: "I was created by Akshith Mandapally to help guide users through the intricate process of fabricating microchips on ELCHIP. 🇮🇳\n\nHe is open to relocation and full-time software roles!" };
+    }
+
+    if (q.includes('how to use') || q.includes('help') || q.includes('guide')) {
+      return { text: "Here is how to use the ELCHIP platform:\n\n1. ⚙️ Browse the **Process Flow** to view the 13 major steps of chip manufacturing.\n2. 🔬 Explore the **Tools** section to see scanning electron microscopes, ellipsometers, and other metrology systems.\n3. 🏢 Check out **Companies** to read profiles on ASML, TSMC, Intel, and others.\n4. 🔍 Use the centered Search Bar at the top of the page (or press ⌘K / Ctrl+K) to search everything.\n5. 💬 Type navigation commands in this chat (e.g., 'go to tools') and I will route you there instantly!" };
     }
 
     // ── GLOSSARY / DEFINITION queries ──────────────────────────────────
     for (const entry of data.glossary) {
       if (q.includes(entry.term.toLowerCase())) {
-        return `📖 ${entry.term}\n\n${entry.definition}\n\nSearch "${entry.term}" in the search bar to explore related content on ELCHIP.`;
+        return { text: `📖 ${entry.term}\n\n${entry.definition}\n\nSearch "${entry.term}" in the search bar to explore related content on ELCHIP.` };
       }
     }
 
     // ── PROCESS STEPS ──────────────────────────────────────────────────
     for (const step of data.steps) {
       if (q.includes(step.title.toLowerCase()) || q.includes(step.slug.replace(/-/g, ' '))) {
-        return `⚙️ ${step.title} (Step ${step.stepNumber})\n\n${step.shortDesc}\n\n${step.overview ? step.overview.substring(0, 280) + '…' : ''}\n\nClick the process card on the Process Flow page or search "${step.title}" to read the full technical detail.`;
+        return { text: `⚙️ ${step.title} (Step ${step.stepNumber})\n\n${step.shortDesc}\n\n${step.overview ? step.overview.substring(0, 280) + '…' : ''}\n\nClick the process card on the Process Flow page or search "${step.title}" to read the full technical detail.` };
       }
     }
 
     // ── TOOLS ──────────────────────────────────────────────────────────
     for (const tool of data.tools) {
       if (q.includes(tool.name.toLowerCase()) || q.includes(tool.fullName.toLowerCase()) || q.includes(tool.slug.replace(/-/g, ' '))) {
-        return `🔬 ${tool.name} — ${tool.fullName}\n\n${tool.principle ? tool.principle.substring(0, 250) + '…' : 'A key inspection and metrology tool in semiconductor manufacturing.'}\n\nVisit the Tools section to see the full technical page with SVG schematics.`;
+        return { text: `🔬 ${tool.name} — ${tool.fullName}\n\n${tool.principle ? tool.principle.substring(0, 250) + '…' : 'A key inspection and metrology tool in semiconductor manufacturing.'}\n\nVisit the Tools section to see the full technical page with SVG schematics.` };
       }
     }
 
@@ -1623,86 +2016,76 @@
     const allCos = [...data.companies.foundries, ...data.companies.equipment];
     for (const co of allCos) {
       if (q.includes(co.name.toLowerCase()) || q.includes(co.fullName.toLowerCase())) {
-        return `🏢 ${co.name} (${co.country})\n\n${co.description.substring(0, 300)}…\n\nSpecialization: ${co.specialization}\n\nVisit the Companies section for detailed profiles.`;
+        return { text: `🏢 ${co.name} (${co.country})\n\n${co.description.substring(0, 300)}…\n\nSpecialization: ${co.specialization}\n\nVisit the Companies section for detailed profiles.` };
       }
     }
 
     // ── SPECIFIC CONCEPTS ───────────────────────────────────────────────
     if (/euv|extreme ultraviolet/.test(q)) {
-      return 'EUV (Extreme Ultraviolet) Lithography uses 13.5nm light to print features smaller than 7nm on chips. ASML is the sole manufacturer of EUV machines, which cost $150–200M each.\n\nKey facts:\n• 13.5nm wavelength (vs 193nm DUV)\n• Enables 3nm, 5nm chip nodes\n• Uses tin droplets + CO2 laser to generate EUV light\n• TSMC, Samsung, and Intel use EUV\n\nSearch "EUV" or "photolithography" on ELCHIP for more.';
+      return { text: 'EUV (Extreme Ultraviolet) Lithography uses 13.5nm light to print features smaller than 7nm on chips. ASML is the sole manufacturer of EUV machines, which cost $150–200M each.\n\nKey facts:\n• 13.5nm wavelength (vs 193nm DUV)\n• Enables 3nm, 5nm chip nodes\n• Uses tin droplets + CO2 laser to generate EUV light\n• TSMC, Samsung, and Intel use EUV\n\nSearch "EUV" or "photolithography" on ELCHIP for more.' };
     }
     if (/duv|deep ultraviolet|immersion/.test(q)) {
-      return 'DUV (Deep Ultraviolet) Lithography uses 193nm wavelength light (ArF laser) and immersion techniques to pattern chips. It\'s the predecessor to EUV and still widely used for less advanced nodes.\n\nKey facts:\n• 193nm ArF laser\n• Immersion in water extends resolution to ~40nm\n• Multiple patterning extends to ~10nm with SAQP\n• Most fabs use DUV for non-critical layers\n\nExplore the Photolithography process step on ELCHIP!';
+      return { text: 'DUV (Deep Ultraviolet) Lithography uses 193nm wavelength light (ArF laser) and immersion techniques to pattern chips. It\'s the predecessor to EUV and still widely used for less advanced nodes.\n\nKey facts:\n• 193nm ArF laser\n• Immersion in water extends resolution to ~40nm\n• Multiple patterning extends to ~10nm with SAQP\n• Most fabs use DUV for non-critical layers\n\nExplore the Photolithography process step on ELCHIP!' };
     }
     if (/cmp|chemical mechanical|planarization|polish/.test(q)) {
-      return 'CMP (Chemical Mechanical Planarization) is a polishing process that achieves a globally flat wafer surface.\n\nHow it works:\n• Wafer pressed against polishing pad\n• Abrasive chemical slurry removes high spots\n• Endpoint detected optically or by friction\n• Achieves angstrom-level flatness\n\nUsed between every metal layer in chip making! See the CMP step on ELCHIP.';
+      return { text: 'CMP (Chemical Mechanical Planarization) is a polishing process that achieves a globally flat wafer surface.\n\nHow it works:\n• Wafer pressed against polishing pad\n• Abrasive chemical slurry removes high spots\n• Endpoint detected optically or by friction\n• Achieves angstrom-level flatness\n\nUsed between every metal layer in chip making! See the CMP step on ELCHIP.' };
     }
     if (/etch|plasma|rie|icp/.test(q)) {
-      return 'Etching removes material from the wafer to create patterns.\n\nTypes:\n• Dry (Plasma) Etching: Uses ionized gas (RIE, ICP-RIE) — precise, anisotropic\n• Wet Etching: Chemical solution — isotropic, cheaper, less precise\n\nIn advanced nodes, DRIE (Deep RIE) creates high-aspect-ratio trenches for FinFETs and 3D NAND.\n\nSee the Etching step on ELCHIP for full technical details.';
+      return { text: 'Etching removes material from the wafer to create patterns.\n\nTypes:\n• Dry (Plasma) Etching: Uses ionized gas (RIE, ICP-RIE) — precise, anisotropic\n• Wet Etching: Chemical solution — isotropic, cheaper, less precise\n\nIn advanced nodes, DRIE (Deep RIE) creates high-aspect-ratio trenches for FinFETs and 3D NAND.\n\nSee the Etching step on ELCHIP for full technical details.' };
     }
     if (/ion implant|doping|dopant|boron|phosphorus|arsenic/.test(q)) {
-      return 'Ion Implantation introduces dopant atoms into silicon to create P-type or N-type regions (transistors).\n\nProcess:\n• Dopant ions (B, P, As) accelerated to 10–500 keV\n• Ions penetrate silicon to controlled depth\n• Annealing repairs crystal damage and activates dopants\n\nSuppliers: Axcelis Technologies (Purion series)\n\nFind the Ion Implantation page on ELCHIP.';
+      return { text: 'Ion Implantation introduces dopant atoms into silicon to create P-type or N-type regions (transistors).\n\nProcess:\n• Dopant ions (B, P, As) accelerated to 10–500 keV\n• Ions penetrate silicon to controlled depth\n• Annealing repairs crystal damage and activates dopants\n\nSuppliers: Axcelis Technologies (Purion series)\n\nFind the Ion Implantation page on ELCHIP.' };
     }
     if (/cvd|ald|pvd|deposition|thin film/.test(q)) {
-      return 'Thin Film Deposition adds material layers to the wafer:\n\n• CVD (Chemical Vapor Deposition): Gas-phase reaction, conformal coverage\n• ALD (Atomic Layer Deposition): One atomic layer at a time — ultimate control\n• PVD (Physical Vapor Deposition): Sputtering metals for interconnects\n• PECVD: Plasma-enhanced CVD at lower temperatures\n\nSuppliers: Applied Materials, Lam Research, Tokyo Electron\n\nSee the Deposition process on ELCHIP.';
+      return { text: 'Thin Film Deposition adds material layers to the wafer:\n\n• CVD (Chemical Vapor Deposition): Gas-phase reaction, conformal coverage\n• ALD (Atomic Layer Deposition): One atomic layer at a time — ultimate control\n• PVD (Physical Vapor Deposition): Sputtering metals for interconnects\n• PECVD: Plasma-enhanced CVD at lower temperatures\n\nSuppliers: Applied Materials, Lam Research, Tokyo Electron\n\nSee the Deposition process on ELCHIP.' };
     }
     if (/asml/.test(q)) {
-      return '🇳🇱 ASML is the world\'s most critical semiconductor company — the sole supplier of EUV lithography machines.\n\nKey facts:\n• Founded 1984, HQ in Eindhoven, Netherlands\n• Market cap: ~$260B+\n• Each EUV machine costs $150–200M\n• 5,000+ suppliers for one machine\n• High-NA EUV machines cost $300M+\n\nWithout ASML, no sub-7nm chips could be made. See the Companies section on ELCHIP.';
+      return { text: '🇳🇱 ASML is the world\'s most critical semiconductor company — the sole supplier of EUV lithography machines.\n\nKey facts:\n• Founded 1984, HQ in Eindhoven, Netherlands\n• Market cap: ~$260B+\n• Each EUV machine costs $150–200M\n• 5,000+ suppliers for one machine\n• High-NA EUV machines cost $300M+\n\nWithout ASML, no sub-7nm chips could be made. See the Companies section on ELCHIP.' };
     }
     if (/tsmc/.test(q)) {
-      return '🇹🇼 TSMC (Taiwan Semiconductor Manufacturing Company) is the world\'s largest foundry with 55%+ global market share.\n\nKey facts:\n• Founded 1987 by Morris Chang\n• Manufactures chips for Apple, NVIDIA, AMD, Qualcomm\n• Current leading node: 2nm (N2)\n• 300mm GigaFabs in Taiwan, Arizona, Japan\n• Revenue: $80B+/year\n\nVisit the Companies page on ELCHIP for the full profile.';
+      return { text: '🇹🇼 TSMC (Taiwan Semiconductor Manufacturing Company) is the world\'s largest foundry with 55%+ global market share.\n\nKey facts:\n• Founded 1987 by Morris Chang\n• Manufactures chips for Apple, NVIDIA, AMD, Qualcomm\n• Current leading node: 2nm (N2)\n• 300mm GigaFabs in Taiwan, Arizona, Japan\n• Revenue: $80B+/year\n\nVisit the Companies page on ELCHIP for the full profile.' };
     }
     if (/kla/.test(q)) {
-      return '🇺🇸 KLA Corporation is the world\'s leading process control and defect inspection company.\n\nKey facts:\n• Based in Milpitas, California\n• Market cap: ~$90B+\n• Products used at virtually every process step\n• Optical inspection, e-beam review, overlay metrology\n• Critical for yield improvement\n\nSearch "KLA" or visit Companies on ELCHIP.';
+      return { text: '🇺🇸 KLA Corporation is the world\'s leading process control and defect inspection company.\n\nKey facts:\n• Based in Milpitas, California\n• Market cap: ~$90B+\n• Products used at virtually every process step\n• Optical inspection, e-beam review, overlay metrology\n• Critical for yield improvement\n\nSearch "KLA" or visit Companies on ELCHIP.' };
     }
 
     // ── WHAT IS / HOW questions ─────────────────────────────────────────
     if (/what is (a |the |an )?wafer/.test(q)) {
-      return 'A wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for integrated circuit fabrication.\n\nKey facts:\n• Standard size: 300mm diameter (12 inches)\n• Thickness: ~775 μm\n• 500-1000 chips per wafer\n• Made from 99.9999999% pure silicon (9N)\n• Grown via the Czochralski process from a seed crystal\n\nSee the Wafer Preparation process on ELCHIP!';
+      return { text: 'A wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for integrated circuit fabrication.\n\nKey facts:\n• Standard size: 300mm diameter (12 inches)\n• Thickness: ~775 μm\n• 500-1000 chips per wafer\n• Made from 99.9999999% pure silicon (9N)\n• Grown via the Czochralski process from a seed crystal\n\nSee the Wafer Preparation process on ELCHIP!' };
     }
     if (/what is (a |an )?transistor|how does (a |a |the )?transistor work/.test(q)) {
-      return 'A transistor is a tiny electronic switch or amplifier that forms the basic building block of all modern chips.\n\nHow it works:\n• Apply voltage to Gate → Channel opens → Current flows (ON)\n• Remove voltage → Channel closes → No current (OFF)\n• A MOSFET has: Gate, Source, Drain, and Channel\n• Modern chips have 50–100+ billion transistors!\n\nModern types:\n• FinFET (fin-shaped 3D gate)\n• GAAFET/RibbonFET (wraps gate around channel)\n\nWatch the "How does a Transistor Work?" video in ELCHIP Videos!';
+      return { text: 'A transistor is a tiny electronic switch or amplifier that forms the basic building block of all modern chips.\n\nHow it works:\n• Apply voltage to Gate → Channel opens → Current flows (ON)\n• Remove voltage → Channel closes → No current (OFF)\n• A MOSFET has: Gate, Source, Drain, and Channel\n• Modern chips have 50–100+ billion transistors!\n\nModern types:\n• FinFET (fin-shaped 3D gate)\n• GAAFET/RibbonFET (wraps gate around channel)\n\nWatch the "How does a Transistor Work?" video in ELCHIP Videos!' };
     }
     if (/what is (a |an )?yield|yield rate/.test(q)) {
-      return 'Yield is the percentage of dies on a wafer that pass all electrical tests.\n\nKey facts:\n• Mature nodes (28nm+): 80–95% yield\n• Advanced nodes (3–5nm): 30–60% at launch\n• A 1% yield improvement = millions in profit\n• Yield killers: particles, overlay errors, film non-uniformity\n\nKLA Corporation\'s inspection tools are critical for improving yield!';
+      return { text: 'Yield is the percentage of dies on a wafer that pass all electrical tests.\n\nKey facts:\n• Mature nodes (28nm+): 80–95% yield\n• Advanced nodes (3–5nm): 30–60% at launch\n• A 1% yield improvement = millions in profit\n• Yield killers: particles, overlay errors, film non-uniformity\n\nKLA Corporation\'s inspection tools are critical for improving yield!' };
     }
 
     // ── COMPARISON questions ─────────────────────────────────────────────
     if (/difference between|compare|vs|versus/.test(q)) {
       if (/cvd.*ald|ald.*cvd/.test(q)) {
-        return 'CVD vs ALD:\n\n• CVD (Chemical Vapor Deposition): Faster, good step coverage, batch process\n• ALD (Atomic Layer Deposition): 1 monolayer at a time, perfect conformality, slower\n\nUse ALD when you need ultra-thin, conformal films (e.g., high-k gate dielectric, barrier layers).\nUse CVD for thicker dielectrics, polysilicon, tungsten fill.';
+        return { text: 'CVD vs ALD:\n\n• CVD (Chemical Vapor Deposition): Faster, good step coverage, batch process\n• ALD (Atomic Layer Deposition): 1 monolayer at a time, perfect conformality, slower\n\nUse ALD when you need ultra-thin, conformal films (e.g., high-k gate dielectric, barrier layers).\nUse CVD for thicker dielectrics, polysilicon, tungsten fill.' };
       }
       if (/euv.*duv|duv.*euv/.test(q)) {
-        return 'EUV vs DUV:\n\n• DUV: 193nm wavelength, ArF laser, needs multiple patterning for <40nm\n• EUV: 13.5nm wavelength, enables single-exposure patterning at <7nm\n• EUV machines: $150–200M each, made only by ASML\n• EUV is used for the most critical layers at 7nm and below\n• Most fabs use DUV for non-critical layers even on advanced nodes';
+        return { text: 'EUV vs DUV:\n\n• DUV: 193nm wavelength, ArF laser, needs multiple patterning for <40nm\n• EUV: 13.5nm wavelength, enables single-exposure patterning at <7nm\n• EUV machines: $150–200M each, made only by ASML\n• EUV is used for the most critical layers at 7nm and below\n• Most fabs use DUV for non-critical layers even on advanced nodes' };
       }
       if (/wet.*dry|dry.*wet/.test(q)) {
-        return 'Wet vs Dry Etching:\n\n• Wet Etching: Chemical bath, isotropic (etches all directions equally), simple and cheap, used for bulk removal\n• Dry Etching: Plasma-based (RIE, ICP-RIE), anisotropic (directional), precise, used for critical patterning\n\nAdvanced nodes exclusively use dry plasma etching for pattern transfer.';
+        return { text: 'Wet vs Dry Etching:\n\n• Wet Etching: Chemical bath, isotropic (etches all directions equally), simple and cheap, used for bulk removal\n• Dry Etching: Plasma-based (RIE, ICP-RIE), anisotropic (directional), precise, used for critical patterning\n\nAdvanced nodes exclusively use dry plasma etching for pattern transfer.' };
       }
     }
 
     // ── HOW MANY questions ───────────────────────────────────────────────
     if (/how many (steps|process|phases|stage)/.test(q)) {
-      return `ELCHIP covers ${data.steps.length} major manufacturing process steps:\n\n${data.steps.map(s => `${s.stepNumber}. ${s.title}`).join('\n')}\n\nEach step has its own detailed page with technical parameters, inspection tools, and supplier profiles.`;
+      return { text: `ELCHIP covers ${data.steps.length} major manufacturing process steps:\n\n${data.steps.map(s => `${s.stepNumber}. ${s.title}`).join('\n')}\n\nEach step has its own detailed page with technical parameters, inspection tools, and supplier profiles.` };
     }
     if (/how many (tool|inspection|metrology)/.test(q)) {
-      return `ELCHIP covers ${data.tools.length} inspection and metrology tools:\n\n${data.tools.map(t => `• ${t.name} — ${t.fullName}`).join('\n')}\n\nClick "Tools" in the navigation to explore each one.`;
+      return { text: `ELCHIP covers ${data.tools.length} inspection and metrology tools:\n\n${data.tools.map(t => `• ${t.name} — ${t.fullName}`).join('\n')}\n\nClick "Tools" in the navigation to explore each one.` };
     }
     if (/how many (compan|foundry|foundries|supplier)/.test(q)) {
-      return `ELCHIP profiles ${data.companies.foundries.length + data.companies.equipment.length} companies:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}\n\nVisit the Companies section for detailed profiles.`;
-    }
-
-    // ── HELP / GUIDE ─────────────────────────────────────────────────────
-    if (/help|guide|how to use|what can you|what do you know/.test(q)) {
-      return 'I can help you with:\n\n🔬 Process steps — photolithography, etching, CMP, deposition, ion implantation, packaging, and more\n\n🛠 Inspection tools — CD-SEM, Ellipsometer, AOI, XRD, E-Beam Inspector, and more\n\n🏢 Companies — TSMC, ASML, KLA, Applied Materials, Samsung, Intel, and more\n\n📖 Definitions — technical terms like EUV, wafer, dopant, yield, overlay\n\n💡 Comparisons — CVD vs ALD, EUV vs DUV, wet vs dry etching\n\nJust ask your question and I\'ll do my best to answer!';
-    }
-
-    // ── GREETING ─────────────────────────────────────────────────────────
-    if (/^(hi|hello|hey|howdy|sup|yo)\b/.test(q)) {
-      return 'Hello! 👋 I\'m the ELCHIP Assistant, your guide to semiconductor manufacturing.\n\nAsk me anything about:\n• Manufacturing processes (EUV, CMP, Etching, etc.)\n• Inspection tools (CD-SEM, Ellipsometer, etc.)\n• Companies (TSMC, ASML, KLA, etc.)\n• Technical concepts and definitions\n\nWhat would you like to know?';
+      return { text: `ELCHIP profiles ${data.companies.foundries.length + data.companies.equipment.length} companies:\n\nFoundries: ${data.companies.foundries.map(c => c.name).join(', ')}\n\nEquipment: ${data.companies.equipment.map(c => c.name).join(', ')}\n\nVisit the Companies section for detailed profiles.` };
     }
 
     // ── DEFAULT fallback ──────────────────────────────────────────────────
-    return `I found your query: "${query}"\n\nI don't have a specific answer for that, but try:\n\n1. 🔍 Use the search bar above to search across the ELCHIP database, Wikipedia, and curated videos\n2. 📖 Browse the Process Flow for manufacturing steps\n3. 🔬 Visit the Tools section for inspection equipment\n4. 🏢 Check Companies for industry profiles\n\nOr rephrase — ask "What is [term]?" or "How does [process] work?"`;
+    return { text: `I found your query: "${query}"\n\nI don't have a specific answer for that, but try:\n\n1. 🔍 Use the search bar above to search across the ELCHIP database, Wikipedia, and curated videos\n2. 📖 Browse the Process Flow for manufacturing steps\n3. 🔬 Visit the Tools section for inspection equipment\n4. 🏢 Check Companies for industry profiles\n\nOr rephrase — ask "What is [term]?" or "How does [process] work?"` };
   }
 
   /* ─── INIT ──────────────────────────────────────────────────────────── */

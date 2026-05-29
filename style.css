@@ -155,15 +155,15 @@ nav {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  min-width: 280px;
-  max-width: 360px;
+  min-width: 380px;
+  max-width: 540px;
 }
 
 .nav-search:focus-within {
   border-color: rgba(255,255,255,0.4);
   background: rgba(255,255,255,0.1);
   box-shadow: 0 0 0 3px rgba(255,255,255,0.07);
-  min-width: 320px;
+  min-width: 440px;
 }
 
 .nav-search svg {
@@ -2930,5 +2930,237 @@ h5.wiki-reader-heading { font-size: 0.88rem; }
   .video-results-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   NEW FEATURES & UPGRADES — Chatbot, Search overlay tagline, Books, ArXiv
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Spotlight-style search overlay tagline */
+.search-overlay-tagline {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+  text-align: center;
+  text-transform: uppercase;
+  animation: fadeIn 0.4s ease;
+}
+
+/* Keyboard keycap close button styling */
+.kb-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+  background: #18181c;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-bottom: 3px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+  transition: all 0.1s ease;
+}
+.kb-key:hover {
+  background: #202024;
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+.kb-key:active {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+  box-shadow: none;
+}
+
+/* Chatbot interactive suggestion chips */
+.assist-chips {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0 0.85rem 0.6rem;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+}
+.assist-chips::-webkit-scrollbar {
+  display: none;
+}
+.assist-chip {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 99px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.65rem;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+.assist-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+/* Chatbot reset actions in header */
+.assist-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.assist-reset {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  font-size: 0.95rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+.assist-reset:hover {
+  color: #fff;
+}
+
+/* Typing indicator */
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0.6rem 0.85rem !important;
+}
+.typing-dot {
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  animation: typingBounce 1.2s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Google Books result cards */
+.book-result-card {
+  background: #050505;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 0.95rem;
+  margin-bottom: 0.75rem;
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  transition: all 0.2s ease;
+}
+.book-result-card:hover {
+  background: #000;
+  border-color: rgba(255,255,255,0.18);
+}
+.book-result-thumb {
+  width: 48px;
+  height: 68px;
+  object-fit: cover;
+  flex-shrink: 0;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.12);
+  filter: grayscale(100%) contrast(1.1) brightness(0.9);
+}
+.book-result-text {
+  flex: 1;
+  min-width: 0;
+}
+.book-result-title {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #fff;
+  margin-bottom: 0.15rem;
+}
+.book-result-authors {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.4rem;
+}
+.book-result-desc {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+.book-result-link {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+.book-result-link:hover {
+  color: #fff;
+}
+
+/* ArXiv Paper cards */
+.arxiv-result-card {
+  background: #050505;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 8px;
+  padding: 0.95rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+}
+.arxiv-result-card:hover {
+  background: #000;
+  border-color: rgba(255,255,255,0.18);
+}
+.arxiv-result-title {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-weight: 700;
+  font-size: 0.86rem;
+  color: #fff;
+  margin-bottom: 0.15rem;
+  line-height: 1.35;
+}
+.arxiv-result-authors {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 0.4rem;
+}
+.arxiv-result-desc {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.55;
+  margin-bottom: 0.5rem;
+}
+.arxiv-result-link {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: rgba(255,255,255,0.45);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+.arxiv-result-link:hover {
+  color: #fff;
 }
 
