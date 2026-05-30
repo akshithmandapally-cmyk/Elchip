@@ -122,7 +122,6 @@ An intelligent, context-aware, and helpful cleanroom guide named **ak** built di
 - **Friendly & Educational Personality**: **ak** responds with polite, welcoming, and clear explanations, explaining technical concepts accurately in a single response.
 - **Collapsible Thinking Process**: Visualizes **ak**'s step-by-step thinking process in a collapsible `🧠 ak is thinking...` block at the beginning of each chat bubble.
 - **Serverless BFF Proxy**: Queries the backend serverless proxy `/api/chat` to execute AI calls securely, protecting the owner's Gemini API key from public exposure in client-side code.
-- **Owner Mode Settings**: Open the URL with `?owner` to unlock the configuration gear icon `⚙️` in the chat header, enabling you to test local custom API keys or toggle AI RAG Mode.
 
 ---
 
