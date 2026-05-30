@@ -85,7 +85,7 @@ window.renderHome = function (container) {
 
   const procLabel = document.createElement('span');
   procLabel.className = 'section-label';
-  procLabel.textContent = 'IC Fabrication Journey';
+  procLabel.textContent = 'Step-by-Step Process';
 
   const procTitle = document.createElement('h2');
   procTitle.className = 'section-title';
@@ -293,7 +293,7 @@ function buildFooter() {
   brandName.textContent = 'ELCHIP';
   const brandDesc = document.createElement('p');
   brandDesc.className = 'footer-desc';
-  brandDesc.textContent = 'Interactive educational platform for semiconductor manufacturing and IC fabrication processes.';
+  brandDesc.textContent = 'Semiconductor manufacturing and IC fabrication — process flows, tools, and companies.';
   brand.append(brandName, brandDesc);
 
   // Quick links (Glossary removed)
@@ -330,7 +330,7 @@ function buildFooter() {
   });
   const disclaimer = document.createElement('p');
   disclaimer.style.cssText = 'font-size:0.75rem; color:rgba(255,255,255,0.25); margin-top:0.75rem; line-height:1.6;';
-  disclaimer.textContent = 'Educational purposes only. Technical data sourced from industry references.';
+  disclaimer.textContent = 'Technical data sourced from industry references.';
   refs.append(refsHeading, refsList, disclaimer);
 
   inner.append(brand, links, refs);
