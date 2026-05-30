@@ -1694,13 +1694,13 @@
     const btn = document.createElement('button');
     btn.className = 'assist-btn';
     btn.id = 'assist-btn';
-    btn.setAttribute('aria-label', 'Open ak AI Guide');
-    btn.setAttribute('title', 'ak AI Guide — Click to ask anything');
+    btn.setAttribute('aria-label', 'Open ELCHIP Assistant');
+    btn.setAttribute('title', 'ELCHIP Assistant — Click to ask anything');
 
     // Logo image
     const img = document.createElement('img');
     img.src = 'tnc-removebg-preview.png';
-    img.alt = 'ak AI Guide';
+    img.alt = 'ELCHIP Assistant';
     img.className = 'assist-btn-img';
 
     // Question mark badge overlay
@@ -1716,7 +1716,7 @@
     panel.className = 'assist-panel';
     panel.id = 'assist-panel';
     panel.setAttribute('role', 'dialog');
-    panel.setAttribute('aria-label', 'ak AI Guide');
+    panel.setAttribute('aria-label', 'ELCHIP Assistant');
 
     // Header
     const header = document.createElement('div');
@@ -1733,10 +1733,10 @@
     const hInfo = document.createElement('div');
     const hName = document.createElement('div');
     hName.className = 'assist-header-name';
-    hName.textContent = 'ak';
+    hName.textContent = 'ELCHIP Assistant';
     const hStatus = document.createElement('div');
     hStatus.className = 'assist-header-status';
-    hStatus.textContent = '● Online — AI Guide';
+    hStatus.textContent = '● Online — AI RAG Active';
     hInfo.append(hName, hStatus);
     hLeft.append(hImg, hInfo);
 
@@ -1821,7 +1821,7 @@
     textInput.type = 'text';
     textInput.className = 'assist-input';
     textInput.id = 'assist-input';
-    textInput.placeholder = 'Ask ak about semiconductors...';
+    textInput.placeholder = 'Ask ELCHIP Assistant anything...';
     textInput.setAttribute('autocomplete', 'off');
     textInput.setAttribute('aria-label', 'Ask a question');
 
@@ -1837,7 +1837,7 @@
 
     const overlayTitle = document.createElement('div');
     overlayTitle.className = 'assist-settings-title';
-    overlayTitle.textContent = 'ak AI Settings';
+    overlayTitle.textContent = 'ELCHIP Assistant Settings';
 
     const overlayDesc = document.createElement('div');
     overlayDesc.className = 'assist-settings-desc';
@@ -2142,7 +2142,7 @@
 
       const summary = document.createElement('summary');
       summary.className = 'assist-thought-summary';
-      summary.textContent = '🧠 ak is thinking...';
+      summary.textContent = '🧠 ELCHIP Assistant is thinking...';
 
       const content = document.createElement('div');
       content.className = 'assist-thought-content';

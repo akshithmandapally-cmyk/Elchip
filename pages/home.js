@@ -83,9 +83,6 @@ window.renderHome = function (container) {
   const procInner = document.createElement('div');
   procInner.className = 'container';
 
-  const procLabel = document.createElement('span');
-  procLabel.className = 'section-label';
-  procLabel.textContent = 'Step-by-Step Process';
 
   const procTitle = document.createElement('h2');
   procTitle.className = 'section-title';
@@ -139,7 +136,7 @@ window.renderHome = function (container) {
     timeline.appendChild(card);
   });
 
-  procInner.append(procLabel, procTitle, procDivider, procSub, timeline);
+  procInner.append(procTitle, procDivider, procSub, timeline);
   processSection.appendChild(procInner);
   frag.appendChild(processSection);
 
@@ -291,10 +288,7 @@ function buildFooter() {
   const brandName = document.createElement('span');
   brandName.className = 'footer-brand';
   brandName.textContent = 'ELCHIP';
-  const brandDesc = document.createElement('p');
-  brandDesc.className = 'footer-desc';
-  brandDesc.textContent = 'Semiconductor manufacturing and IC fabrication — process flows, tools, and companies.';
-  brand.append(brandName, brandDesc);
+  brand.append(brandName);
 
   // Quick links (Glossary removed)
   const links = document.createElement('div');
@@ -328,10 +322,7 @@ function buildFooter() {
     li.appendChild(span);
     refsList.appendChild(li);
   });
-  const disclaimer = document.createElement('p');
-  disclaimer.style.cssText = 'font-size:0.75rem; color:rgba(255,255,255,0.25); margin-top:0.75rem; line-height:1.6;';
-  disclaimer.textContent = 'Technical data sourced from industry references.';
-  refs.append(refsHeading, refsList, disclaimer);
+  refs.append(refsHeading, refsList);
 
   inner.append(brand, links, refs);
 
