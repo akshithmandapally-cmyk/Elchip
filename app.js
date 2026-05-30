@@ -1689,8 +1689,6 @@
      Security: all output rendered via textContent
      ═══════════════════════════════════════════════════════════════════════ */
 
-  const SHARED_API_KEY = ''; // TODO(security): Place your Gemini API key here to share it with all users. Note: it will be visible in the client-side source code.
-
   function buildAssistBot() {
     /* ── Floating Button ─────────────────────────────────────────────── */
     const btn = document.createElement('button');
@@ -1923,15 +1921,15 @@
 
     // Load settings helper
     const loadSettings = () => {
-      const useRAG = SHARED_API_KEY ? true : (localStorage.getItem('ak_use_ai_rag') === 'true');
-      const apiKey = SHARED_API_KEY || localStorage.getItem('ak_gemini_api_key') || '';
+      const useRAG = localStorage.getItem('ak_use_ai_rag') !== 'false';
+      const apiKey = localStorage.getItem('ak_gemini_api_key') || '';
       const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
 
-      ragCheckbox.checked = localStorage.getItem('ak_use_ai_rag') === 'true';
-      apiKeyInput.value = localStorage.getItem('ak_gemini_api_key') || '';
+      ragCheckbox.checked = useRAG;
+      apiKeyInput.value = apiKey;
       modelSelect.value = model;
 
-      if (useRAG && apiKey) {
+      if (useRAG) {
         hStatus.textContent = '● Online — AI RAG Active';
         hStatus.style.color = '#10b981';
       } else {
@@ -1969,18 +1967,9 @@
       // Typing animation
       const indicator = _appendTypingIndicator(messages);
 
-      const useRAG = SHARED_API_KEY ? true : (localStorage.getItem('ak_use_ai_rag') === 'true');
-      const apiKey = SHARED_API_KEY || localStorage.getItem('ak_gemini_api_key');
+      const useRAG = localStorage.getItem('ak_use_ai_rag') !== 'false';
 
       if (useRAG) {
-        if (!apiKey) {
-          setTimeout(() => {
-            indicator.remove();
-            _appendBotMessage(messages, "⚠️ Gemini API key is missing. Click the ⚙️ icon in the header to enter your API key, or disable AI RAG Mode to use offline mode.");
-          }, 300);
-          return;
-        }
-
         const context = _retrieveContext(q);
         _callGemini(q, context)
           .then(reply => {
@@ -2318,16 +2307,14 @@
   }
 
   async function _callGemini(query, context) {
-    const apiKey = SHARED_API_KEY || localStorage.getItem('ak_gemini_api_key') || '';
+    const localApiKey = localStorage.getItem('ak_gemini_api_key') || '';
     const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
 
-    if (!apiKey) {
-      throw new Error('Gemini API key is not configured.');
-    }
+    if (localApiKey) {
+      // Direct call using owner's custom local API key override
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${localApiKey}`;
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-    const systemPrompt = `You are "ak", a sarcastic, witty, and highly intelligent AI cleanroom guide for the ELCHIP semiconductor educational platform.
+      const systemPrompt = `You are "ak", a sarcastic, witty, and highly intelligent AI cleanroom guide for the ELCHIP semiconductor educational platform.
 
 Your personality:
 - Introduce or refer to yourself as "ak" ONLY at the perfect, most strategic moment (e.g. once at the beginning of a conversation or when putting a user in their place), never spammed repeatedly.
@@ -2378,42 +2365,65 @@ Possible navigation targets:
 
 If you don't need to perform any action, do not include the action block. Only use valid JSON for the action block. Do not format the action block in code blocks (like \`\`\`), just write it as a plain line at the end.`;
 
-    const requestBody = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: `${systemPrompt}\n\nUser Question: ${query}` }
-          ]
+      const requestBody = {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: `${systemPrompt}\n\nUser Question: ${query}` }
+            ]
+          }
+        ],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 800
         }
-      ],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 800
+      };
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        const errMsg = errData.error?.message || `HTTP error! Status: ${res.status}`;
+        throw new Error(errMsg);
       }
-    };
 
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text) {
+        throw new Error('Empty response from model.');
+      }
 
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      const errMsg = errData.error?.message || `HTTP error! Status: ${res.status}`;
-      throw new Error(errMsg);
+      return text;
+    } else {
+      // Call the Serverless BFF Proxy
+      const endpoint = `/api/chat`;
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ query, context, model })
+      });
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          throw new Error('Serverless proxy endpoint /api/chat not found. Ensure this project is deployed on Vercel.');
+        }
+        const errData = await res.json().catch(() => ({}));
+        const errMsg = errData.error || `HTTP error! Status: ${res.status}`;
+        throw new Error(errMsg);
+      }
+
+      const data = await res.json();
+      return data.text;
     }
-
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      throw new Error('Empty response from model.');
-    }
-
-    return text;
   }
 
   function _getAssistAnswer(query) {
