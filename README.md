@@ -117,9 +117,9 @@ Real-time debounced search (300ms) across all 13 steps, 10 tools, 16 companies, 
 
 ### 🤖 ak AI Guide (RAG Chatbot)
 
-An intelligent, context-aware, and sarcastic cleanroom guide named **ak** built directly into the platform.
+An intelligent, context-aware, and helpful cleanroom guide named **ak** built directly into the platform.
 - **Retrieval Augmented Generation (RAG)**: Automatically tokenizes search terms and retrieves up to 3 of the most relevant process steps, metrology tools, company profiles, or glossary items from the local database, feeding them as context to the AI.
-- **Polite-to-Roast Personality**: **ak** starts every response with polite, respectful words, then immediately pivots into savage X/Twitter slang-filled roasting (e.g. *ratio, cooked, brain rot, clown, skull emoji*) while explaining technical concepts accurately in a single response.
+- **Friendly & Educational Personality**: **ak** responds with polite, welcoming, and clear explanations, explaining technical concepts accurately in a single response.
 - **Collapsible Thinking Process**: Visualizes **ak**'s step-by-step thinking process in a collapsible `🧠 ak is thinking...` block at the beginning of each chat bubble.
 - **Serverless BFF Proxy**: Queries the backend serverless proxy `/api/chat` to execute AI calls securely, protecting the owner's Gemini API key from public exposure in client-side code.
 - **Owner Mode Settings**: Open the URL with `?owner` to unlock the configuration gear icon `⚙️` in the chat header, enabling you to test local custom API keys or toggle AI RAG Mode.

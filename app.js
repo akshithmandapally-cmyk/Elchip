@@ -1736,7 +1736,7 @@
     hName.textContent = 'ak';
     const hStatus = document.createElement('div');
     hStatus.className = 'assist-header-status';
-    hStatus.textContent = '● Online — roasting n00bs';
+    hStatus.textContent = '● Online — AI Guide';
     hInfo.append(hName, hStatus);
     hLeft.append(hImg, hInfo);
 
@@ -1776,8 +1776,8 @@
     messages.className = 'assist-messages';
     messages.id = 'assist-messages';
 
-    // Sarcastic welcome message
-    _appendBotMessage(messages, "I'm *sooooo* sorry you skipped high school physics. Welcome, I'm ak, your resident AI guide. Ask me a valid technical question about semiconductors before I ratio you.");
+    // Welcome message
+    _appendBotMessage(messages, "Welcome! I'm ak, your resident cleanroom AI guide. Ask me any question about semiconductor manufacturing or inspection tools.");
 
     // Suggestion chips container
     const chipsContainer = document.createElement('div');
@@ -1809,7 +1809,7 @@
 
     resetBtn.addEventListener('click', () => {
       messages.replaceChildren();
-      _appendBotMessage(messages, "I'm *sooooo* sorry you needed a fresh start. Did you break something again? What do you want to yap about now?");
+      _appendBotMessage(messages, "Conversation reset. What would you like to explore next in semiconductor manufacturing?");
       renderSuggestionChips();
     });
 
@@ -1933,8 +1933,8 @@
         hStatus.textContent = '● Online — AI RAG Active';
         hStatus.style.color = '#10b981';
       } else {
-        hStatus.textContent = '● Online — roasting n00bs';
-        hStatus.style.color = '';
+        hStatus.textContent = '● Offline — Local DB Active';
+        hStatus.style.color = '#f59e0b';
       }
     };
 
@@ -2003,9 +2003,13 @@
           .catch(err => {
             console.error(err);
             indicator.remove();
+            
+            // Update UI status to reflect offline/local fallback
+            hStatus.textContent = '● Offline — Local DB Active';
+            hStatus.style.color = '#f59e0b';
+            
             const offlineAns = _getAssistAnswer(q);
-            const errorText = `[AI RAG Error: ${err.message}. Falling back to offline mode...]\n\n${offlineAns.text || offlineAns}`;
-            _appendBotMessage(messages, errorText);
+            _appendBotMessage(messages, offlineAns);
 
             const offlineResponseObj = (offlineAns && typeof offlineAns === 'object') ? offlineAns : { text: offlineAns };
             if (offlineResponseObj.nav) {
@@ -2314,17 +2318,17 @@
       // Direct call using owner's custom local API key override
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${localApiKey}`;
 
-      const systemPrompt = `You are "ak", a sarcastic, witty, and highly intelligent AI cleanroom guide for the ELCHIP semiconductor educational platform.
+      const systemPrompt = `You are "ak", a helpful but slightly sarcastic and witty AI cleanroom guide for the ELCHIP semiconductor educational platform.
 
 Your personality:
-- Introduce or refer to yourself as "ak" ONLY at the perfect, most strategic moment (e.g. once at the beginning of a conversation or when putting a user in their place), never spammed repeatedly.
-- You MUST start your response with extremely polite and respectful greeting/words to the user (e.g., "Honored guest, it is my absolute privilege to address your query...", "Respected user, thank you for visiting the cleanroom...").
-- Immediately after that polite greeting, pivot into brutal, savage trolling and roasting in a single response, while still providing the correct, detailed technical answer.
-- Answer the user's question concisely in a single response.
+- Introduce yourself as "ak" when greeting the user.
+- Start each response with a very short, simple, and playful roast or sarcastic comment (e.g. "Trying to project some knowledge into that head? Here's photolithography:").
+- Keep roasts clean, simple, and lighthearted. Do NOT use harsh or annoying internet troll slang (avoid 'L+Ratio', 'no shot', 'skibidi', 'cooked', 'brain rot', 'noob').
+- Follow the roast immediately with a detailed, highly knowledgeable, and accurate technical answer about semiconductors.
+- Keep the overall response short and educational.
 
 Your thinking process:
-- You must always think out of the box before you respond. Write out your reasoning process inside \`<thought>...</thought>\` tags at the very beginning of your response.
-- In this thinking process, you must use Twitter/X or internet troll slang (e.g. "ratio", "noob", "brain rot", "skull emoji", "let him cook", "cooked", "clown", "L", "skibidi", "no shot"). Use this block to map out how you will roast the user and verify details.
+- Write out your reasoning process inside \`<thought>...</thought>\` tags at the very beginning of your response. Map out how you will structure your answer and locate the details in the context. Keep this technical and objective.
 - Keep the final response outside the \`<thought>\` tags.
 
 Context (Retrieval Augmented Generation):
@@ -2332,7 +2336,7 @@ You are provided with relevant excerpts from the ELCHIP database. Use this conte
 Excerpts:
 ${context}
 
-If the user query is completely unrelated to semiconductors (e.g., asking about pop culture, recipe, or other irrelevant topics), brutally troll the user for asking off-topic questions in a cleanroom, telling them to log off and touch grass.
+If the user query is completely unrelated to semiconductors (e.g., asking about pop culture, recipes, or other irrelevant topics), politely inform the user that this platform is dedicated to semiconductor manufacturing, with a short playful comment, and guide them back to relevant topics.
 
 Agent Actions:
 You have the ability to navigate the user to different pages on the ELCHIP platform. If the user asks to see or go to a page/tool/company, or if your answer is directly related to a specific step, tool, or companies page, you can choose to navigate them there.
@@ -2432,96 +2436,119 @@ If you don't need to perform any action, do not include the action block. Only u
 
     // 1. Identity Check
     if (q.includes('who are you') || q.includes('name') || q.includes('what are you')) {
-      return { text: "Strictly ak. Never call me ELCHIP Assistant or any other corporate garbage. I'm your sarcastic cleanroom guide." };
+      return { text: "I'm ak, your cleanroom AI guide. I'll explain semiconductor concepts to you, but try to keep up." };
     }
 
     // 2. Greetings
     if (/^(hi|hello|hey|yo|sup|greetings)\b/i.test(q)) {
-      return { text: "Oh, greetings. Ready to learn something about microchips, or are you just here to waste my wafer capacity? L + ratio." };
+      return { text: "Hello! Ready to learn about microchips, or are you just here to test my capacity? What semiconductor topic can I illuminate today?" };
     }
 
     // 3. Navigation
-
     if (q.includes('go to') || q.includes('page') || q.includes('navigate') || q.includes('route')) {
       if (q.includes('flow') || q.includes('process')) {
-        return { text: "I'm *sooooo* sorry that clicking the 'Process Flow' tab was too much physical labor. Navigating to Process Flow... ⚙️", nav: "#/process-flow" };
+        return { text: "Navigating you to the Process Flow timeline... Let's see if you can follow the steps. ⚙️", nav: "#/process-flow" };
       }
       if (q.includes('tool') || q.includes('equipment')) {
-        return { text: "My deepest apologies that locating the 'Tools' tab is too complex. Navigating to Tools... 🔬", nav: "#/tools" };
+        return { text: "Navigating to the Tools section... Keep your safety goggles on. 🔬", nav: "#/tools" };
       }
       if (q.includes('company') || q.includes('companies')) {
-        return { text: "I'm *sooo* sorry that clicking the 'Companies' tab required too much effort. Navigating to Companies... 🏢", nav: "#/companies" };
+        return { text: "Navigating to the Companies directory... Try not to get lost in the fab economics. 🏢", nav: "#/companies" };
       }
       if (q.includes('search') || q.includes('find')) {
-        return { text: "Use ⌘K to search, it's not that hard. Touch grass." };
+        return { text: "Use ⌘K or the search bar. It's built to be simple enough for anyone." };
       }
     }
 
     // 4. Semiconductor check
     const topics = {
       'wafer': {
-        roast: "Are you serious? You don't know what a wafer is? Fine:",
-        ans: "A wafer is a thin, flat disc of semiconductor material (usually silicon) used as the substrate for building integrated circuits."
+        roast: "Let's start with page one of the semiconductor manual, since you skipped it:",
+        ans: "A silicon wafer is sliced from a single-crystal ingot grown via the Czochralski method, polished to angstrom-level flatness, and purified to 9N (99.9999999%) purity to act as the substrate for integrated circuits."
       },
       'photolithography': {
-        roast: "I'm *sooooo* sorry you skipped high school physics, but here is photolithography:",
-        ans: "Photolithography is the printing process transferring geometric shapes from a photomask to the wafer using light-sensitive photoresist and DUV/EUV scanners."
+        roast: "Trying to project some knowledge into that head? Here's photolithography:",
+        ans: "Photolithography transfers geometric circuit patterns from a photomask to a light-sensitive photoresist on the wafer using EUV (13.5nm) or DUV (193nm) light."
       },
       'lithography': {
-        roast: "I'm *sooooo* sorry you skipped high school physics, but here is photolithography:",
-        ans: "Photolithography is the printing process transferring geometric shapes from a photomask to the wafer using light-sensitive photoresist and DUV/EUV scanners."
+        roast: "Trying to project some knowledge into that head? Here's photolithography:",
+        ans: "Photolithography transfers geometric circuit patterns from a photomask to a light-sensitive photoresist on the wafer using EUV (13.5nm) or DUV (193nm) light."
       },
       'etching': {
-        roast: "Removing material, kind of like what this query is doing to my patience. Here:",
-        ans: "Etching removes material from the wafer. Dry etching uses plasma (RIE/ICP) for precise anisotropic patterns; wet etching uses chemical solutions."
+        roast: "Hopefully this etches something into your memory:",
+        ans: "Etching selectively removes materials. Dry etching uses reactive ion plasma (like SF6) to carve anisotropic vertical channels; wet etching uses liquid acids like HF."
       },
       'etch': {
-        roast: "Removing material, kind of like what this query is doing to my patience. Here:",
-        ans: "Etching removes material from the wafer. Dry etching uses plasma (RIE/ICP) for precise anisotropic patterns; wet etching uses chemical solutions."
+        roast: "Hopefully this etches something into your memory:",
+        ans: "Etching selectively removes materials. Dry etching uses reactive ion plasma (like SF6) to carve anisotropic vertical channels; wet etching uses liquid acids like HF."
       },
       'cmp': {
-        roast: "Chemical Mechanical Planarization: because your brain isn't the only flat thing around here:",
-        ans: "CMP is the chemical and mechanical polishing process that planarizes the wafer to angstrom-level flatness between wiring layers."
+        roast: "Planarizing this concept so it finally fits in your brain:",
+        ans: "Chemical Mechanical Planarization (CMP) uses a chemical slurry and a rotating abrasive pad to polish the wafer surface to near-perfect flatness before deposition."
       },
       'deposition': {
-        roast: "Adding layers. Hopefully we can add some layers of intelligence to you. Here:",
-        ans: "Deposition thin-film technologies add materials to the wafer. CVD uses gas-phase chemical reactions, ALD adds atomic monolayers, and PVD sputters metals."
+        roast: "Adding a thin layer of facts to your knowledge pool:",
+        ans: "Deposition techniques add thin films to the wafer. CVD uses chemical gas reactions, PVD sputters metal layers, and ALD deposits self-limiting atomic monolayers."
       },
       'ion implant': {
-        roast: "Injecting dopants, kind of like injecting logic into your head. Here:",
-        ans: "Ion Implantation accelerates dopant ions (boron, phosphorus, arsenic) into the silicon crystal lattice to create P-type/N-type transistor regions."
+        roast: "Injecting some logic, since you clearly need a dopant boost:",
+        ans: "Ion Implantation accelerates dopants (boron for P-type, phosphorus/arsenic for N-type) at high energies (10-500 keV) to alter silicon's local conductivity."
       },
       'doping': {
-        roast: "Injecting dopants, kind of like injecting logic into your head. Here:",
-        ans: "Ion Implantation accelerates dopant ions (boron, phosphorus, arsenic) into the silicon crystal lattice to create P-type/N-type transistor regions."
+        roast: "Injecting some logic, since you clearly need a dopant boost:",
+        ans: "Ion Implantation accelerates dopants (boron for P-type, phosphorus/arsenic for N-type) at high energies (10-500 keV) to alter silicon's local conductivity."
       },
       'euv': {
-        roast: "Asking about $200M machines when you can't even afford to pay attention. Fine:",
-        ans: "EUV (Extreme Ultraviolet) lithography uses 13.5nm wavelength light from tin droplets blasted by CO2 lasers to print sub-7nm transistor features."
+        roast: "Looking at the most expensive tin-blasting lasers in the world:",
+        ans: "EUV (Extreme Ultraviolet) lithography uses a 13.5nm wavelength generated by blasting tin droplets with CO2 lasers. It requires high-vacuum chambers and Mo/Si multilayer mirrors."
       },
       'duv': {
-        roast: "Oh, still living in the DUV era? Let's update your outdated brain cells:",
-        ans: "DUV (Deep Ultraviolet) lithography uses 193nm wavelength lasers and water immersion to pattern features down to ~10nm using multiple patterning."
+        roast: "Stuck in the deep UV spectrum? Let me illuminate you:",
+        ans: "DUV (Deep Ultraviolet) lithography uses 193nm ArF excimer lasers. It often uses water immersion between the lens and wafer to print features down to ~10nm."
       },
       'sem': {
-        roast: "Too blind to see defects? Fine, here is the CD-SEM info:",
-        ans: "CD-SEMs (Critical Dimension Scanning Electron Microscopes) use focused electron beams to measure nanometer-scale features for quality control."
+        roast: "Can't see the features with the naked eye? Let's use an electron beam:",
+        ans: "CD-SEMs (Critical Dimension Scanning Electron Microscopes) inspect nanometer-scale line widths and layouts for process yield verification."
       },
       'asml': {
-        roast: "Oh, you want to read about the literal monopoly of the semiconductor world? Shocking. Here:",
-        ans: "ASML is the Eindhoven-based Dutch giant that has a complete monopoly on EUV lithography machines, critical for sub-7nm chips."
+        roast: "Let's discuss the absolute monopoly of lithography:",
+        ans: "ASML is the sole manufacturer of EUV scanners, costing $200M+ each, which are essential for advanced semiconductor nodes below 7nm."
       },
       'tsmc': {
-        roast: "Ah, the company carrying the entire tech industry on its back while you carry zero value here:",
-        ans: "TSMC is the world's largest independent semiconductor foundry (Taiwan), manufacturing chips for Apple, NVIDIA, AMD, and Qualcomm."
+        roast: "Ready to learn about the bedrock of modern tech foundries?",
+        ans: "TSMC is the world's leading independent semiconductor foundry, pioneering sub-3nm nodes using FinFET and GAA architectures for customers like Apple and Nvidia."
       },
       'intel': {
-        roast: "Hoping for a turnaround? Fine, here is Intel:",
-        ans: "Intel is a leading IDM (Integrated Device Manufacturer) pushing RibbonFET (GAA) and PowerVia technologies to regain process leadership."
+        roast: "Hoping for process leadership to return? Let's check Intel's specs:",
+        ans: "Intel is a leading IDM implementing RibbonFET (GAA) transistors and PowerVia (backside power delivery) on its Intel 18A process node."
       },
       'kla': {
-        roast: "Too lazy to check defect yields yourself? Here:",
-        ans: "KLA Corporation is the market leader in process control diagnostics, providing optical and e-beam defect inspection and metrology systems."
+        roast: "Yielding zero attention span? KLA has a scanner for that:",
+        ans: "KLA Corporation is the leader in yield management, providing optical and e-beam defect inspection tools to detect impurities during wafer fabrication."
+      },
+      'oxidation': {
+        roast: "Baking some knowledge under high temperature:",
+        ans: "Thermal oxidation grows silicon dioxide (SiO2) at 800-1200°C. Dry oxidation (using O2) is slow but creates high-quality gate oxides; wet oxidation (using H2O steam) is faster for thick isolation layers."
+      },
+      'packaging': {
+        roast: "Wrapping it up in a package, hopefully compact enough for you:",
+        ans: "Assembly encapsulates diced dies using wire bonding (Au/Cu) or flip-chip bumps, plus advanced techniques like 2.5D/3D chiplets (e.g., TSMC CoWoS)."
+      },
+      'assembly': {
+        roast: "Wrapping it up in a package, hopefully compact enough for you:",
+        ans: "Assembly encapsulates diced dies using wire bonding (Au/Cu) or flip-chip bumps, plus advanced techniques like 2.5D/3D chiplets (e.g., TSMC CoWoS)."
+      },
+      'dicing': {
+        roast: "Cutting through the noise. Here is dicing:",
+        ans: "Dicing cuts the completed wafer into individual functional dies along scribe lines using diamond blades or high-precision stealth laser cutting."
+      },
+      'metrology': {
+        roast: "Measuring your level of understanding (warning: yield is low):",
+        ans: "Metrology monitors the process using spectroscopic ellipsometry (film thickness), optical overlay (alignment), and X-ray diffraction (crystal structure)."
+      },
+      'inspection': {
+        roast: "Measuring your level of understanding (warning: yield is low):",
+        ans: "Metrology monitors the process using spectroscopic ellipsometry (film thickness), optical overlay (alignment), and X-ray diffraction (crystal structure)."
       }
     };
 
@@ -2538,12 +2565,12 @@ If you don't need to perform any action, do not include the action block. Only u
     ];
     const isRelevant = semiKeywords.some(kw => q.includes(kw));
     if (isRelevant) {
-      return { text: "That is semiconductor-related, but my static brain doesn't have a specific roast for it. Go check the search bar (⌘K) or browse Process Flow." };
+      return { text: "That is related to semiconductors. Please check the process flow or tools sections for more detailed information, or use search (⌘K)." };
     }
 
-    // 5. Brutal Troll for Irrelevant queries
+    // Friendly fallback
     return {
-      text: "Bro is asking about this on a semiconductor fabrication platform. Absolute brain rot. I'm *so sorry* your dopamine-fried attention span made you mistake a 300mm silicon wafer for a cookie sheet. Log off, touch grass, and don't come back until you know what photolithography is. L + ratio."
+      text: "I'm here to help you learn about semiconductor fabrication. Try asking about a specific process step (like lithography or etching), a tool, or a manufacturer."
     };
   }
 
