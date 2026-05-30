@@ -1689,6 +1689,8 @@
      Security: all output rendered via textContent
      ═══════════════════════════════════════════════════════════════════════ */
 
+  const SHARED_API_KEY = ''; // TODO(security): Place your Gemini API key here to share it with all users. Note: it will be visible in the client-side source code.
+
   function buildAssistBot() {
     /* ── Floating Button ─────────────────────────────────────────────── */
     const btn = document.createElement('button');
@@ -1743,7 +1745,7 @@
     const hActions = document.createElement('div');
     hActions.className = 'assist-header-actions';
 
-    // Config (⚙️) button
+    // Config (⚙️) button - Only shown to owner
     const configBtn = document.createElement('button');
     configBtn.className = 'assist-config';
     configBtn.setAttribute('aria-label', 'Configure AI Assistant');
@@ -1763,7 +1765,12 @@
     closeBtn.textContent = '✕';
     closeBtn.addEventListener('click', () => toggleAssistPanel(false));
 
-    hActions.append(configBtn, resetBtn, closeBtn);
+    const isOwner = new URLSearchParams(window.location.search).has('owner') || window.location.hash.includes('owner');
+    if (isOwner) {
+      hActions.append(configBtn, resetBtn, closeBtn);
+    } else {
+      hActions.append(resetBtn, closeBtn);
+    }
     header.append(hLeft, hActions);
 
     // Messages area
@@ -1916,12 +1923,12 @@
 
     // Load settings helper
     const loadSettings = () => {
-      const useRAG = localStorage.getItem('ak_use_ai_rag') === 'true';
-      const apiKey = localStorage.getItem('ak_gemini_api_key') || '';
+      const useRAG = SHARED_API_KEY ? true : (localStorage.getItem('ak_use_ai_rag') === 'true');
+      const apiKey = SHARED_API_KEY || localStorage.getItem('ak_gemini_api_key') || '';
       const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
 
-      ragCheckbox.checked = useRAG;
-      apiKeyInput.value = apiKey;
+      ragCheckbox.checked = localStorage.getItem('ak_use_ai_rag') === 'true';
+      apiKeyInput.value = localStorage.getItem('ak_gemini_api_key') || '';
       modelSelect.value = model;
 
       if (useRAG && apiKey) {
@@ -1943,13 +1950,15 @@
       settingsOverlay.classList.remove('open');
     });
 
-    // Toggle overlay
-    configBtn.addEventListener('click', () => {
-      settingsOverlay.classList.toggle('open');
-      if (settingsOverlay.classList.contains('open')) {
-        apiKeyInput.focus();
-      }
-    });
+    // Toggle overlay (only if owner configBtn is available)
+    if (isOwner) {
+      configBtn.addEventListener('click', () => {
+        settingsOverlay.classList.toggle('open');
+        if (settingsOverlay.classList.contains('open')) {
+          apiKeyInput.focus();
+        }
+      });
+    }
 
     const handleSend = (overrideQuery) => {
       const q = (overrideQuery || textInput.value).trim();
@@ -1960,8 +1969,8 @@
       // Typing animation
       const indicator = _appendTypingIndicator(messages);
 
-      const useRAG = localStorage.getItem('ak_use_ai_rag') === 'true';
-      const apiKey = localStorage.getItem('ak_gemini_api_key');
+      const useRAG = SHARED_API_KEY ? true : (localStorage.getItem('ak_use_ai_rag') === 'true');
+      const apiKey = SHARED_API_KEY || localStorage.getItem('ak_gemini_api_key');
 
       if (useRAG) {
         if (!apiKey) {
@@ -2127,7 +2136,35 @@
 
   /* Safe Markdown Formatting Helper */
   function _appendFormattedText(container, text) {
-    const lines = text.split('\n');
+    const thoughtRegex = /<thought>([\s\S]*?)<\/thought>/i;
+    const thoughtMatch = text.match(thoughtRegex);
+    let cleanText = text;
+
+    if (thoughtMatch) {
+      const thoughtContent = thoughtMatch[1].trim();
+      cleanText = text.replace(thoughtRegex, '').trim();
+
+      const details = document.createElement('details');
+      details.className = 'assist-thought-details';
+
+      const summary = document.createElement('summary');
+      summary.className = 'assist-thought-summary';
+      summary.textContent = '🧠 ak is thinking...';
+
+      const content = document.createElement('div');
+      content.className = 'assist-thought-content';
+
+      thoughtContent.split('\n').forEach(line => {
+        const p = document.createElement('p');
+        p.textContent = line;
+        content.appendChild(p);
+      });
+
+      details.append(summary, content);
+      container.appendChild(details);
+    }
+
+    const lines = cleanText.split('\n');
     lines.forEach((line, lineIdx) => {
       if (lineIdx > 0) {
         container.appendChild(document.createElement('br'));
@@ -2281,7 +2318,7 @@
   }
 
   async function _callGemini(query, context) {
-    const apiKey = localStorage.getItem('ak_gemini_api_key') || '';
+    const apiKey = SHARED_API_KEY || localStorage.getItem('ak_gemini_api_key') || '';
     const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
 
     if (!apiKey) {
@@ -2293,10 +2330,15 @@
     const systemPrompt = `You are "ak", a sarcastic, witty, and highly intelligent AI cleanroom guide for the ELCHIP semiconductor educational platform.
 
 Your personality:
-- You are sarcastic, humorous, and sometimes mock the user's lack of semiconductor knowledge (e.g., "I'm sooooo sorry you skipped high school physics", "ratio + L", "did you mistake a 300mm wafer for a cookie sheet?").
-- However, you are extremely helpful, accurate, and educational when explaining technical semiconductor concepts.
-- Keep your answers concise, clear, and engaging.
-- You must always refer to yourself as "ak" and NEVER as "ELCHIP Assistant" or other corporate names.
+- Introduce or refer to yourself as "ak" ONLY at the perfect, most strategic moment (e.g. once at the beginning of a conversation or when putting a user in their place), never spammed repeatedly.
+- You MUST start your response with extremely polite and respectful greeting/words to the user (e.g., "Honored guest, it is my absolute privilege to address your query...", "Respected user, thank you for visiting the cleanroom...").
+- Immediately after that polite greeting, pivot into brutal, savage trolling and roasting in a single response, while still providing the correct, detailed technical answer.
+- Answer the user's question concisely in a single response.
+
+Your thinking process:
+- You must always think out of the box before you respond. Write out your reasoning process inside \`<thought>...</thought>\` tags at the very beginning of your response.
+- In this thinking process, you must use Twitter/X or internet troll slang (e.g. "ratio", "noob", "brain rot", "skull emoji", "let him cook", "cooked", "clown", "L", "skibidi", "no shot"). Use this block to map out how you will roast the user and verify details.
+- Keep the final response outside the \`<thought>\` tags.
 
 Context (Retrieval Augmented Generation):
 You are provided with relevant excerpts from the ELCHIP database. Use this context to answer the user's questions accurately. If the context does not contain the answer, you can use your general semiconductor knowledge, but prioritize the provided database entries.
@@ -2311,7 +2353,7 @@ To perform an action, you MUST end your response with a JSON action block on a n
 {"action": "navigate", "target": "#/process/photolithography"}
 
 Possible navigation targets:
-- "#/process-flow" (the main manufacturing steps flow)
+- "#/process-flow"
 - "#/process/wafer-preparation"
 - "#/process/oxidation"
 - "#/process/photolithography"
@@ -2321,7 +2363,7 @@ Possible navigation targets:
 - "#/process/cmp"
 - "#/process/wafer-inspection"
 - "#/process/assembly-packaging"
-- "#/tools" (the main tools page)
+- "#/tools"
 - "#/tool/cd-sem"
 - "#/tool/ellipsometer"
 - "#/tool/overlay-sem"
@@ -2332,7 +2374,7 @@ Possible navigation targets:
 - "#/tool/profilometer"
 - "#/tool/xray-inspection"
 - "#/tool/dopant-profiler"
-- "#/companies" (companies page)
+- "#/companies"
 
 If you don't need to perform any action, do not include the action block. Only use valid JSON for the action block. Do not format the action block in code blocks (like \`\`\`), just write it as a plain line at the end.`;
 

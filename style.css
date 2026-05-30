@@ -3537,4 +3537,35 @@ h5.wiki-reader-heading { font-size: 0.88rem; }
   color: #fff;
 }
 
+/* ak Collapsible Thinking Process Styles */
+.assist-thought-details {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.45rem 0.6rem;
+  margin-bottom: 0.75rem;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+.assist-thought-summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  outline: none;
+  user-select: none;
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.64rem;
+}
+.assist-thought-content {
+  margin-top: 0.45rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  line-height: 1.45;
+  white-space: pre-wrap;
+  font-style: italic;
+}
+
+
 
