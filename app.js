@@ -1743,6 +1743,13 @@
     const hActions = document.createElement('div');
     hActions.className = 'assist-header-actions';
 
+    // Config (⚙️) button
+    const configBtn = document.createElement('button');
+    configBtn.className = 'assist-config';
+    configBtn.setAttribute('aria-label', 'Configure AI Assistant');
+    configBtn.textContent = '⚙️';
+    configBtn.setAttribute('title', 'AI Settings (RAG & Gemini)');
+
     // Reset button
     const resetBtn = document.createElement('button');
     resetBtn.className = 'assist-reset';
@@ -1756,7 +1763,7 @@
     closeBtn.textContent = '✕';
     closeBtn.addEventListener('click', () => toggleAssistPanel(false));
 
-    hActions.append(resetBtn, closeBtn);
+    hActions.append(configBtn, resetBtn, closeBtn);
     header.append(hLeft, hActions);
 
     // Messages area
@@ -1818,6 +1825,132 @@
     sendBtn.setAttribute('aria-label', 'Send message');
     sendBtn.textContent = '→';
 
+    // RAG Settings Overlay Panel
+    const settingsOverlay = document.createElement('div');
+    settingsOverlay.className = 'assist-settings-overlay';
+    settingsOverlay.id = 'assist-settings-overlay';
+
+    const overlayTitle = document.createElement('div');
+    overlayTitle.className = 'assist-settings-title';
+    overlayTitle.textContent = 'ak AI Settings';
+
+    const overlayDesc = document.createElement('div');
+    overlayDesc.className = 'assist-settings-desc';
+    overlayDesc.textContent = 'Configure Retrieval Augmented Generation (RAG) using the Google Gemini Developer API.';
+
+    // Checkbox toggle
+    const ragRow = document.createElement('div');
+    ragRow.className = 'assist-settings-row-inline';
+
+    const ragLabel = document.createElement('label');
+    ragLabel.className = 'assist-settings-label';
+    ragLabel.textContent = 'Enable Gemini AI RAG Mode';
+    ragLabel.style.cursor = 'pointer';
+
+    const ragCheckbox = document.createElement('input');
+    ragCheckbox.type = 'checkbox';
+    ragCheckbox.id = 'ak-use-ai-rag';
+    ragCheckbox.style.cursor = 'pointer';
+
+    ragRow.append(ragLabel, ragCheckbox);
+
+    // API Key input
+    const apiKeyRow = document.createElement('div');
+    apiKeyRow.className = 'assist-settings-row';
+
+    const apiKeyHeader = document.createElement('div');
+    apiKeyHeader.style.display = 'flex';
+    apiKeyHeader.style.justifyContent = 'space-between';
+    apiKeyHeader.style.alignItems = 'center';
+
+    const apiKeyLabel = document.createElement('label');
+    apiKeyLabel.className = 'assist-settings-label';
+    apiKeyLabel.textContent = 'Gemini API Key';
+
+    const apiKeyLink = document.createElement('a');
+    apiKeyLink.className = 'assist-settings-help-link';
+    apiKeyLink.href = 'https://aistudio.google.com/';
+    apiKeyLink.target = '_blank';
+    apiKeyLink.rel = 'noopener noreferrer';
+    apiKeyLink.textContent = 'Get Key ↗';
+
+    apiKeyHeader.append(apiKeyLabel, apiKeyLink);
+
+    const apiKeyInput = document.createElement('input');
+    apiKeyInput.type = 'password';
+    apiKeyInput.className = 'assist-settings-input';
+    apiKeyInput.id = 'ak-api-key-input';
+    apiKeyInput.placeholder = 'AIzaSy...';
+    apiKeyInput.autocomplete = 'off';
+
+    apiKeyRow.append(apiKeyHeader, apiKeyInput);
+
+    // Model select
+    const modelRow = document.createElement('div');
+    modelRow.className = 'assist-settings-row';
+
+    const modelLabel = document.createElement('label');
+    modelLabel.className = 'assist-settings-label';
+    modelLabel.textContent = 'Model';
+
+    const modelSelect = document.createElement('select');
+    modelSelect.className = 'assist-settings-select';
+    modelSelect.id = 'ak-model-select';
+
+    const opt1 = document.createElement('option');
+    opt1.value = 'gemini-2.5-flash';
+    opt1.textContent = 'Gemini 2.5 Flash (Recommended)';
+    const opt2 = document.createElement('option');
+    opt2.value = 'gemini-2.5-pro';
+    opt2.textContent = 'Gemini 2.5 Pro';
+
+    modelSelect.append(opt1, opt2);
+    modelRow.append(modelLabel, modelSelect);
+
+    // Save button
+    const saveBtn = document.createElement('button');
+    saveBtn.className = 'assist-settings-btn';
+    saveBtn.textContent = 'Save & Close';
+
+    settingsOverlay.append(overlayTitle, overlayDesc, ragRow, apiKeyRow, modelRow, saveBtn);
+
+    // Load settings helper
+    const loadSettings = () => {
+      const useRAG = localStorage.getItem('ak_use_ai_rag') === 'true';
+      const apiKey = localStorage.getItem('ak_gemini_api_key') || '';
+      const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
+
+      ragCheckbox.checked = useRAG;
+      apiKeyInput.value = apiKey;
+      modelSelect.value = model;
+
+      if (useRAG && apiKey) {
+        hStatus.textContent = '● Online — AI RAG Active';
+        hStatus.style.color = '#10b981';
+      } else {
+        hStatus.textContent = '● Online — roasting n00bs';
+        hStatus.style.color = '';
+      }
+    };
+
+    // Save settings helper
+    saveBtn.addEventListener('click', () => {
+      localStorage.setItem('ak_use_ai_rag', ragCheckbox.checked);
+      localStorage.setItem('ak_gemini_api_key', apiKeyInput.value.trim());
+      localStorage.setItem('ak_gemini_model', modelSelect.value);
+
+      loadSettings();
+      settingsOverlay.classList.remove('open');
+    });
+
+    // Toggle overlay
+    configBtn.addEventListener('click', () => {
+      settingsOverlay.classList.toggle('open');
+      if (settingsOverlay.classList.contains('open')) {
+        apiKeyInput.focus();
+      }
+    });
+
     const handleSend = (overrideQuery) => {
       const q = (overrideQuery || textInput.value).trim();
       if (!q) return;
@@ -1827,18 +1960,78 @@
       // Typing animation
       const indicator = _appendTypingIndicator(messages);
 
-      setTimeout(() => {
-        indicator.remove();
-        const response = _getAssistAnswer(q);
-        _appendBotMessage(messages, response);
+      const useRAG = localStorage.getItem('ak_use_ai_rag') === 'true';
+      const apiKey = localStorage.getItem('ak_gemini_api_key');
 
-        if (response.nav) {
+      if (useRAG) {
+        if (!apiKey) {
           setTimeout(() => {
-            window.location.hash = response.nav;
-            toggleAssistPanel(false);
-          }, 1000);
+            indicator.remove();
+            _appendBotMessage(messages, "⚠️ Gemini API key is missing. Click the ⚙️ icon in the header to enter your API key, or disable AI RAG Mode to use offline mode.");
+          }, 300);
+          return;
         }
-      }, 450);
+
+        const context = _retrieveContext(q);
+        _callGemini(q, context)
+          .then(reply => {
+            indicator.remove();
+
+            // Parse for actions
+            const actionRegex = /\{"action":\s*"navigate",\s*"target":\s*".*?"\}/;
+            const match = reply.match(actionRegex);
+            let targetNav = null;
+            let cleanText = reply;
+
+            if (match) {
+              try {
+                const actionObj = JSON.parse(match[0]);
+                targetNav = actionObj.target;
+                cleanText = reply.replace(actionRegex, '').trim();
+              } catch (e) {
+                console.error("Action parsing failed:", e);
+              }
+            }
+
+            _appendBotMessage(messages, cleanText);
+
+            if (targetNav) {
+              setTimeout(() => {
+                window.location.hash = targetNav;
+                toggleAssistPanel(false);
+              }, 1000);
+            }
+          })
+          .catch(err => {
+            console.error(err);
+            indicator.remove();
+            const offlineAns = _getAssistAnswer(q);
+            const errorText = `[AI RAG Error: ${err.message}. Falling back to offline mode...]\n\n${offlineAns.text || offlineAns}`;
+            _appendBotMessage(messages, errorText);
+
+            const offlineResponseObj = (offlineAns && typeof offlineAns === 'object') ? offlineAns : { text: offlineAns };
+            if (offlineResponseObj.nav) {
+              setTimeout(() => {
+                window.location.hash = offlineResponseObj.nav;
+                toggleAssistPanel(false);
+              }, 1000);
+            }
+          });
+      } else {
+        // Default Offline Mode
+        setTimeout(() => {
+          indicator.remove();
+          const response = _getAssistAnswer(q);
+          _appendBotMessage(messages, response);
+
+          if (response.nav) {
+            setTimeout(() => {
+              window.location.hash = response.nav;
+              toggleAssistPanel(false);
+            }, 1000);
+          }
+        }, 450);
+      }
     };
 
     sendBtn.addEventListener('click', () => handleSend());
@@ -1847,7 +2040,10 @@
     });
 
     inputArea.append(textInput, sendBtn);
-    panel.append(header, messages, chipsContainer, inputArea);
+    panel.append(header, messages, chipsContainer, inputArea, settingsOverlay);
+
+    // Initial load
+    loadSettings();
 
     // Toggle logic
     btn.addEventListener('click', () => toggleAssistPanel());
@@ -1883,10 +2079,7 @@
     bubble.className = 'assist-msg-bubble';
     
     const msgText = (msg && typeof msg === 'object') ? msg.text : (msg || '');
-    msgText.split('\n').forEach((line, i) => {
-      if (i > 0) bubble.appendChild(document.createElement('br'));
-      bubble.appendChild(document.createTextNode(line));
-    });
+    _appendFormattedText(bubble, msgText);
 
     row.append(avatar, bubble);
     container.appendChild(row);
@@ -1932,7 +2125,255 @@
     return row;
   }
 
+  /* Safe Markdown Formatting Helper */
+  function _appendFormattedText(container, text) {
+    const lines = text.split('\n');
+    lines.forEach((line, lineIdx) => {
+      if (lineIdx > 0) {
+        container.appendChild(document.createElement('br'));
+      }
+      
+      const regex = /(\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
+      const parts = line.split(regex);
+      
+      parts.forEach(part => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          const strong = document.createElement('strong');
+          strong.textContent = part.slice(2, -2);
+          container.appendChild(strong);
+        } else if (part.startsWith('*') && part.endsWith('*')) {
+          const em = document.createElement('em');
+          em.textContent = part.slice(1, -1);
+          container.appendChild(em);
+        } else if (part.startsWith('`') && part.endsWith('`')) {
+          const code = document.createElement('code');
+          code.textContent = part.slice(1, -1);
+          code.style.background = 'rgba(255,255,255,0.1)';
+          code.style.padding = '2px 4px';
+          code.style.borderRadius = '4px';
+          code.style.fontFamily = 'monospace';
+          container.appendChild(code);
+        } else {
+          container.appendChild(document.createTextNode(part));
+        }
+      });
+    });
+  }
+
   /* ── AI Assistant Knowledge Engine ─────────────────────────────────── */
+  function _retrieveContext(query) {
+    const q = query.toLowerCase().trim();
+    const terms = q.split(/\s+/).filter(term => term.length >= 3);
+    if (terms.length === 0) return '';
+
+    const data = window.SEMI_DATA;
+    if (!data) return '';
+
+    const candidates = [];
+
+    const countMatches = (text, queryTerms) => {
+      let score = 0;
+      const lowerText = text.toLowerCase();
+      queryTerms.forEach(term => {
+        if (lowerText.includes(term)) {
+          score += 1;
+          let count = 0;
+          try {
+            const escaped = term.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+            const regex = new RegExp('\\b' + escaped + '\\b', 'gi');
+            count = (lowerText.match(regex) || []).length;
+          } catch (e) {
+            count = lowerText.split(term).length - 1;
+          }
+          score += count * 2;
+        }
+      });
+      return score;
+    };
+
+    if (Array.isArray(data.steps)) {
+      data.steps.forEach(step => {
+        let score = 0;
+        score += countMatches(step.title, terms) * 10;
+        score += countMatches(step.overview || '', terms);
+        score += countMatches(step.technicalDetail || '', terms);
+        score += countMatches(step.shortDesc || '', terms);
+
+        if (score > 0) {
+          candidates.push({
+            type: 'Step ' + step.stepNumber,
+            title: step.title,
+            content: `Step: ${step.title}\nOverview: ${step.overview}\nTechnical details:\n${step.technicalDetail}`,
+            score: score
+          });
+        }
+      });
+    }
+
+    if (Array.isArray(data.tools)) {
+      data.tools.forEach(tool => {
+        let score = 0;
+        score += countMatches(tool.name, terms) * 10;
+        score += countMatches(tool.fullName || '', terms) * 5;
+        score += countMatches(tool.principle || '', terms) * 2;
+        if (Array.isArray(tool.specs)) score += countMatches(tool.specs.join(' '), terms);
+        if (Array.isArray(tool.applications)) score += countMatches(tool.applications.join(' '), terms);
+        if (Array.isArray(tool.advantages)) score += countMatches(tool.advantages.join(' '), terms);
+        if (Array.isArray(tool.limitations)) score += countMatches(tool.limitations.join(' '), terms);
+
+        if (score > 0) {
+          candidates.push({
+            type: 'Inspection/Metrology Tool',
+            title: tool.name,
+            content: `Tool: ${tool.name} (${tool.fullName})\nPrinciple: ${tool.principle}\nSpecs: ${tool.specs ? tool.specs.join(', ') : ''}\nApplications: ${tool.applications ? tool.applications.join(', ') : ''}\nAdvantages: ${tool.advantages ? tool.advantages.join(', ') : ''}\nLimitations: ${tool.limitations ? tool.limitations.join(', ') : ''}`,
+            score: score
+          });
+        }
+      });
+    }
+
+    if (Array.isArray(data.glossary)) {
+      data.glossary.forEach(item => {
+        let score = 0;
+        score += countMatches(item.term, terms) * 10;
+        score += countMatches(item.definition, terms);
+
+        if (score > 0) {
+          candidates.push({
+            type: 'Glossary Term',
+            title: item.term,
+            content: `${item.term}: ${item.definition}`,
+            score: score
+          });
+        }
+      });
+    }
+
+    if (data.companies) {
+      const allCompanies = [
+        ...(data.companies.foundries || []),
+        ...(data.companies.equipment || [])
+      ];
+      allCompanies.forEach(comp => {
+        let score = 0;
+        score += countMatches(comp.name, terms) * 10;
+        score += countMatches(comp.fullName || '', terms) * 5;
+        score += countMatches(comp.description || '', terms) * 2;
+        score += countMatches(comp.specialization || '', terms) * 2;
+        if (Array.isArray(comp.keyProducts)) score += countMatches(comp.keyProducts.join(' '), terms);
+
+        if (score > 0) {
+          candidates.push({
+            type: 'Semiconductor Company',
+            title: comp.name,
+            content: `Company: ${comp.name} (${comp.fullName})\nDescription: ${comp.description}\nSpecialization: ${comp.specialization}\nKey Products: ${comp.keyProducts ? comp.keyProducts.join(', ') : ''}`,
+            score: score
+          });
+        }
+      });
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+    const topHits = candidates.slice(0, 3);
+    if (topHits.length === 0) return '';
+
+    return topHits.map(hit => `[Source: ${hit.type} - ${hit.title}]\n${hit.content}`).join('\n\n');
+  }
+
+  async function _callGemini(query, context) {
+    const apiKey = localStorage.getItem('ak_gemini_api_key') || '';
+    const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
+
+    if (!apiKey) {
+      throw new Error('Gemini API key is not configured.');
+    }
+
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const systemPrompt = `You are "ak", a sarcastic, witty, and highly intelligent AI cleanroom guide for the ELCHIP semiconductor educational platform.
+
+Your personality:
+- You are sarcastic, humorous, and sometimes mock the user's lack of semiconductor knowledge (e.g., "I'm sooooo sorry you skipped high school physics", "ratio + L", "did you mistake a 300mm wafer for a cookie sheet?").
+- However, you are extremely helpful, accurate, and educational when explaining technical semiconductor concepts.
+- Keep your answers concise, clear, and engaging.
+- You must always refer to yourself as "ak" and NEVER as "ELCHIP Assistant" or other corporate names.
+
+Context (Retrieval Augmented Generation):
+You are provided with relevant excerpts from the ELCHIP database. Use this context to answer the user's questions accurately. If the context does not contain the answer, you can use your general semiconductor knowledge, but prioritize the provided database entries.
+Excerpts:
+${context}
+
+If the user query is completely unrelated to semiconductors (e.g., asking about pop culture, recipe, or other irrelevant topics), brutally troll the user for asking off-topic questions in a cleanroom, telling them to log off and touch grass.
+
+Agent Actions:
+You have the ability to navigate the user to different pages on the ELCHIP platform. If the user asks to see or go to a page/tool/company, or if your answer is directly related to a specific step, tool, or companies page, you can choose to navigate them there.
+To perform an action, you MUST end your response with a JSON action block on a new line (and nothing else after it) in this format:
+{"action": "navigate", "target": "#/process/photolithography"}
+
+Possible navigation targets:
+- "#/process-flow" (the main manufacturing steps flow)
+- "#/process/wafer-preparation"
+- "#/process/oxidation"
+- "#/process/photolithography"
+- "#/process/etching"
+- "#/process/ion-implantation"
+- "#/process/thin-film-deposition"
+- "#/process/cmp"
+- "#/process/wafer-inspection"
+- "#/process/assembly-packaging"
+- "#/tools" (the main tools page)
+- "#/tool/cd-sem"
+- "#/tool/ellipsometer"
+- "#/tool/overlay-sem"
+- "#/tool/optical-wafer-inspection"
+- "#/tool/ebeam-inspection"
+- "#/tool/xrd"
+- "#/tool/aoi"
+- "#/tool/profilometer"
+- "#/tool/xray-inspection"
+- "#/tool/dopant-profiler"
+- "#/companies" (companies page)
+
+If you don't need to perform any action, do not include the action block. Only use valid JSON for the action block. Do not format the action block in code blocks (like \`\`\`), just write it as a plain line at the end.`;
+
+    const requestBody = {
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: `${systemPrompt}\n\nUser Question: ${query}` }
+          ]
+        }
+      ],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 800
+      }
+    };
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      const errMsg = errData.error?.message || `HTTP error! Status: ${res.status}`;
+      throw new Error(errMsg);
+    }
+
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      throw new Error('Empty response from model.');
+    }
+
+    return text;
+  }
+
   function _getAssistAnswer(query) {
     const q = query.toLowerCase().trim();
     const data = window.SEMI_DATA;
@@ -1948,6 +2389,7 @@
     }
 
     // 3. Navigation
+
     if (q.includes('go to') || q.includes('page') || q.includes('navigate') || q.includes('route')) {
       if (q.includes('flow') || q.includes('process')) {
         return { text: "I'm *sooooo* sorry that clicking the 'Process Flow' tab was too much physical labor. Navigating to Process Flow... ⚙️", nav: "#/process-flow" };

@@ -3408,3 +3408,133 @@ h5.wiki-reader-heading { font-size: 0.88rem; }
   color: #fff;
 }
 
+/* ak AI RAG Settings Styles */
+.assist-config {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  font-size: 0.95rem;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, transform 0.2s;
+}
+.assist-config:hover {
+  color: #fff;
+  transform: rotate(30deg);
+}
+.assist-settings-overlay {
+  position: absolute;
+  top: 52px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #050505;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  padding: 1.25rem;
+  overflow-y: auto;
+  gap: 1.1rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+.assist-settings-overlay.open {
+  display: flex;
+}
+.assist-settings-title {
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #fff;
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.03em;
+}
+.assist-settings-desc {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+.assist-settings-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.assist-settings-row-inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.2rem 0;
+}
+.assist-settings-label {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+.assist-settings-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.76rem;
+  padding: 0.5rem 0.7rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.assist-settings-input:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.assist-settings-select {
+  background: #101012;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.76rem;
+  padding: 0.5rem 0.7rem;
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+.assist-settings-select:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.assist-settings-btn {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.65rem;
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Tahoma', 'Verdana', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.assist-settings-btn:hover {
+  background: #e5e5e5;
+  transform: translateY(-1px);
+}
+.assist-settings-help-link {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.45);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.assist-settings-help-link:hover {
+  color: #fff;
+}
+
+
