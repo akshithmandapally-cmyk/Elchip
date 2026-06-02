@@ -37,6 +37,7 @@
     '/companies':   () => window.renderCompanies(getApp()),
     '/auth':        () => window.renderAuth(getApp()),
     '/connect':     () => window.renderConnect(getApp()),
+    '/dashboard':   () => window.renderDashboard(getApp()),
     '/glossary':    () => render404Page(getApp()), // Glossary page removed
   };
 
@@ -157,9 +158,13 @@
       const liUser = document.createElement('li');
       liUser.style.cssText = 'font-size:0.72rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.12em; display:inline-flex; align-items:center; gap:0.5rem; white-space:nowrap; margin-left:0.5rem;';
       
-      const spanName = document.createElement('span');
-      spanName.style.color = '#fff';
-      spanName.textContent = user.firstName;
+      const linkName = document.createElement('a');
+      linkName.href = '#/dashboard';
+      linkName.setAttribute('data-href', '#/dashboard');
+      linkName.style.cssText = 'color:#fff; text-decoration:none; border-bottom:1px dashed rgba(255,255,255,0.3); padding-bottom:2px; cursor:pointer; transition:color 0.2s;';
+      linkName.textContent = user.firstName;
+      linkName.addEventListener('mouseenter', () => linkName.style.color = 'var(--w70)');
+      linkName.addEventListener('mouseleave', () => linkName.style.color = '#fff');
       
       const btnLogout = document.createElement('a');
       btnLogout.href = '#/';
@@ -175,7 +180,7 @@
       btnLogout.addEventListener('mouseenter', () => btnLogout.style.color = '#fff');
       btnLogout.addEventListener('mouseleave', () => btnLogout.style.color = 'var(--w50)');
       
-      liUser.append(spanName, document.createTextNode('|'), btnLogout);
+      liUser.append(linkName, document.createTextNode('|'), btnLogout);
       ul.appendChild(liUser);
     } else {
       const liAuth = document.createElement('li');
@@ -290,9 +295,13 @@
       const divUser = document.createElement('div');
       divUser.style.cssText = 'font-size:0.95rem; color:rgba(255,255,255,0.5); font-family:var(--mono); letter-spacing:0.1em; text-transform:uppercase; display:flex; flex-direction:column; align-items:center; gap:0.75rem;';
       
-      const nameSpan = document.createElement('span');
-      nameSpan.style.color = '#fff';
-      nameSpan.textContent = `Welcome, ${user.firstName}`;
+      const nameLink = document.createElement('a');
+      nameLink.href = '#/dashboard';
+      nameLink.style.cssText = 'color:#fff; text-decoration:none; font-weight:700; border-bottom:1px dashed rgba(255,255,255,0.3); padding-bottom:2px; cursor:pointer; transition:color 0.2s;';
+      nameLink.textContent = `Welcome, ${user.firstName}`;
+      nameLink.addEventListener('mouseenter', () => nameLink.style.color = 'var(--w70)');
+      nameLink.addEventListener('mouseleave', () => nameLink.style.color = '#fff');
+      nameLink.addEventListener('click', closeMobileNav);
       
       const logoutLink = document.createElement('a');
       logoutLink.href = '#/';
@@ -306,7 +315,7 @@
         window.location.hash = '#/';
         window.location.reload();
       });
-      divUser.append(nameSpan, logoutLink);
+      divUser.append(nameLink, logoutLink);
       mobileNav.appendChild(divUser);
     } else {
       const a = document.createElement('a');

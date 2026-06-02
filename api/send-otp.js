@@ -46,10 +46,10 @@ export default async function handler(req, res) {
     if (!apiKey) {
       // Simulate mode when API key is not configured in Vercel env
       console.warn('RESEND_API_KEY environment variable is not configured. Running in simulation mode.');
+      console.log(`[SIMULATION LOG] Email destination: ${email} | Subject: ELCHIP Verification Code | OTP: ${otp}`);
       return res.status(200).json({
         success: true,
-        simulated: true,
-        emailContent: `From: onboarding@resend.dev\nTo: ${email}\nSubject: ELCHIP Verification Code\n\n${emailText}`
+        simulated: true
       });
     }
 

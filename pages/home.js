@@ -274,16 +274,16 @@ window.renderHome = function (container) {
 
     const lockText = document.createElement('div');
     lockText.style.cssText = 'font-size:1.15rem; font-weight:700; color:#fff;';
-    lockText.textContent = 'Semiconductor Companies Directory is Locked';
+    lockText.textContent = 'Companies Directory Locked';
 
     const lockDesc = document.createElement('p');
     lockDesc.style.cssText = 'font-size:0.88rem; color:rgba(255,255,255,0.5); max-width:480px; line-height:1.65; margin:0;';
-    lockDesc.textContent = 'Sign up / Sign in to unlock profiles and financial statistics of global semiconductor companies (TSMC, Intel, ASML, etc.).';
+    lockDesc.textContent = 'Sign Up or Sign In to access semiconductor companies directory.';
 
     const lockBtn = document.createElement('a');
     lockBtn.className = 'btn btn-primary';
     lockBtn.href = '#/auth';
-    lockBtn.textContent = 'Sign Up to Unlock';
+    lockBtn.textContent = 'Sign Up / Sign In';
 
     lockCard.append(lockIcon, lockText, lockDesc, lockBtn);
     coInner.append(coLabel, coTitle, coDivider, lockCard);

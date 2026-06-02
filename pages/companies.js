@@ -255,11 +255,11 @@ window.renderCompaniesLocked = function(container) {
   
   const title = document.createElement('h1');
   title.style.cssText = 'font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; color:#fff; margin-bottom:1rem; letter-spacing:-0.02em;';
-  title.textContent = 'Access to Global Industry Directory is Locked';
+  title.textContent = 'Companies Directory';
   
   const desc = document.createElement('p');
   desc.style.cssText = 'font-size:0.95rem; color:rgba(255,255,255,0.5); max-width:540px; line-height:1.75; margin-bottom:2.5rem;';
-  desc.textContent = 'Explore the key profiles, market values, and specializations of top semiconductor manufacturers and lithography/inspection tool makers. Please sign up or sign in using your email to unlock access.';
+  desc.textContent = 'Sign Up or Sign In to access semiconductor companies directory.';
   
   const btn = document.createElement('a');
   btn.className = 'btn btn-primary';
