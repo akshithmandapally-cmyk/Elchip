@@ -7,6 +7,50 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 window.renderAuth = function(container) {
+  function createPasswordInput(placeholder, labelText) {
+    const group = document.createElement('div');
+    group.style.cssText = 'display:flex; flex-direction:column; gap:0.5rem;';
+    
+    const label = document.createElement('label');
+    label.style.cssText = 'font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.05em;';
+    label.textContent = labelText;
+    
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'position:relative; width:100%; display:flex;';
+    
+    const input = document.createElement('input');
+    input.type = 'password';
+    input.placeholder = placeholder;
+    input.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.75rem 2.75rem 0.75rem 1rem; color:#fff; font-size:0.85rem; outline:none; transition:border 0.3s; width:100%;';
+    input.addEventListener('focus', () => input.style.borderColor = 'rgba(255,255,255,0.4)');
+    input.addEventListener('blur', () => input.style.borderColor = 'rgba(255,255,255,0.12)');
+    
+    const toggleBtn = document.createElement('button');
+    toggleBtn.type = 'button';
+    toggleBtn.style.cssText = 'position:absolute; right:0.75rem; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:rgba(255,255,255,0.4); font-size:1rem; outline:none; display:flex; align-items:center; justify-content:center; padding:0;';
+    toggleBtn.textContent = '👁️';
+    toggleBtn.title = 'Show Password';
+    
+    toggleBtn.addEventListener('click', () => {
+      if (input.type === 'password') {
+        input.type = 'text';
+        toggleBtn.textContent = '🙈';
+        toggleBtn.title = 'Hide Password';
+        toggleBtn.style.color = '#fff';
+      } else {
+        input.type = 'password';
+        toggleBtn.textContent = '👁️';
+        toggleBtn.title = 'Show Password';
+        toggleBtn.style.color = 'rgba(255,255,255,0.4)';
+      }
+    });
+    
+    wrapper.append(input, toggleBtn);
+    group.append(label, wrapper);
+    
+    return { group, input };
+  }
+
   const frag = document.createDocumentFragment();
 
   // Root wrapper
@@ -88,18 +132,7 @@ window.renderAuth = function(container) {
   siEmailGroup.append(siEmailLabel, siEmailInput);
 
   // Password Field
-  const siPassGroup = document.createElement('div');
-  siPassGroup.style.cssText = 'display:flex; flex-direction:column; gap:0.5rem;';
-  const siPassLabel = document.createElement('label');
-  siPassLabel.style.cssText = 'font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.05em;';
-  siPassLabel.textContent = 'Password';
-  const siPassInput = document.createElement('input');
-  siPassInput.type = 'password';
-  siPassInput.placeholder = '••••••••';
-  siPassInput.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.75rem 1rem; color:#fff; font-size:0.85rem; outline:none; transition:border 0.3s;';
-  siPassInput.addEventListener('focus', () => siPassInput.style.borderColor = 'rgba(255,255,255,0.4)');
-  siPassInput.addEventListener('blur', () => siPassInput.style.borderColor = 'rgba(255,255,255,0.12)');
-  siPassGroup.append(siPassLabel, siPassInput);
+  const { group: siPassGroup, input: siPassInput } = createPasswordInput('••••••••', 'Password');
 
   // Captcha Field
   const siCapGroup = document.createElement('div');
@@ -217,32 +250,10 @@ window.renderAuth = function(container) {
   suEmailGroup.append(suEmailLabel, suEmailInput);
 
   // Password Field
-  const suPassGroup = document.createElement('div');
-  suPassGroup.style.cssText = 'display:flex; flex-direction:column; gap:0.5rem;';
-  const suPassLabel = document.createElement('label');
-  suPassLabel.style.cssText = 'font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.05em;';
-  suPassLabel.textContent = 'Password';
-  const suPassInput = document.createElement('input');
-  suPassInput.type = 'password';
-  suPassInput.placeholder = 'At least 6 characters & 1 special character';
-  suPassInput.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.75rem 1rem; color:#fff; font-size:0.85rem; outline:none; transition:border 0.3s;';
-  suPassInput.addEventListener('focus', () => suPassInput.style.borderColor = 'rgba(255,255,255,0.4)');
-  suPassInput.addEventListener('blur', () => suPassInput.style.borderColor = 'rgba(255,255,255,0.12)');
-  suPassGroup.append(suPassLabel, suPassInput);
+  const { group: suPassGroup, input: suPassInput } = createPasswordInput('At least 6 characters & 1 special character', 'Password');
 
   // Confirm Password Field
-  const suConfGroup = document.createElement('div');
-  suConfGroup.style.cssText = 'display:flex; flex-direction:column; gap:0.5rem;';
-  const suConfLabel = document.createElement('label');
-  suConfLabel.style.cssText = 'font-size:0.75rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.05em;';
-  suConfLabel.textContent = 'Confirm Password';
-  const suConfInput = document.createElement('input');
-  suConfInput.type = 'password';
-  suConfInput.placeholder = 'Confirm your password';
-  suConfInput.style.cssText = 'background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:0.75rem 1rem; color:#fff; font-size:0.85rem; outline:none; transition:border 0.3s;';
-  suConfInput.addEventListener('focus', () => suConfInput.style.borderColor = 'rgba(255,255,255,0.4)');
-  suConfInput.addEventListener('blur', () => suConfInput.style.borderColor = 'rgba(255,255,255,0.12)');
-  suConfGroup.append(suConfLabel, suConfInput);
+  const { group: suConfGroup, input: suConfInput } = createPasswordInput('Confirm your password', 'Confirm Password');
 
   // Captcha Field
   const suCapGroup = document.createElement('div');
@@ -317,6 +328,13 @@ window.renderAuth = function(container) {
       showMessage('Please enter a valid email address.');
       return;
     }
+
+    // Check if email already registered
+    const users = JSON.parse(localStorage.getItem('elchip_registered_users') || '[]');
+    if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
+      showMessage('An account with this email address already exists. Please Sign In.');
+      return;
+    }
     
     // Password strength rules: length >= 6, contains at least one special character
     const specialCharRegex = /[^A-Za-z0-9]/;
@@ -351,22 +369,29 @@ window.renderAuth = function(container) {
       const response = await fetch('/api/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, firstName: name, otp: generatedOtp })
+        body: JSON.stringify({ email, firstName: name, otp: generatedOtp, origin: window.location.origin })
       });
 
-      suSendBtn.style.display = 'none';
-      otpContainer.style.display = 'flex';
-
       if (response.ok) {
-        showMessage('Verification OTP sent successfully! Please check your email inbox.', true);
+        const resData = await response.json().catch(() => ({}));
+        suSendBtn.style.display = 'none';
+        otpContainer.style.display = 'flex';
+        
+        if (resData.simulated) {
+          showMessage('Simulation mode: Verification OTP code is: ' + generatedOtp + ' (logged to server console).', true);
+        } else {
+          showMessage('Verification OTP sent successfully! Please check your email inbox.', true);
+        }
       } else {
-        // Fallback info message
-        showMessage('Registration verification OTP generated. Please check your inbox.', true);
+        suSendBtn.disabled = false;
+        suSendBtn.textContent = 'Send OTP';
+        const errData = await response.json().catch(() => ({}));
+        showMessage(errData.error || 'Failed to send OTP email. Please verify your Resend setup in Vercel.');
       }
     } catch (e) {
-      suSendBtn.style.display = 'none';
-      otpContainer.style.display = 'flex';
-      showMessage('OTP generated. Verify connection to receive email, or check locally.', true);
+      suSendBtn.disabled = false;
+      suSendBtn.textContent = 'Send OTP';
+      showMessage('Network error: Could not reach verification server. Please try again.');
     }
   });
 

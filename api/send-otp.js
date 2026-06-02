@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { email, firstName, otp } = req.body || {};
+    const { email, firstName, otp, origin } = req.body || {};
 
     if (!email || !firstName || !otp) {
       return res.status(400).json({ error: 'Missing required parameters: email, firstName, and otp.' });
@@ -21,27 +21,33 @@ export default async function handler(req, res) {
     }
 
     const apiKey = process.env.RESEND_API_KEY;
+    const logoUrl = origin ? `${origin}/tnc-removebg-preview.png` : 'https://akshithmandapally-cmyk.github.io/Elchip/tnc-removebg-preview.png';
 
     const emailHtml = `
-      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
-        <h2 style="color: #333; margin-top: 0;">Greetings from ELCHIP!</h2>
-        <p style="color: #555; line-height: 1.6;">Hi ${firstName},</p>
-        <p style="color: #555; line-height: 1.6;">Thank you for signing up to explore the global semiconductor manufacturing ecosystem.</p>
-        <p style="color: #555; line-height: 1.6;">Your verification OTP is:</p>
-        <div style="background: #f4f4f5; padding: 15px; text-align: center; border-radius: 8px; font-size: 24px; font-weight: bold; letter-spacing: 5px; color: #000; margin: 20px 0;">
+      <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; padding: 25px; border: 1px solid #e4e4e7; border-radius: 16px; background-color: #ffffff; color: #18181b;">
+        <div style="text-align: center; margin-bottom: 25px;">
+          <img src="${logoUrl}" alt="ELCHIP Logo" style="width: 80px; height: auto; margin-bottom: 10px;">
+          <h1 style="font-size: 28px; font-weight: 800; color: #000000; margin: 0; letter-spacing: -0.03em;">ELCHIP</h1>
+          <p style="font-size: 14px; color: #71717a; margin: 5px 0 0;">Semiconductor Manufacturing & Inspection System</p>
+        </div>
+        <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 20px 0;">
+        <p style="font-size: 16px; line-height: 1.6; color: #27272a; margin: 0 0 15px;">Greetings from ELCHIP!</p>
+        <p style="font-size: 15px; line-height: 1.6; color: #3f3f46; margin: 0 0 15px;">Hi ${firstName},</p>
+        <p style="font-size: 15px; line-height: 1.6; color: #3f3f46; margin: 0 0 20px;">Thank you for signing up to explore our global semiconductor manufacturing ecosystem. To complete your account registration, please enter the following verification code:</p>
+        <div style="background: #f4f4f5; border: 1px solid #e4e4e7; padding: 20px; text-align: center; border-radius: 12px; font-size: 32px; font-weight: 800; letter-spacing: 6px; color: #09090b; margin: 25px 0; font-family: monospace;">
           ${otp}
         </div>
-        <p style="color: #555; line-height: 1.6;">Please enter this code in the registration field to complete your account setup.</p>
-        <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-        <p style="color: #888; font-size: 13px; line-height: 1.4; margin-bottom: 0;">
+        <p style="font-size: 14px; line-height: 1.6; color: #71717a; margin: 0 0 25px;">This verification code is valid for 10 minutes. If you did not request this code, you can safely ignore this email.</p>
+        <hr style="border: none; border-top: 1px solid #e4e4e7; margin: 20px 0;">
+        <div style="font-size: 13px; line-height: 1.5; color: #71717a;">
           Thank you,<br>
-          <strong>Akshith Mandapally</strong><br>
+          <strong style="color: #18181b;">Akshith Mandapally</strong><br>
           Owner of ELCHIP
-        </p>
+        </div>
       </div>
     `;
 
-    const emailText = `Greetings from ELCHIP!\n\nHi ${firstName},\n\nThank you for signing up to explore the global semiconductor manufacturing ecosystem.\n\nYour verification OTP is: ${otp}\n\nPlease enter this code in the registration field to complete your account setup.\n\nThank you,\nAkshith Mandapally\nOwner of ELCHIP`;
+    const emailText = `Greetings from ELCHIP!\n\nHi ${firstName},\n\nThank you for signing up to explore our global semiconductor manufacturing ecosystem.\n\nYour verification OTP is: ${otp}\n\nPlease enter this code in the registration field to complete your account setup.\n\nThank you,\nAkshith Mandapally\nOwner of ELCHIP`;
 
     if (!apiKey) {
       // Simulate mode when API key is not configured in Vercel env
