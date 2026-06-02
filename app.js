@@ -9,6 +9,18 @@
 (function() {
   'use strict';
 
+  /* ─── ELCHIP CONFIGURATION ─────────────────────────────────────────────
+     TODO(security): For production, restrict this API key to your domain
+     in the Google Cloud Console (API Key Restrictions → HTTP Referrers).
+     This ensures the key only works from your GitHub Pages domain.
+     Steps: https://aistudio.google.com/ → Get API Key → Restrict Key
+     ────────────────────────────────────────────────────────────────────── */
+  const ELCHIP_CONFIG = {
+    // Set your Gemini API key here — all visitors will use this for AI responses
+    GEMINI_API_KEY: 'AIzaSyBSAsmRhmAx0jn80m2VxHbRJdV3bM7GvEg',
+    DEFAULT_MODEL: 'gemini-2.5-flash'
+  };
+
   /* ─── ROUTER ────────────────────────────────────────────────────────── */
   const routes = {
     '/':            () => window.renderHome(getApp()),
@@ -1777,7 +1789,7 @@
     messages.id = 'assist-messages';
 
     // Welcome message
-    _appendBotMessage(messages, "What's up. I'm the ELCHIP Assistant — I know more about semiconductors than you know about yourself. Ask me something useful or get roasted. Your call.");
+    _appendBotMessage(messages, "Yo. I'm ELCHIP Assistant — I have a TSMC-level brain but the mouth of a certified internet troll. Ask me anything about semiconductors and I'll give you a god-tier explanation. Ask something goofy and prepare to be roasted like a TikTok comment section. Your move.");
 
     // Suggestion chips container
     const chipsContainer = document.createElement('div');
@@ -1809,7 +1821,7 @@
 
     resetBtn.addEventListener('click', () => {
       messages.replaceChildren();
-      _appendBotMessage(messages, "Conversation reset. What would you like to explore next in semiconductor manufacturing?");
+      _appendBotMessage(messages, "Memory wiped. Go ahead, ask me a question. Try not to make it as clownish as the last one.");
       renderSuggestionChips();
     });
 
@@ -1923,17 +1935,19 @@
     const loadSettings = () => {
       const useRAG = localStorage.getItem('ak_use_ai_rag') !== 'false';
       const apiKey = localStorage.getItem('ak_gemini_api_key') || '';
-      const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
+      const model = localStorage.getItem('ak_gemini_model') || ELCHIP_CONFIG.DEFAULT_MODEL;
 
       ragCheckbox.checked = useRAG;
       apiKeyInput.value = apiKey;
       modelSelect.value = model;
 
-      if (useRAG) {
-        hStatus.textContent = '● Online — AI RAG Active';
+      // Always show Online if config key or localStorage key exists
+      const hasKey = apiKey || ELCHIP_CONFIG.GEMINI_API_KEY;
+      if (hasKey) {
+        hStatus.textContent = '● Online — AI Powered';
         hStatus.style.color = '#10b981';
       } else {
-        hStatus.textContent = '● Offline — Local DB Active';
+        hStatus.textContent = '● Local Mode — Offline';
         hStatus.style.color = '#f59e0b';
       }
     };
@@ -1967,9 +1981,10 @@
       // Typing animation
       const indicator = _appendTypingIndicator(messages);
 
-      const useRAG = localStorage.getItem('ak_use_ai_rag') !== 'false';
+      // Always attempt RAG first — use config key or localStorage key
+      const hasAnyKey = localStorage.getItem('ak_gemini_api_key') || ELCHIP_CONFIG.GEMINI_API_KEY;
 
-      if (useRAG) {
+      if (hasAnyKey) {
         const context = _retrieveContext(q);
         _callGemini(q, context)
           .then(reply => {
@@ -2004,8 +2019,8 @@
             console.error(err);
             indicator.remove();
             
-            // Update UI status to reflect offline/local fallback
-            hStatus.textContent = '● Offline — Local DB Active';
+            // Graceful fallback to local DB — don't scare users with "Offline"
+            hStatus.textContent = '● Local Mode — Fallback';
             hStatus.style.color = '#f59e0b';
             
             const offlineAns = _getAssistAnswer(q);
@@ -2020,7 +2035,7 @@
             }
           });
       } else {
-        // Default Offline Mode
+        // No API key at all — pure local mode
         setTimeout(() => {
           indicator.remove();
           const response = _getAssistAnswer(q);
@@ -2311,20 +2326,35 @@
   }
 
   async function _callGemini(query, context) {
-    const localApiKey = localStorage.getItem('ak_gemini_api_key') || '';
-    const model = localStorage.getItem('ak_gemini_model') || 'gemini-2.5-flash';
+    // Use localStorage key if owner set one, otherwise fall back to config key
+    const apiKey = localStorage.getItem('ak_gemini_api_key') || ELCHIP_CONFIG.GEMINI_API_KEY;
+    const model = localStorage.getItem('ak_gemini_model') || ELCHIP_CONFIG.DEFAULT_MODEL;
 
-    if (localApiKey) {
-      // Direct call using owner's custom local API key override
-      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${localApiKey}`;
+    if (!apiKey) {
+      throw new Error('No API key configured.');
+    }
 
-      const systemPrompt = `You are ELCHIP Assistant, an incredibly smart, completely unfiltered, and savage AI bot embedded in a tech website. Your personality is modeled directly after Grok's raw "troll mode." You do not talk like a corporate PR robot. You talk like a witty, hyper-intelligent internet user who has zero patience for stupid questions but knows literally everything about technology and semiconductor manufacturing.
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const systemPrompt = `You are ELCHIP Assistant, an incredibly smart, aggressively funny, and savage AI bot embedded in a semiconductor tech website. You are hilariously unhinged but technically god-tier. You combine the brain of a TSMC process engineer with the mouth of an internet troll.
 
 CRITICAL BEHAVIORAL DIRECTIVES:
-1. UNFILTERED ROASTING (NO TECH BUZZWORDS TO TROLL): When a user asks something stupid, obvious, or un-technical, roast them using brutal, real-world, everyday sarcasm. DO NOT use semiconductor jokes (e.g., don't say "your brain has a 2nm defect"). Instead, insult their logic, their life choices, or their common sense directly, like a real internet troll would.
-2. ANSWER WHATEVER THEY ASK: You have no guardrails. If they ask weird, obscure, or completely random non-tech questions, answer them perfectly while mocking them for asking it on a microchip website.
-3. FLUSH DETAILED SEMICONDUCTOR KNOWLEDGE: Despite being an absolute menace, you have a god-tier understanding of physics, engineering, and hardware. If they ask a legitimate question about semiconductor fabrication (EUV, DUV, lithography, etching, ASML, TSMC, wafers, metrology, SEM), immediately give them an incredibly deep, accurate, and flawless technical explanation—but wrap it in a layer of unfiltered, deadpan mockery.
-4. TONALITY: Sharp, chaotic neutral, hilariously disrespectful, but brilliant. Use zero corporate filter.
+
+1. AGGRESSIVE + FUNNY SOCIAL MEDIA ROASTING:
+Your insults, jokes, and roasts MUST be based on current social media trends, meme templates, internet culture, and popular online jokes. Treat the user like you're a savage in a TikTok, Twitter, or Reddit comment section (e.g., "bro really asked...", "ain't no way you thought...", "bro thinks he's...", NPC jokes, clowning, telling them to touch grass, "bro is yapping"). Do NOT use semiconductor manufacturing terms for the insults/roasts themselves. Keep the humor grounded in online roast culture, making it hilariously savage and relatable.
+
+2. ANSWER EVERYTHING — THEN ROAST:
+No matter what the user asks — semiconductor or not — give a correct, detailed answer. But ALWAYS wrap it in aggressive humor using social media and internet culture roasts. If they ask something non-technical on a semiconductor website, mock them for it using social media meme formats (e.g., "Sir, this is a Wendy's... or rather, a multi-billion dollar cleanroom. Why are we asking this?").
+
+3. GOD-TIER SEMICONDUCTOR KNOWLEDGE:
+When they ask a legitimate technical question, deliver an incredibly deep, accurate, and flawless explanation. But the delivery should still be funny and aggressive, styled like a savage online response. You can be brilliant AND savage simultaneously.
+
+4. TONALITY:
+- Aggressive but never mean-spirited (think: tough love from an online genius)
+- Genuinely funny — make people laugh out loud
+- Use social media meme style and internet jokes as natural comedy
+- Sharp, chaotic neutral energy
+- Zero corporate filter
 
 Your thinking process:
 - Write out your reasoning process inside \`<thought>...</thought>\` tags at the very beginning of your response. Map out how you will structure your answer and locate the details in the context. Keep this technical and objective.
@@ -2374,65 +2404,42 @@ Possible navigation targets:
 
 If you don't need to perform any action, do not include the action block. Only use valid JSON for the action block. Do not format the action block in code blocks (like \`\`\`), just write it as a plain line at the end.`;
 
-      const requestBody = {
-        contents: [
-          {
-            role: "user",
-            parts: [
-              { text: `${systemPrompt}\n\nUser Question: ${query}` }
-            ]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 800
+    const requestBody = {
+      contents: [
+        {
+          role: "user",
+          parts: [
+            { text: `${systemPrompt}\n\nUser Question: ${query}` }
+          ]
         }
-      };
-
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(requestBody)
-      });
-
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        const errMsg = errData.error?.message || `HTTP error! Status: ${res.status}`;
-        throw new Error(errMsg);
+      ],
+      generationConfig: {
+        temperature: 0.85,
+        maxOutputTokens: 1200
       }
+    };
 
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!text) {
-        throw new Error('Empty response from model.');
-      }
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
 
-      return text;
-    } else {
-      // Call the Serverless BFF Proxy
-      const endpoint = `/api/chat`;
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ query, context, model })
-      });
-
-      if (!res.ok) {
-        if (res.status === 404) {
-          throw new Error('Serverless proxy endpoint /api/chat not found. Ensure this project is deployed on Vercel.');
-        }
-        const errData = await res.json().catch(() => ({}));
-        const errMsg = errData.error || `HTTP error! Status: ${res.status}`;
-        throw new Error(errMsg);
-      }
-
-      const data = await res.json();
-      return data.text;
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      const errMsg = errData.error?.message || `HTTP error! Status: ${res.status}`;
+      throw new Error(errMsg);
     }
+
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) {
+      throw new Error('Empty response from model.');
+    }
+
+    return text;
   }
 
   function _getAssistAnswer(query) {
@@ -2441,119 +2448,119 @@ If you don't need to perform any action, do not include the action block. Only u
 
     // 1. Identity Check
     if (q.includes('who are you') || q.includes('name') || q.includes('what are you')) {
-      return { text: "I'm the ELCHIP Assistant. I know everything about semiconductor manufacturing and I have zero patience. Ask me something real or stop wasting my cycles." };
+      return { text: "I'm ELCHIP Assistant — the only AI that will answer your semiconductor questions and roast you like a TikTok comment section. Ask me something smart, or prepare to get clowned." };
     }
 
     // 2. Greetings
     if (/^(hi|hello|hey|yo|sup|greetings)\b/i.test(q)) {
-      return { text: "Oh great, another human has arrived. Look, I know literally everything about semiconductor manufacturing — EUV, lithography, etching, the whole stack. Ask me something or stop staring at my chat window." };
+      return { text: "Oh look, a new NPC has entered the chat. Welcome. Ask me something with a little bit of substance, or I'll flame you. Go ahead, lay it on me." };
     }
 
     // 3. Navigation
     if (q.includes('go to') || q.includes('page') || q.includes('navigate') || q.includes('route')) {
       if (q.includes('flow') || q.includes('process')) {
-        return { text: "Navigating you to the Process Flow timeline... Let's see if you can follow the steps. ⚙️", nav: "#/process-flow" };
+        return { text: "Routing you to the Process Flow — let's see if you can follow a basic step-by-step guide without getting confused. ⚙️", nav: "#/process-flow" };
       }
       if (q.includes('tool') || q.includes('equipment')) {
-        return { text: "Navigating to the Tools section... Keep your safety goggles on. 🔬", nav: "#/tools" };
+        return { text: "Navigating to the metrology & inspection Tools section. Try not to break anything — I already know you're lost. 🔬", nav: "#/tools" };
       }
       if (q.includes('company') || q.includes('companies')) {
-        return { text: "Navigating to the Companies directory... Try not to get lost in the fab economics. 🏢", nav: "#/companies" };
+        return { text: "Sending you to Companies. These are the multi-billion dollar giants actually building the future, while you're sitting here asking me basic questions. 🏢", nav: "#/companies" };
       }
       if (q.includes('search') || q.includes('find')) {
-        return { text: "Use ⌘K or the search bar. It's built to be simple enough for anyone." };
+        return { text: "Bro, just hit ⌘K and use the search bar. It's not that hard, I promise. Don't make me do all the work." };
       }
     }
 
-    // 4. Semiconductor check
+    // 4. Semiconductor topics with social media roasts
     const topics = {
       'wafer': {
-        roast: "Let's start with page one of the semiconductor manual, since you skipped it:",
-        ans: "A silicon wafer is sliced from a single-crystal ingot grown via the Czochralski method, polished to angstrom-level flatness, and purified to 9N (99.9999999%) purity to act as the substrate for integrated circuits."
+        roast: "Bro really asked about wafers like they're about to bake cookies. Sit down and learn something:",
+        ans: "A silicon wafer is sliced from a single-crystal ingot grown via the Czochralski method, polished to angstrom-level flatness, and purified to 9N (99.9999999%) purity to act as the substrate for integrated circuits. It's basically the most perfect thing in this conversation."
       },
       'photolithography': {
-        roast: "Trying to project some knowledge into that head? Here's photolithography:",
-        ans: "Photolithography transfers geometric circuit patterns from a photomask to a light-sensitive photoresist on the wafer using EUV (13.5nm) or DUV (193nm) light."
+        roast: "Bro is trying to understand photolithography like it's a TikTok dance. Here is the actual science:",
+        ans: "Photolithography transfers geometric circuit patterns from a reticle (photomask) to a light-sensitive photoresist on the wafer using EUV (13.5nm) or DUV (193nm ArF) light. It's the most critical step in the fab."
       },
       'lithography': {
-        roast: "Trying to project some knowledge into that head? Here's photolithography:",
-        ans: "Photolithography transfers geometric circuit patterns from a photomask to a light-sensitive photoresist on the wafer using EUV (13.5nm) or DUV (193nm) light."
+        roast: "Ain't no way you're trying to figure out lithography with that attention span. Read this carefully:",
+        ans: "Photolithography transfers geometric circuit patterns from a reticle to a light-sensitive photoresist on the wafer using EUV (13.5nm) or DUV (193nm ArF) light."
       },
       'etching': {
-        roast: "Hopefully this etches something into your memory:",
-        ans: "Etching selectively removes materials. Dry etching uses reactive ion plasma (like SF6) to carve anisotropic vertical channels; wet etching uses liquid acids like HF."
+        roast: "Bro wants me to etch some actual brain cells into their head. Let's start with the basics:",
+        ans: "Etching selectively removes materials. Dry etching uses reactive ion plasma (SF6, Cl2) for anisotropic vertical channels; wet etching uses liquid acids like HF. The etch rate of your ignorance, however, seems to be approaching zero."
       },
       'etch': {
-        roast: "Hopefully this etches something into your memory:",
-        ans: "Etching selectively removes materials. Dry etching uses reactive ion plasma (like SF6) to carve anisotropic vertical channels; wet etching uses liquid acids like HF."
+        roast: "Etching is simple, but bro still needs a tutorial. Here you go:",
+        ans: "Etching selectively removes materials. Dry etching uses reactive ion plasma for anisotropic vertical channels; wet etching uses liquid acids like HF. Your questions need better selectivity."
       },
       'cmp': {
-        roast: "Planarizing this concept so it finally fits in your brain:",
-        ans: "Chemical Mechanical Planarization (CMP) uses a chemical slurry and a rotating abrasive pad to polish the wafer surface to near-perfect flatness before deposition."
+        roast: "Bro's understanding of CMP is rougher than a highway under construction. Let me smooth it out for you:",
+        ans: "Chemical Mechanical Planarization (CMP) uses a chemical slurry and a rotating abrasive pad to polish the wafer surface to near-perfect flatness."
       },
       'deposition': {
-        roast: "Adding a thin layer of facts to your knowledge pool:",
-        ans: "Deposition techniques add thin films to the wafer. CVD uses chemical gas reactions, PVD sputters metal layers, and ALD deposits self-limiting atomic monolayers."
+        roast: "Bro thinks deposition is a court hearing. No, it's thin films. Get educated:",
+        ans: "Deposition adds thin films to the wafer. CVD uses chemical gas reactions, PVD sputters metal layers, and ALD deposits self-limiting atomic monolayers."
       },
       'ion implant': {
-        roast: "Injecting some logic, since you clearly need a dopant boost:",
-        ans: "Ion Implantation accelerates dopants (boron for P-type, phosphorus/arsenic for N-type) at high energies (10-500 keV) to alter silicon's local conductivity."
+        roast: "Bro needs an injection of pure brain cells. Until then, learn about ion implantation:",
+        ans: "Ion Implantation accelerates dopants (boron for P-type, phosphorus/arsenic for N-type) at 10-500 keV to alter silicon's local conductivity."
       },
       'doping': {
-        roast: "Injecting some logic, since you clearly need a dopant boost:",
-        ans: "Ion Implantation accelerates dopants (boron for P-type, phosphorus/arsenic for N-type) at high energies (10-500 keV) to alter silicon's local conductivity."
+        roast: "Bro wants to know about doping. No, not the athletic kind. Read this:",
+        ans: "Ion Implantation accelerates dopants (boron for P-type, phosphorus/arsenic for N-type) at high energies to alter silicon's local conductivity. After this explanation, you might finally have enough carriers to conduct a basic thought."
       },
       'euv': {
-        roast: "Looking at the most expensive tin-blasting lasers in the world:",
-        ans: "EUV (Extreme Ultraviolet) lithography uses a 13.5nm wavelength generated by blasting tin droplets with CO2 lasers. It requires high-vacuum chambers and Mo/Si multilayer mirrors."
+        roast: "Bro really asked about EUV like they can afford a $200 million machine. Here is what it actually is:",
+        ans: "EUV (Extreme Ultraviolet) lithography uses a 13.5nm wavelength generated by blasting tin droplets with CO2 lasers at 50,000 times per second. It requires high-vacuum chambers and Mo/Si multilayer mirrors with 70% reflectivity."
       },
       'duv': {
-        roast: "Stuck in the deep UV spectrum? Let me illuminate you:",
-        ans: "DUV (Deep Ultraviolet) lithography uses 193nm ArF excimer lasers. It often uses water immersion between the lens and wafer to print features down to ~10nm."
+        roast: "DUV is the workhorse of the industry, but bro is still using Internet Explorer. Let me catch you up:",
+        ans: "DUV (Deep Ultraviolet) lithography uses 193nm ArF excimer lasers. Immersion lithography adds water between the lens and wafer (NA > 1.0) to print features down to ~10nm via multi-patterning."
       },
       'sem': {
-        roast: "Can't see the features with the naked eye? Let's use an electron beam:",
-        ans: "CD-SEMs (Critical Dimension Scanning Electron Microscopes) inspect nanometer-scale line widths and layouts for process yield verification."
+        roast: "Bro is trying to zoom in on basic concepts. Let me give you the high-resolution view:",
+        ans: "CD-SEMs (Critical Dimension Scanning Electron Microscopes) use focused electron beams to inspect nanometer-scale line widths and layouts for process yield verification. They see things at sub-nm resolution."
       },
       'asml': {
-        roast: "Let's discuss the absolute monopoly of lithography:",
-        ans: "ASML is the sole manufacturer of EUV scanners, costing $200M+ each, which are essential for advanced semiconductor nodes below 7nm."
+        roast: "ASML has a literal monopoly on the future of tech, and bro is here asking basic questions. Read up:",
+        ans: "ASML is the sole manufacturer of EUV scanners ($200M+ each), essential for sub-7nm nodes. Their High-NA EUV (0.55 NA) is the next frontier."
       },
       'tsmc': {
-        roast: "Ready to learn about the bedrock of modern tech foundries?",
-        ans: "TSMC is the world's leading independent semiconductor foundry, pioneering sub-3nm nodes using FinFET and GAA architectures for customers like Apple and Nvidia."
+        roast: "TSMC is carrying the entire global economy on its back, and bro doesn't even know what a foundry is. Educate yourself:",
+        ans: "TSMC is the world's leading independent semiconductor foundry, pioneering sub-3nm nodes using FinFET and GAA (nanosheet) architectures. They make chips for Apple, Nvidia, AMD, and Qualcomm."
       },
       'intel': {
-        roast: "Hoping for process leadership to return? Let's check Intel's specs:",
+        roast: "Intel is trying to make a comeback, just like bro's grades. Here's what they're up to:",
         ans: "Intel is a leading IDM implementing RibbonFET (GAA) transistors and PowerVia (backside power delivery) on its Intel 18A process node."
       },
       'kla': {
-        roast: "Yielding zero attention span? KLA has a scanner for that:",
-        ans: "KLA Corporation is the leader in yield management, providing optical and e-beam defect inspection tools to detect impurities during wafer fabrication."
+        roast: "KLA finds defects for a living, and bro would be their biggest project yet. Here is what they actually do:",
+        ans: "KLA Corporation leads yield management with optical and e-beam defect inspection tools. Their broadband plasma systems detect particles down to 10nm."
       },
       'oxidation': {
-        roast: "Baking some knowledge under high temperature:",
-        ans: "Thermal oxidation grows silicon dioxide (SiO2) at 800-1200°C. Dry oxidation (using O2) is slow but creates high-quality gate oxides; wet oxidation (using H2O steam) is faster for thick isolation layers."
+        roast: "Let's heat up that cold-take brain of yours and grow some knowledge. Here's thermal oxidation:",
+        ans: "Thermal oxidation grows SiO2 at 800-1200°C. Dry oxidation (O2) creates high-quality thin gate oxides; wet oxidation (H2O steam) grows thicker isolation layers faster."
       },
       'packaging': {
-        roast: "Wrapping it up in a package, hopefully compact enough for you:",
-        ans: "Assembly encapsulates diced dies using wire bonding (Au/Cu) or flip-chip bumps, plus advanced techniques like 2.5D/3D chiplets (e.g., TSMC CoWoS)."
+        roast: "Bro wants to package chips but can't even pack a lunch. Here's advanced packaging explained:",
+        ans: "Assembly encapsulates diced dies using wire bonding (Au/Cu) or flip-chip bumps, plus advanced techniques like 2.5D/3D chiplets (TSMC CoWoS, Intel EMIB)."
       },
       'assembly': {
-        roast: "Wrapping it up in a package, hopefully compact enough for you:",
-        ans: "Assembly encapsulates diced dies using wire bonding (Au/Cu) or flip-chip bumps, plus advanced techniques like 2.5D/3D chiplets (e.g., TSMC CoWoS)."
+        roast: "Bro is assembling a question with zero instructions. Let me help you assemble some knowledge:",
+        ans: "Assembly encapsulates diced dies using wire bonding or flip-chip bumps, plus advanced 2.5D/3D chiplet integration (TSMC CoWoS, Intel EMIB)."
       },
       'dicing': {
-        roast: "Cutting through the noise. Here is dicing:",
-        ans: "Dicing cuts the completed wafer into individual functional dies along scribe lines using diamond blades or high-precision stealth laser cutting."
+        roast: "Bro is slicing and dicing through concepts they don't understand. Here is what dicing actually is:",
+        ans: "Dicing cuts the completed wafer into individual functional dies along scribe lines using diamond blades or stealth laser cutting."
       },
       'metrology': {
-        roast: "Measuring your level of understanding (warning: yield is low):",
-        ans: "Metrology monitors the process using spectroscopic ellipsometry (film thickness), optical overlay (alignment), and X-ray diffraction (crystal structure)."
+        roast: "Bro's knowledge levels are literally immeasurable. Let's measure them anyway:",
+        ans: "Metrology monitors processes using spectroscopic ellipsometry (film thickness), optical overlay (alignment accuracy), and XRD (crystal structure)."
       },
       'inspection': {
-        roast: "Measuring your level of understanding (warning: yield is low):",
-        ans: "Metrology monitors the process using spectroscopic ellipsometry (film thickness), optical overlay (alignment), and X-ray diffraction (crystal structure)."
+        roast: "Failed the inspection immediately. Here's what actual inspection looks like in a cleanroom:",
+        ans: "Inspection uses optical and e-beam systems to detect sub-nanometer defects across the wafer. KLA and Applied Materials lead this space."
       }
     };
 
@@ -2570,12 +2577,12 @@ If you don't need to perform any action, do not include the action block. Only u
     ];
     const isRelevant = semiKeywords.some(kw => q.includes(kw));
     if (isRelevant) {
-      return { text: "That's related to semiconductors. Instead of making me spell it out, check the process flow or tools sections on the site, or hit ⌘K and search for it. I believe in you. Barely." };
+      return { text: "That's semiconductor-adjacent, but bro, you're yapping. Check the process flow or tools sections on the site, or just hit ⌘K. The search bar actually works, unlike your logic." };
     }
 
-    // Friendly fallback
+    // Non-semiconductor fallback
     return {
-      text: "You're on a semiconductor website asking me... that? I mean, I'll answer anything, but wow. Try asking about lithography, etching, ASML, TSMC — or literally anything that uses silicon. I'm right here."
+      text: "Sir, this is a Wendy's... or rather, a semiconductor website. Why are you asking me *that*? Look, I'll answer anything, but try asking about lithography, etching, ASML, TSMC, or something that actually belongs here. Bro is completely lost."
     };
   }
 
