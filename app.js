@@ -35,6 +35,8 @@
     '/tool/:slug':  (params) => window.renderTool(getApp(), params.slug),
     '/tools':       () => window.renderToolsList(getApp()),
     '/companies':   () => window.renderCompanies(getApp()),
+    '/auth':        () => window.renderAuth(getApp()),
+    '/connect':     () => window.renderConnect(getApp()),
     '/glossary':    () => render404Page(getApp()), // Glossary page removed
   };
 
@@ -131,10 +133,12 @@
     ul.className = 'nav-links';
     ul.id = 'nav-links';
 
+    window.rebuildNavUI = buildNav;
     const navItems = [
       { label: 'Process Flow', href: '#/process-flow' },
       { label: 'Tools', href: '#/tools' },
-      { label: 'Companies', href: '#/companies' }
+      { label: 'Companies', href: '#/companies' },
+      { label: "Let's Connect", href: '#/connect' }
     ];
 
     navItems.forEach(item => {
@@ -146,6 +150,43 @@
       li.appendChild(a);
       ul.appendChild(li);
     });
+
+    // Authentication dynamic link
+    const user = JSON.parse(localStorage.getItem('elchip_user') || 'null');
+    if (user) {
+      const liUser = document.createElement('li');
+      liUser.style.cssText = 'font-size:0.72rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.12em; display:inline-flex; align-items:center; gap:0.5rem; white-space:nowrap; margin-left:0.5rem;';
+      
+      const spanName = document.createElement('span');
+      spanName.style.color = '#fff';
+      spanName.textContent = user.firstName;
+      
+      const btnLogout = document.createElement('a');
+      btnLogout.href = '#/';
+      btnLogout.style.cssText = 'color:var(--w50); text-decoration:none; border-bottom:1px dashed rgba(255,255,255,0.3); padding-bottom:2px; cursor:pointer; transition:color 0.2s;';
+      btnLogout.textContent = 'Logout';
+      btnLogout.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('elchip_user');
+        buildNav();
+        window.location.hash = '#/';
+        window.location.reload();
+      });
+      btnLogout.addEventListener('mouseenter', () => btnLogout.style.color = '#fff');
+      btnLogout.addEventListener('mouseleave', () => btnLogout.style.color = 'var(--w50)');
+      
+      liUser.append(spanName, document.createTextNode('|'), btnLogout);
+      ul.appendChild(liUser);
+    } else {
+      const liAuth = document.createElement('li');
+      const authLink = document.createElement('a');
+      authLink.href = '#/auth';
+      authLink.textContent = 'Sign In';
+      authLink.setAttribute('data-href', '#/auth');
+      liAuth.appendChild(authLink);
+      ul.appendChild(liAuth);
+    }
+
     navEl.appendChild(ul);
 
     // ── SEARCH ── redesigned as a prominent centered search bar
@@ -240,10 +281,41 @@
       const a = document.createElement('a');
       a.href = item.href;
       a.textContent = item.label;
-      // Security: Event listener not inline onclick
       a.addEventListener('click', closeMobileNav);
       mobileNav.appendChild(a);
     });
+
+    // Mobile auth section
+    if (user) {
+      const divUser = document.createElement('div');
+      divUser.style.cssText = 'font-size:0.95rem; color:rgba(255,255,255,0.5); font-family:var(--mono); letter-spacing:0.1em; text-transform:uppercase; display:flex; flex-direction:column; align-items:center; gap:0.75rem;';
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.style.color = '#fff';
+      nameSpan.textContent = `Welcome, ${user.firstName}`;
+      
+      const logoutLink = document.createElement('a');
+      logoutLink.href = '#/';
+      logoutLink.style.cssText = 'color:#fca5a5; text-decoration:none;';
+      logoutLink.textContent = 'Logout';
+      logoutLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('elchip_user');
+        closeMobileNav();
+        buildNav();
+        window.location.hash = '#/';
+        window.location.reload();
+      });
+      divUser.append(nameSpan, logoutLink);
+      mobileNav.appendChild(divUser);
+    } else {
+      const a = document.createElement('a');
+      a.href = '#/auth';
+      a.textContent = 'Sign In';
+      a.addEventListener('click', closeMobileNav);
+      mobileNav.appendChild(a);
+    }
+
     document.body.insertBefore(mobileNav, document.body.firstChild);
 
     // Hamburger toggle

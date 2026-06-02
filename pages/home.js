@@ -262,7 +262,34 @@ window.renderHome = function (container) {
   coLink.textContent = 'View All Companies →';
   coBtn.appendChild(coLink);
 
-  coInner.append(coLabel, coTitle, coDivider, coGrid, coBtn);
+  const user = localStorage.getItem('elchip_user');
+  if (!user) {
+    const lockCard = document.createElement('div');
+    lockCard.className = 'glass-card';
+    lockCard.style.cssText = 'padding:3rem 2rem; border-radius:18px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.25rem;';
+
+    const lockIcon = document.createElement('div');
+    lockIcon.style.cssText = 'font-size:2.5rem;';
+    lockIcon.textContent = '🔒';
+
+    const lockText = document.createElement('div');
+    lockText.style.cssText = 'font-size:1.15rem; font-weight:700; color:#fff;';
+    lockText.textContent = 'Semiconductor Companies Directory is Locked';
+
+    const lockDesc = document.createElement('p');
+    lockDesc.style.cssText = 'font-size:0.88rem; color:rgba(255,255,255,0.5); max-width:480px; line-height:1.65; margin:0;';
+    lockDesc.textContent = 'Sign up / Sign in to unlock profiles and financial statistics of global semiconductor companies (TSMC, Intel, ASML, etc.).';
+
+    const lockBtn = document.createElement('a');
+    lockBtn.className = 'btn btn-primary';
+    lockBtn.href = '#/auth';
+    lockBtn.textContent = 'Sign Up to Unlock';
+
+    lockCard.append(lockIcon, lockText, lockDesc, lockBtn);
+    coInner.append(coLabel, coTitle, coDivider, lockCard);
+  } else {
+    coInner.append(coLabel, coTitle, coDivider, coGrid, coBtn);
+  }
   coSection.appendChild(coInner);
   frag.appendChild(coSection);
 

@@ -3567,5 +3567,40 @@ h5.wiki-reader-heading { font-size: 0.88rem; }
   font-style: italic;
 }
 
+/* ─── AUTHENTICATION & LET'S CONNECT CUSTOM STYLES ──────────────────── */
+.auth-tab {
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.auth-tab:hover {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+.auth-tab.active {
+  color: #ffffff !important;
+  border-bottom-color: #ffffff !important;
+}
+
+.auth-card input:focus, 
+.connect-form input:focus, 
+.connect-form textarea:focus {
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+
+.lock-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  text-align: center;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(255,255,255,0.15)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
+}
+
+
 
 
