@@ -264,32 +264,27 @@ window.renderToolsList = function(container) {
   main.className = 'container page-enter';
   main.style.cssText = 'padding-top:3rem; padding-bottom:4rem;';
 
-  // Inspection group
-  const inspLabel = document.createElement('h2');
-  inspLabel.style.cssText = 'font-size:1.2rem; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.05em; text-transform:uppercase; font-size:0.8rem; font-family:var(--mono); margin-bottom:1rem;';
-  inspLabel.textContent = '— Defect Inspection Systems';
-  main.appendChild(inspLabel);
+  const categories = [
+    { key: 'Optical Inspection Technology', label: '— Category 1: Optical Inspection Technology' },
+    { key: 'Charged Particle & Probe Microscopy', label: '— Category 2: Charged Particle & Probe Microscopy' },
+    { key: 'Advanced Material & Structural Analysis', label: '— Category 3: Advanced Material & Structural Analysis' }
+  ];
 
-  const inspGrid = document.createElement('div');
-  inspGrid.className = 'tools-grid';
-  inspGrid.style.marginBottom = '3rem';
+  categories.forEach((cat, index) => {
+    const label = document.createElement('h2');
+    label.style.cssText = 'font-size:0.8rem; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.05em; text-transform:uppercase; font-family:var(--mono); margin-top:2rem; margin-bottom:1rem;';
+    label.textContent = cat.label;
+    main.appendChild(label);
 
-  data.tools.filter(t => t.category === 'Inspection').forEach(tool => {
-    inspGrid.appendChild(buildToolCard(tool));
+    const grid = document.createElement('div');
+    grid.className = 'tools-grid';
+    grid.style.marginBottom = index < categories.length - 1 ? '3.5rem' : '0';
+
+    data.tools.filter(t => t.category === cat.key).forEach(tool => {
+      grid.appendChild(buildToolCard(tool));
+    });
+    main.appendChild(grid);
   });
-  main.appendChild(inspGrid);
-
-  const metrLabel = document.createElement('h2');
-  metrLabel.style.cssText = 'font-size:0.8rem; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.05em; text-transform:uppercase; font-family:var(--mono); margin-bottom:1rem;';
-  metrLabel.textContent = '— Metrology & Measurement Systems';
-  main.appendChild(metrLabel);
-
-  const metrGrid = document.createElement('div');
-  metrGrid.className = 'tools-grid';
-  data.tools.filter(t => t.category === 'Metrology').forEach(tool => {
-    metrGrid.appendChild(buildToolCard(tool));
-  });
-  main.appendChild(metrGrid);
 
   frag.appendChild(main);
   frag.appendChild(window._buildFooter());
@@ -302,57 +297,169 @@ function buildToolCard(tool) {
   card.href = '#/tool/' + tool.slug;
   card.setAttribute('aria-label', tool.name + ' — ' + tool.fullName);
 
+  if (tool.image) {
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'tool-card-img-wrap';
+    const img = document.createElement('img');
+    img.className = 'tool-card-img';
+    img.src = tool.image;
+    img.alt = tool.name;
+    imgWrap.appendChild(img);
+    card.appendChild(imgWrap);
+  }
+
+  const headerRow = document.createElement('div');
+  headerRow.style.cssText = 'display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem;';
+
   const icon = document.createElement('span');
-  icon.className = 'tool-card-icon';
+  icon.style.cssText = 'font-size:1.2rem;';
   icon.textContent = tool.icon;
 
   const name = document.createElement('div');
   name.className = 'tool-card-name';
+  name.style.margin = '0';
   name.textContent = tool.name;
+
+  headerRow.append(icon, name);
 
   const full = document.createElement('div');
   full.className = 'tool-card-full';
-  full.textContent = tool.fullName;
+  full.textContent = tool.whatItIs || tool.fullName;
 
   const badge = document.createElement('span');
-  badge.className = tool.category === 'Inspection' ? 'badge badge-orange' : 'badge badge-cyan';
+  badge.className = 'badge badge-cyan';
   badge.style.marginTop = '0.6rem';
   badge.textContent = tool.category;
 
-  card.append(icon, name, full, badge);
+  card.append(headerRow, full, badge);
   return card;
 }
 
 /* ─── Tool Diagram Builder ───────────────────────────────────────────── */
 function buildDiagram(tool) {
-  const wrapper = document.createElement('div');
-  wrapper.style.cssText = 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:2rem; display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap; min-height:200px;';
+  const outer = document.createElement('div');
+  outer.style.cssText = 'display:flex; flex-direction:column; align-items:center; gap:1.5rem; width:100%;';
 
-  // Build schematic SVG diagram based on tool type
+  if (tool.image) {
+    const imgWrap = document.createElement('div');
+    imgWrap.className = 'tool-detail-img-wrap';
+    const img = document.createElement('img');
+    img.className = 'tool-detail-img';
+    img.src = tool.image;
+    img.alt = tool.name + ' Diagram';
+    imgWrap.appendChild(img);
+    outer.appendChild(imgWrap);
+  }
+
+  // Draw schematic SVG
   const diagrams = {
     'cd-sem': buildSEMDiagram,
-    'ellipsometer': buildEllipsometerDiagram,
-    'overlay-sem': buildOverlayDiagram,
-    'optical-wafer-inspection': buildOpticalInspDiagram,
-    'ebeam-inspection': buildEBeamDiagram,
-    'xrd': buildXRDDiagram,
     'aoi': buildAOIDiagram,
-    'profilometer': buildProfilometerDiagram,
-    'xray-inspection': buildXRayDiagram,
-    'dopant-profiler': buildSIMSDiagram,
+    'wli': buildWLIDiagram,
+    'xray': buildXRayDiagram,
+    'raman': buildRamanDiagram,
+    'afm': buildAFMDiagram,
   };
 
-  const fn = diagrams[tool.id] || buildGenericDiagram;
-  const svgEl = fn(tool);
-  wrapper.appendChild(svgEl);
+  const fn = diagrams[tool.id];
+  if (fn) {
+    const schematicLabel = document.createElement('h4');
+    schematicLabel.style.cssText = 'font-size:0.8rem; font-weight:700; color:rgba(255,255,255,0.4); letter-spacing:0.05em; text-transform:uppercase; font-family:var(--mono); margin-top:1.5rem; margin-bottom:0.5rem;';
+    schematicLabel.textContent = '— Technical Schematic';
+    outer.appendChild(schematicLabel);
 
-  const caption = document.createElement('p');
-  caption.style.cssText = 'text-align:center; font-family:var(--mono); font-size:0.7rem; color:rgba(255,255,255,0.3); margin-top:1rem; letter-spacing:0.1em; text-transform:uppercase;';
-  caption.textContent = tool.fullName + ' — Schematic';
+    const wrapper = document.createElement('div');
+    wrapper.style.cssText = 'background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:2rem; display:flex; align-items:center; justify-content:center; gap:2rem; flex-wrap:wrap; min-height:200px; width:100%; box-sizing:border-box;';
+    const svgEl = fn();
+    wrapper.appendChild(svgEl);
 
-  const outer = document.createElement('div');
-  outer.append(wrapper, caption);
+    const caption = document.createElement('p');
+    caption.style.cssText = 'text-align:center; font-family:var(--mono); font-size:0.7rem; color:rgba(255,255,255,0.3); margin-top:0.5rem; letter-spacing:0.1em; text-transform:uppercase;';
+    caption.textContent = tool.name + ' — Schematic Diagram';
+
+    outer.appendChild(wrapper);
+    outer.appendChild(caption);
+  }
+
   return outer;
+}
+
+function buildWLIDiagram() {
+  return parseSVG(`<svg xmlns="http://www.w3.org/2000/svg" width="280" height="160" viewBox="0 0 280 160">
+    <rect width="280" height="160" fill="none"/>
+    <!-- Light Source -->
+    <rect x="10" y="50" width="50" height="25" rx="5" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.2)" stroke-width="1.2"/>
+    <text x="35" y="65" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="8" font-family="monospace">WHITE LIGHT</text>
+    <!-- Broadband beam -->
+    <line x1="60" y1="62" x2="110" y2="62" stroke="#fff" stroke-dasharray="3,2" stroke-width="1"/>
+    <!-- Beam splitter -->
+    <rect x="110" y="52" width="20" height="20" rx="2" fill="rgba(168,85,247,0.15)" stroke="#d8b4fe" stroke-width="1" transform="rotate(-45,120,62)"/>
+    <!-- Up to Reference Mirror -->
+    <line x1="120" y1="52" x2="120" y2="25" stroke="#fff" stroke-width="1"/>
+    <rect x="105" y="20" width="30" height="5" fill="rgba(79,142,247,0.3)" stroke="#4f8ef7" stroke-width="1"/>
+    <!-- Down to Sample -->
+    <line x1="120" y1="72" x2="120" y2="110" stroke="#fff" stroke-width="1"/>
+    <rect x="90" y="110" width="60" height="15" rx="2" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+    <text x="120" y="120" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="7" font-family="monospace">WAFER</text>
+    <!-- Up to CCD -->
+    <line x1="130" y1="62" x2="210" y2="62" stroke="#22c55e" stroke-dasharray="3,2" stroke-width="1"/>
+    <rect x="210" y="50" width="45" height="25" rx="5" fill="rgba(34,197,94,0.12)" stroke="#86efac" stroke-width="1.2"/>
+    <text x="232" y="65" text-anchor="middle" fill="#86efac" font-size="8" font-family="monospace">CCD CAMERA</text>
+    <text x="140" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="monospace">Interferogram height mapping</text>
+  </svg>`);
+}
+
+function buildAFMDiagram() {
+  return parseSVG(`<svg xmlns="http://www.w3.org/2000/svg" width="280" height="160" viewBox="0 0 280 160">
+    <rect width="280" height="160" fill="none"/>
+    <!-- Laser source -->
+    <rect x="10" y="20" width="45" height="20" rx="4" fill="rgba(239,68,68,0.1)" stroke="#f87171" stroke-width="1"/>
+    <text x="32" y="32" text-anchor="middle" fill="#f87171" font-size="7" font-family="monospace">LASER</text>
+    <!-- Laser beam down to cantilever -->
+    <line x1="55" y1="30" x2="110" y2="65" stroke="#ef4444" stroke-width="1.2"/>
+    <!-- Flexible Cantilever -->
+    <line x1="150" y1="65" x2="110" y2="65" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+    <polygon points="110,65 107,75 113,75" fill="#4f8ef7"/>
+    <!-- Wafer surface -->
+    <path d="M 70 85 Q 90 80 110 88 T 150 82" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+    <text x="110" y="102" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="8" font-family="monospace">SURFACE PROFILE</text>
+    <!-- Reflected beam up to photodiode -->
+    <line x1="110" y1="65" x2="200" y2="25" stroke="#ef4444" stroke-width="1.2"/>
+    <!-- Quadrant Photodiode -->
+    <circle cx="210" cy="20" r="12" fill="rgba(79,142,247,0.12)" stroke="#4f8ef7" stroke-width="1.2"/>
+    <line x1="210" y1="8" x2="210" y2="32" stroke="#4f8ef7" stroke-width="0.8"/>
+    <line x1="198" y1="20" x2="222" y2="20" stroke="#4f8ef7" stroke-width="0.8"/>
+    <text x="210" y="42" text-anchor="middle" fill="#93b8ff" font-size="7" font-family="monospace">PHOTODIODE</text>
+    <text x="140" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="monospace">Sub-nm cantilever deflection feedback</text>
+  </svg>`);
+}
+
+function buildRamanDiagram() {
+  return parseSVG(`<svg xmlns="http://www.w3.org/2000/svg" width="280" height="160" viewBox="0 0 280 160">
+    <rect width="280" height="160" fill="none"/>
+    <!-- Excitation Laser -->
+    <rect x="10" y="45" width="50" height="25" rx="5" fill="rgba(34,197,94,0.12)" stroke="#86efac" stroke-width="1.2"/>
+    <text x="35" y="60" text-anchor="middle" fill="#86efac" font-size="8" font-family="monospace">532nm LASER</text>
+    <!-- Green beam -->
+    <line x1="60" y1="57" x2="120" y2="57" stroke="#22c55e" stroke-width="1.5"/>
+    <!-- Beam Splitter -->
+    <rect x="120" y="47" width="20" height="20" rx="2" fill="rgba(168,85,247,0.15)" stroke="#d8b4fe" stroke-width="1" transform="rotate(-45,130,57)"/>
+    <!-- Down to lattice -->
+    <line x1="130" y1="67" x2="130" y2="100" stroke="#22c55e" stroke-width="1.2"/>
+    <!-- Silicon crystal lattice -->
+    <circle cx="120" cy="110" r="3" fill="#4f8ef7"/>
+    <circle cx="130" cy="110" r="3" fill="#4f8ef7"/>
+    <circle cx="140" cy="110" r="3" fill="#4f8ef7"/>
+    <line x1="120" y1="110" x2="140" y2="110" stroke="rgba(255,255,255,0.4)" stroke-width="0.8"/>
+    <!-- Inelastic scattering (Orange) -->
+    <line x1="130" y1="100" x2="180" y2="50" stroke="#f97316" stroke-width="1.2" stroke-dasharray="3,1"/>
+    <!-- Filter -->
+    <rect x="180" y="42" width="10" height="20" fill="rgba(249,115,22,0.2)" stroke="#f97316" stroke-width="1"/>
+    <!-- CCD -->
+    <rect x="210" y="40" width="45" height="25" rx="5" fill="rgba(79,142,247,0.12)" stroke="#4f8ef7" stroke-width="1.2"/>
+    <text x="232" y="55" text-anchor="middle" fill="#93b8ff" font-size="8" font-family="monospace">DETECTOR</text>
+    <text x="140" y="145" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8" font-family="monospace">Inelastic photon lattice scattering</text>
+  </svg>`);
 }
 
 /* ─── SVG Diagram helpers (built safely via DOMParser) ──────────────── */

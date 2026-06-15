@@ -47,138 +47,221 @@ window.SEMI_DATA = {
     ]
   },
 
-  /* ─── INSPECTION TOOLS ──────────────────────────────────────────────── */
+  /* ─── INSPECTION & METROLOGY TOOLS ─────────────────────────────────── */
   tools: [
     {
-      id: 'cd-sem', slug: 'cd-sem', name: 'CD-SEM',
-      fullName: 'Critical Dimension Scanning Electron Microscope',
-      icon: '🔬',
-      principle: 'A focused electron beam scans the wafer surface. Secondary electrons emitted at feature edges create high-contrast images. Software algorithms measure feature widths (critical dimensions) at nanometer resolution, far beyond optical limits.',
-      specs: ['Resolution: <1 nm', 'Measurement accuracy: ±0.3 nm', 'Throughput: 100+ wafers/hour', 'Voltage: 0.2–2 kV', 'Landing energy: 100 eV–10 keV'],
-      applications: ['Gate length measurement', 'Contact hole diameter', 'Spacer width', 'Pitch verification after EUV patterning'],
-      advantages: ['Sub-nanometer resolution', 'Non-destructive', 'High throughput with automated recipe', 'Direct feature measurement'],
-      limitations: ['Slower than optical', 'Electron beam charging on insulators', 'Requires vacuum environment', 'Sample contamination risk'],
-      manufacturers: ['Hitachi High-Tech (CG7000)', 'Applied Materials (VeritySEM)', 'JEOL Ltd.'],
-      processes: ['Photolithography', 'Etching'],
-      category: 'Metrology'
-    },
-    {
-      id: 'ellipsometer', slug: 'ellipsometer', name: 'Ellipsometer',
-      fullName: 'Spectroscopic Ellipsometer',
+      id: 'wli',
+      slug: 'wli',
+      name: 'White Light Interferometer (WLI)',
+      fullName: 'White Light Interferometer (WLI)',
       icon: '💡',
-      principle: 'Polarized light reflects from the film surface. The change in polarization state (amplitude ratio Ψ and phase difference Δ) is measured. Film thickness and optical constants are extracted by fitting measured data to optical models.',
-      specs: ['Wavelength range: 190–900 nm', 'Thickness range: 0.1 nm – 100 μm', 'Accuracy: ±0.1 nm', 'Spot size: 25 μm – 1 mm', 'Measurement time: <1 second per point'],
-      applications: ['Oxide film thickness', 'Photoresist thickness', 'Metal film measurement', 'Silicon nitride thickness', 'Multi-layer stack characterization'],
-      advantages: ['Extremely sensitive (sub-nm)', 'Non-destructive', 'Fast measurement', 'Multi-layer capability'],
-      limitations: ['Requires optical model', 'Less accurate on rough surfaces', 'Limited for opaque metal films', 'Model-dependent results'],
-      manufacturers: ['KLA (Arachnid)', 'Nova (Prism OCD)', 'Woollam Co.', 'Onto Innovation'],
-      processes: ['Oxidation', 'Deposition', 'CMP'],
-      category: 'Metrology'
-    },
-    {
-      id: 'overlay-sem', slug: 'overlay-sem', name: 'Overlay Metrology',
-      fullName: 'Overlay Inspection System',
-      icon: '🎯',
-      principle: 'Optical or e-beam systems measure the relative displacement between alignment marks printed in successive lithography layers. Image-based (IBO) or diffraction-based (DBO) overlay metrology achieves sub-nanometer accuracy.',
-      specs: ['Measurement accuracy: <0.3 nm (3σ)', 'Throughput: 100+ wafers/hour', 'Mark size: 10–40 μm', 'Wavelength: 400–700 nm (IBO)', 'TIS (Tool-Induced Shift) <0.1 nm'],
-      applications: ['Layer-to-layer alignment verification', 'Scanner calibration', 'Process window optimization', 'Lot disposition decisions'],
-      advantages: ['High throughput', 'Non-destructive', 'Statistical process control integration', 'APC feedback capability'],
-      limitations: ['Only measures at mark locations', 'Mark placement may not represent device area', 'Requires dedicated overlay marks'],
-      manufacturers: ['KLA (ARCHER)', 'ASML (YieldStar)', 'Onto Innovation (Iris)', 'Nova'],
-      processes: ['Photolithography'],
-      category: 'Metrology'
-    },
-    {
-      id: 'optical-wafer-inspection', slug: 'optical-wafer-inspection', name: 'Optical Wafer Inspector',
-      fullName: 'Brightfield/Darkfield Optical Wafer Inspection',
-      icon: '👁️',
-      principle: 'High-intensity light (laser or broadband) illuminates the wafer. Scattered light from defects is captured by a detector array. Die-to-die or die-to-database comparison algorithms identify anomalies at high throughput.',
-      specs: ['Defect sensitivity: 15–40 nm PSL', 'Throughput: 30–100 wafers/hour', 'Illumination: 193 nm to 800 nm', 'Modes: Brightfield, Darkfield, Multi-mode'],
-      applications: ['Particle contamination', 'Pattern defects', 'Scratches, pits', 'Gross process excursions', 'Yield monitoring'],
-      advantages: ['Very high throughput', 'Sensitive to large area defects', 'Die-to-die comparison', 'Low cost of ownership'],
-      limitations: ['Limited resolution vs. e-beam', 'Cannot identify defect type directly', 'Requires review tool for classification'],
-      manufacturers: ['KLA (Puma, eSL10)', 'Applied Materials (SEMVision)', 'ASML'],
-      processes: ['Wafer Inspection', 'CMP', 'Etching'],
-      category: 'Inspection'
-    },
-    {
-      id: 'ebeam-inspection', slug: 'ebeam-inspection', name: 'E-Beam Inspector',
-      fullName: 'Electron Beam Defect Inspection System',
-      icon: '⚡',
-      principle: 'A focused electron beam rasters the wafer surface at high resolution. Secondary and backscattered electrons generate images with sensitivity to both physical defects and electrical contrast differences (voltage contrast), enabling detection of buried and electrical defects.',
-      specs: ['Resolution: <5 nm', 'Voltage contrast sensitivity: Detects open/short circuits', 'Throughput: 0.5–5 wafers/hour', 'Beam energy: 1–3 keV'],
-      applications: ['Contact/via open detection', 'Buried defects', 'Electrical defect capture', 'Logic and memory pattern inspection at advanced nodes'],
-      advantages: ['Highest sensitivity', 'Voltage contrast for electrical defects', 'Sub-5 nm resolution', 'Detects buried defects'],
-      limitations: ['Low throughput vs. optical', 'Expensive', 'Charging artifacts on insulators', 'Requires vacuum'],
-      manufacturers: ['KLA (eDR-7000, CIRCL-8)', 'Applied Materials (SEMVision)', 'Hitachi High-Tech'],
-      processes: ['Wafer Inspection', 'Photolithography'],
-      category: 'Inspection'
-    },
-    {
-      id: 'xrd', slug: 'xrd', name: 'XRD / XRF',
-      fullName: 'X-Ray Diffraction / X-Ray Fluorescence',
-      icon: '☢️',
-      principle: 'X-rays directed at the wafer diffract off crystal planes (XRD) or excite characteristic fluorescent X-rays from elements (XRF). Diffraction patterns reveal crystal structure, strain, and film quality; fluorescence spectra reveal elemental composition.',
-      specs: ['Composition accuracy: <0.1%', 'Thickness range: 1 nm – 1 μm', 'Non-destructive', 'Spot size: 100 μm – 1 mm'],
-      applications: ['Dopant concentration verification', 'Film composition analysis', 'Crystal quality assessment', 'Metal alloy composition'],
-      advantages: ['Elemental composition', 'Crystal structure information', 'Non-destructive', 'Standardless analysis possible'],
-      limitations: ['Poor spatial resolution', 'Limited to bulk/thick films for best sensitivity', 'Requires skilled interpretation'],
-      manufacturers: ['Thermo Fisher Scientific', 'Rigaku', 'Nova (Metrion X-ray)', 'PANalytical'],
-      processes: ['Oxidation', 'Ion Implantation', 'Deposition'],
-      category: 'Metrology'
-    },
-    {
-      id: 'aoi', slug: 'aoi', name: 'AOI System',
-      fullName: 'Automated Optical Inspection',
-      icon: '🔍',
-      principle: 'High-resolution cameras capture images of packaged devices or PCBs. Image processing algorithms compare captured images against a golden reference, flagging dimensional, solder, or cosmetic defects at high speed.',
-      specs: ['Resolution: 5–15 μm/pixel', 'Speed: up to 150 cm²/second', 'False call rate: <200 ppm', 'Defect types: 50+ categories'],
-      applications: ['Bond wire inspection', 'Package defects', 'Lead coplanarity', 'Solder joint verification', 'Marking legibility'],
-      advantages: ['High throughput', '100% inspection possible', 'Non-contact', 'Traceable defect data'],
-      limitations: ['Cannot detect internal defects', 'Requires good lighting setup', 'False alarm management needed'],
-      manufacturers: ['Nordson (Dage)', 'Cohu', 'Onto Innovation (Dragonfly)', 'Camtek'],
-      processes: ['Packaging', 'Final Inspection'],
-      category: 'Inspection'
-    },
-    {
-      id: 'profilometer', slug: 'profilometer', name: 'Surface Profilometer',
-      fullName: 'Contact / Optical Surface Profilometer',
-      icon: '📏',
-      principle: 'Contact: A diamond stylus drags across the surface. Vertical deflection is measured as a function of position. Optical: White-light interferometry or confocal microscopy measures surface height without contact at nanometer vertical resolution.',
-      specs: ['Vertical resolution: 0.1 nm (optical)', 'Scan range: 1 μm – 100 mm', 'Roughness measurement: Ra, Rq, Rz', 'Step height accuracy: ±1 nm'],
-      applications: ['CMP planarity verification', 'Film step height', 'Surface roughness (Ra)', 'Resist coat uniformity', 'Etch depth'],
-      advantages: ['Direct height measurement', 'Wide measurement range', 'Simple calibration'],
-      limitations: ['Contact may damage soft films', 'Slow for large area', 'Limited lateral resolution vs. AFM'],
-      manufacturers: ['KLA-Tencor (P-series)', 'Bruker (DektakXT)', 'Zygo Corporation', 'Onto Innovation'],
+      principle: 'It utilizes the low-coherence properties of a broadband white light source. By splitting the light beam and analyzing the phase differences (constructive and destructive interference patterns) of returning light waves, it instantly maps nanometer-scale surface height variations and roughness without making physical contact.',
+      whatItIs: 'A high-precision, non-contact 3D optical profile measuring instrument used to map microscopic surface topographies.',
+      specs: [
+        'Vertical resolution: <0.1 nm',
+        'Lateral resolution: 0.1–1.5 μm',
+        'Vertical scan range: Up to 10 mm',
+        'RMS repeatability: <0.05 nm'
+      ],
+      applications: [
+        '3D surface topography mapping',
+        'Step height and film thickness profiling',
+        'Surface roughness (Ra, Rq) characterization',
+        'CMP planarity and defect inspection'
+      ],
+      advantages: [
+        'Extremely high vertical resolution',
+        'Non-contact, non-destructive measurement',
+        'Fast 3D scanning over large areas',
+        'Does not require special sample prep'
+      ],
+      limitations: [
+        'Lower lateral resolution compared to AFM or SEM',
+        'Sensitive to ambient vibrations',
+        'Relatively expensive optical systems'
+      ],
+      manufacturers: ['Zygo Corporation', 'Bruker (Alicona)', 'KLA Corporation', 'Onto Innovation'],
       processes: ['CMP', 'Deposition', 'Etching'],
-      category: 'Metrology'
+      category: 'Optical Inspection Technology',
+      image: 'tool_images/wli_diagram.png'
     },
     {
-      id: 'xray-inspection', slug: 'xray-inspection', name: 'X-Ray Inspection',
-      fullName: 'X-Ray Transmission Inspection System',
-      icon: '🩻',
-      principle: 'X-rays penetrate the package and are captured by a detector. Dense materials (solder, bond wires, die) absorb more X-rays, creating contrast. Real-time 2D or computed tomography (CT) 3D images reveal internal package structure.',
-      specs: ['Resolution: 0.1–5 μm', 'Energy: 10–160 kVp', 'Modes: 2D, 3D CT', 'Sample size: Up to 300mm wafer or full FCBGA'],
-      applications: ['BGA solder joint inspection', 'Bond wire detection', 'Void detection in die attach', '3D package CT analysis', 'Delamination detection'],
-      advantages: ['Non-destructive', 'Sees through package', '3D capability with CT', 'No sample prep'],
-      limitations: ['Low resolution for fine features', 'Slow for CT mode', 'X-ray dose considerations', 'Expensive CT systems'],
-      manufacturers: ['Nordson DAGE', 'Cohu (Xceed)', 'Nikon Metrology', 'Bruker'],
-      processes: ['Packaging', 'Final Inspection'],
-      category: 'Inspection'
+      id: 'aoi',
+      slug: 'aoi',
+      name: 'Automated Optical Inspection (AOI)',
+      fullName: 'Automated Optical Inspection (AOI)',
+      icon: '🔍',
+      principle: 'High-resolution cameras capture patterns across the substrate, utilizing structured light, autofocus, and line confocal technology. Advanced AI algorithms contrast these captures against a pristine reference database to flag macro-defects, scratches, contamination, and die shift/tilt variations.',
+      whatItIs: 'A camera-based system used to rapidly detect cosmetic and structural defects on wafers and advanced packaging architectures (like CoWoS).',
+      specs: [
+        'Resolution: 5–15 μm/pixel',
+        'Scan Speed: up to 150 cm²/second',
+        'False call rate: <200 ppm',
+        'Defect types: 50+ categories'
+      ],
+      applications: [
+        'Wafer defect inspection',
+        'Advanced packaging inspection (CoWoS)',
+        'Solder joint verification',
+        'Die shift and tilt measurement'
+      ],
+      advantages: [
+        'Very high throughput',
+        '100% inspection possible',
+        'Non-contact and automated classification',
+        'Identifies macro-defects and scratches instantly'
+      ],
+      limitations: [
+        'Cannot detect internal/sub-surface defects',
+        'Requires complex lighting configurations',
+        'False alarms require manual review'
+      ],
+      manufacturers: ['Nordson (Dage)', 'Onto Innovation (Dragonfly)', 'Camtek', 'KLA Corporation'],
+      processes: ['Photolithography', 'CMP', 'Packaging', 'Final Inspection'],
+      category: 'Optical Inspection Technology',
+      image: 'tool_images/aoi_diagram.png'
     },
     {
-      id: 'dopant-profiler', slug: 'dopant-profiler', name: 'SIMS / Dopant Profiler',
-      fullName: 'Secondary Ion Mass Spectrometry',
+      id: 'cd-sem',
+      slug: 'cd-sem',
+      name: 'Scanning Electron Microscope (SEM / CD-SEM)',
+      fullName: 'Scanning Electron Microscope (SEM / CD-SEM)',
+      icon: '🔬',
+      principle: 'Operating within a high-vacuum chamber, an electron gun shapes and shoots a focused electron beam onto the wafer. A series of electromagnetic lenses focus the beam as it sweeps across the surface, liberating Secondary Electrons (SE) for high-resolution topography maps and Backscattered Electrons (BSE) for material contrast.',
+      whatItIs: 'A nanoscale imaging tool that bypasses the physical diffraction limits of visible light to inspect ultra-fine 2D patterns and critical dimensions (CD).',
+      specs: [
+        'Resolution: <1 nm',
+        'Measurement accuracy: ±0.3 nm',
+        'Throughput: 100+ wafers/hour',
+        'Landing energy: 100 eV–10 keV'
+      ],
+      applications: [
+        'Gate length and feature width (CD) measurement',
+        'Contact hole and via diameter verification',
+        'High-resolution nanoscale defect review',
+        'Spacer and pitch verification after EUV lithography'
+      ],
+      advantages: [
+        'Sub-nanometer lateral resolution',
+        'Non-destructive pattern checking',
+        'Highly automated and recipe-driven',
+        'Direct measurement of critical dimensions'
+      ],
+      limitations: [
+        'Slower than optical inspection methods',
+        'Electron beam can cause charge buildup on insulators',
+        'Requires a high-vacuum chamber environment'
+      ],
+      manufacturers: ['Hitachi High-Tech (CG7000)', 'Applied Materials (VeritySEM)', 'JEOL Ltd.', 'ASML'],
+      processes: ['Photolithography', 'Etching'],
+      category: 'Charged Particle & Probe Microscopy',
+      image: 'tool_images/sem_diagram.png'
+    },
+    {
+      id: 'afm',
+      slug: 'afm',
+      name: 'Atomic Force Microscope (AFM)',
+      fullName: 'Atomic Force Microscope (AFM)',
+      icon: '📐',
+      principle: 'Instead of utilizing lenses, it uses a highly sensitive microscopic probe attached to a flexible cantilever. Guided by a piezoelectric scanner, the probe gently "feels" the surface. A laser beam bounces off the back of the cantilever into a quadrant photodiode detector, capturing sub-nanometer deflections to map native surface roughness, cracks, or pits.',
+      whatItIs: 'A scanning probe instrument capable of reconstructing true 3D surface profiles at atomic-scale resolution.',
+      specs: [
+        'Lateral resolution: <0.1 nm (atomic-scale)',
+        'Vertical resolution: <0.01 nm',
+        'Scan area: Up to 100x100 μm',
+        'Cantilever probe radius: <10 nm'
+      ],
+      applications: [
+        'True 3D atomic-scale profiling',
+        'Native surface roughness mapping',
+        'Micro-crack and sub-nanometer pit detection',
+        'CMP planarity characterization at atomic levels'
+      ],
+      advantages: [
+        'True 3D mapping with atomic height resolution',
+        'Does not require vacuum (operates in air or liquid)',
+        'Direct physical measurement without optical modeling'
+      ],
+      limitations: [
+        'Extremely slow scan speed (takes minutes per scan)',
+        'Very small maximum scan area',
+        'Probe tip is fragile and prone to wear/contamination'
+      ],
+      manufacturers: ['Bruker Nano', 'Park Systems', 'Oxford Instruments (Asylum Research)'],
+      processes: ['CMP', 'Deposition', 'Etching'],
+      category: 'Charged Particle & Probe Microscopy',
+      image: 'tool_images/afm_diagram.png'
+    },
+    {
+      id: 'raman',
+      slug: 'raman',
+      name: 'Raman Spectrometer',
+      fullName: 'Raman Spectrometer',
       icon: '⚗️',
-      principle: 'A focused primary ion beam sputters atoms from the sample surface. Ejected secondary ions are analyzed by mass spectrometry. Depth profiling reveals dopant concentration vs. depth with parts-per-billion sensitivity.',
-      specs: ['Depth resolution: 1–5 nm', 'Sensitivity: 1×10¹³ – 1×10²³ atoms/cm³', 'Detects: All elements including H, B, P, As', 'Destructive technique'],
-      applications: ['Dopant profile verification', 'Implant dose confirmation', 'Thin film composition', 'Diffusion profile measurement'],
-      advantages: ['Highest elemental sensitivity', 'Depth profiling', 'Detects hydrogen', 'Quantitative with standards'],
-      limitations: ['Destructive — destroys sample', 'Low throughput', 'Requires calibration standards', 'Vacuum required'],
-      manufacturers: ['Thermo Fisher (SIMS)', 'Cameca (IMS series)', 'Physical Electronics'],
-      processes: ['Ion Implantation', 'Oxidation'],
-      category: 'Metrology'
+      principle: 'A laser interacts with molecular vibrations within the crystalline lattice, causing inelastic light scattering (the Raman Effect). The resulting shift in photon energy acts as a unique molecular fingerprint, allowing engineers to quantitatively measure element concentration and structural integrity.',
+      whatItIs: 'An optical material analysis tool used to evaluate chemical composition, crystallinity, stress, and strain within semiconductor layers.',
+      specs: [
+        'Laser wavelengths: 532 nm, 633 nm, 785 nm',
+        'Spectral resolution: <0.5 cm⁻¹',
+        'Spatial resolution: ~0.5 μm (confocal optical limit)',
+        'Measurement time: <1 second per point'
+      ],
+      applications: [
+        'Mechanical stress and lattice strain profiling (Si/SiGe)',
+        'Crystallinity and phase composition mapping',
+        'Annealing and dopant activation profiling',
+        'Impurity and chemical composition monitoring'
+      ],
+      advantages: [
+        'Completely non-contact and non-destructive',
+        'Highly sensitive to sub-nanometer lattice strain',
+        'Fast measurement speeds with no sample prep required'
+      ],
+      limitations: [
+        'Diffraction-limited spatial resolution (~500 nm)',
+        'Very weak signal (only 1 in 10⁶ photons scatter)',
+        'Fluorescence background can overlap the Raman signal'
+      ],
+      manufacturers: ['Horiba Scientific', 'Renishaw', 'Bruker Optics', 'Nova'],
+      processes: ['Ion Implantation', 'Deposition'],
+      category: 'Advanced Material & Structural Analysis',
+      image: 'tool_images/raman_diagram.png'
     },
+    {
+      id: 'xray',
+      slug: 'xray',
+      name: 'X-ray Techniques (XRD & AXI)',
+      fullName: 'X-ray Techniques (XRD & Automated X-ray Inspection / AXI)',
+      icon: '☢️',
+      principle: 'For crystalline phases (XRD): An X-ray beam hits the sample at varying angles (2θ). When Bragg’s Law (nλ=2dsinθ) is satisfied, constructive interference yields intense diffraction peaks, mapping crystal phase fingerprints. For structural inspection (AXI/CT): X-rays penetrate dense metal architectures like Through-Silicon Vias (TSVs) or micro-bumps. While the source stays fixed, a 5-axis motorized stage rotates the specimen 360° to compile hundreds of 2D radiographs into a fully realized 3D Computed Tomography map to flag hidden internal voids or cracks.',
+      whatItIs: 'Deep-penetrating radiation systems used to inspect crystalline phase orientation and internal/sub-surface structural integrity without altering the sample.',
+      specs: [
+        'XRD Angular resolution: <0.0001°',
+        'AXI / CT resolution: 0.1–5 μm',
+        'AXI Voltage range: 10–160 kV',
+        'Stage: 5-axis motorized, 360° rotation'
+      ],
+      applications: [
+        'Crystalline phase orientation and strain profiling',
+        'Sub-surface inspection of TSVs and micro-bumps',
+        'Hidden void, crack, and delamination detection in 3D packages',
+        'Film thickness and elemental composition analysis'
+      ],
+      advantages: [
+        'Deep penetration through packaging metals and substrates',
+        'Non-destructive 3D tomographic mapping',
+        'No sample preparation required'
+      ],
+      limitations: [
+        'Slow scan times in CT mode',
+        'Radiation dose management and safety shielding required',
+        'Lower spatial resolution compared to e-beam/SEM methods'
+      ],
+      manufacturers: ['Rigaku', 'Nordson DAGE', 'Nikon Metrology', 'Bruker', 'Nova'],
+      processes: ['Ion Implantation', 'Deposition', 'Packaging', 'Final Inspection'],
+      category: 'Advanced Material & Structural Analysis',
+      image: 'tool_images/xray_diagram.png'
+    }
   ],
 
   /* ─── MANUFACTURING STEPS ─────────────────────────────────────────── */
@@ -211,7 +294,7 @@ CLEANING: Multi-step RCA clean removes organic and metallic contamination. SC-1 
         { step: 'RCA Cleaning', desc: 'Remove organics, particles, and metallic contamination' },
         { step: 'QC Inspection', desc: 'Surface defect, thickness, and orientation verification' },
       ],
-      inspectionTools: ['cd-sem', 'optical-wafer-inspection', 'xrd', 'profilometer'],
+      inspectionTools: ['cd-sem', 'aoi', 'xray', 'wli'],
       companies: ['shin-etsu', 'sumco', 'siltronic', 'globalwafers'],
       companyDetails: [
         { name: 'Shin-Etsu Chemical', country: 'Japan', role: 'Wafer supplier, #1 globally (30% share). Also supplies photoresists and specialty chemicals.' },
@@ -249,7 +332,7 @@ KEY METRICS: Oxide thickness uniformity <1% across wafer. Interface state densit
         { step: 'Cool Down', desc: 'Controlled cool at 3-5°C/min to prevent slip dislocations' },
         { step: 'Thickness Measurement', desc: 'Ellipsometry verifies thickness and uniformity across wafer' },
       ],
-      inspectionTools: ['ellipsometer', 'xrd', 'dopant-profiler', 'optical-wafer-inspection'],
+      inspectionTools: ['aoi', 'xray', 'wli'],
       companies: [],
       companyDetails: [
         { name: 'KLA Corporation', country: 'USA', role: 'Ellipsometry systems for oxide thickness and uniformity measurement (Arachnid, Spectra FX).' },
@@ -289,7 +372,7 @@ INSPECTION: After litho, CD-SEM measures feature widths; overlay metrology check
         { step: 'TMAH Development', desc: '0.26N developer dissolves exposed resist regions, 20-60s' },
         { step: 'CD-SEM Inspection', desc: 'Measure feature widths, overlay, defects; disposition wafer' },
       ],
-      inspectionTools: ['cd-sem', 'overlay-sem', 'optical-wafer-inspection', 'ebeam-inspection'],
+      inspectionTools: ['cd-sem', 'aoi'],
       companies: [],
       companyDetails: [
         { name: 'ASML Holding', country: 'Netherlands', role: 'Sole supplier of EUV scanners (TWINSCAN NXE/EXE). Also supplies DUV immersion scanners. Market cap >$260B.' },
@@ -331,7 +414,7 @@ KEY PARAMETERS: Selectivity (etch rate ratio target/mask), Anisotropy (vertical/
         { step: 'Resist Strip', desc: 'O₂ plasma ash removes photoresist; wet clean removes residue' },
         { step: 'Profile Inspection', desc: 'CD-SEM and cross-section verify sidewall angle and depth' },
       ],
-      inspectionTools: ['cd-sem', 'optical-wafer-inspection', 'ebeam-inspection', 'profilometer'],
+      inspectionTools: ['cd-sem', 'aoi', 'wli'],
       companies: [],
       companyDetails: [
         { name: 'Lam Research', country: 'USA', role: 'Plasma etch market leader. Kiyo etch system for conductor etch; Flex for dielectric etch.' },
@@ -372,7 +455,7 @@ POST-IMPLANT ANNEALING: Implant creates lattice damage (amorphous layer at high 
         { step: 'Resist Strip', desc: 'Plasma ash + wet clean removes implanted resist residue' },
         { step: 'RTA Anneal', desc: '900-1,100°C for 10-60 sec activates dopants, repairs damage' },
       ],
-      inspectionTools: ['dopant-profiler', 'xrd', 'ellipsometer', 'optical-wafer-inspection'],
+      inspectionTools: ['xray', 'aoi', 'raman'],
       companies: [],
       companyDetails: [
         { name: 'Axcelis Technologies', country: 'USA', role: 'Purion family — dedicated ion implant systems for high-current, high-energy, and medium-current applications.' },
@@ -410,7 +493,7 @@ EPI (EPITAXIAL GROWTH): CVD or MBE grows single-crystal silicon or SiGe on singl
         { step: 'Thickness Measurement', desc: 'Ellipsometry, XRR, or XRF measures thickness, density, composition' },
         { step: 'Uniformity Check', dest: '49-point or 121-point wafer map verifies ±1% uniformity' },
       ],
-      inspectionTools: ['ellipsometer', 'xrd', 'profilometer', 'optical-wafer-inspection'],
+      inspectionTools: ['wli', 'xray', 'aoi'],
       companies: [],
       companyDetails: [
         { name: 'Applied Materials', country: 'USA', role: 'Centura PVD, Producer CVD/ALD — largest equipment supplier for deposition processes.' },
@@ -451,7 +534,7 @@ POST-CMP: Brush scrub cleaning removes slurry particles. Megasonic clean in dilu
         { step: 'Post-CMP Clean', desc: 'Brush scrub + megasonic removes particles and slurry residue' },
         { step: 'Planarity Inspection', desc: 'Profilometer and optical scanner verify flatness and defects' },
       ],
-      inspectionTools: ['profilometer', 'ellipsometer', 'optical-wafer-inspection', 'ebeam-inspection'],
+      inspectionTools: ['wli', 'aoi'],
       companies: [],
       companyDetails: [
         { name: 'Applied Materials', country: 'USA', role: 'Reflexion LK Prime CMP — industry-leading multi-head CMP system for copper and dielectric planarization.' },
@@ -490,7 +573,7 @@ RESISTANCE TARGETS: Via resistance <10 Ω. Line resistance per unit length: M1 8
         { step: 'Cu Anneal', desc: '200-400°C improves grain size, reduces resistance, relieves stress' },
         { step: 'Copper CMP', desc: 'Removes Cu overburden; barrier CMP achieves <50nm final flatness' },
       ],
-      inspectionTools: ['optical-wafer-inspection', 'ebeam-inspection', 'profilometer', 'cd-sem'],
+      inspectionTools: ['aoi', 'wli', 'cd-sem'],
       companies: [],
       companyDetails: [
         { name: 'Applied Materials', country: 'USA', role: 'PVD (Endura), CVD dielectric (Producer), CMP (Reflexion), and ECP (Raider) systems for full interconnect flow.' },
@@ -531,7 +614,7 @@ DEFECT REVIEW: After inspection, defect coordinates loaded into review SEM (KLA 
         { step: 'Data Analysis', desc: 'Statistical process control (SPC) charts monitor trends' },
         { step: 'APC Feedback', desc: 'Automated corrections sent to scanner, etch, and deposition tools' },
       ],
-      inspectionTools: ['optical-wafer-inspection', 'ebeam-inspection', 'cd-sem', 'overlay-sem', 'ellipsometer'],
+      inspectionTools: ['aoi', 'cd-sem', 'wli'],
       companies: [],
       companyDetails: [
         { name: 'KLA Corporation', country: 'USA', role: 'Dominant inspection/metrology supplier. Puma optical, eDR e-beam, ARCHER overlay, SpectraFx film thickness, P-series profilometry.' },
@@ -573,7 +656,7 @@ BINNING: Pass Bin: meets all specs. Speed Bin: sorted by max frequency (e.g., 3.
         { step: 'Binning', desc: 'Each die assigned to pass/speed/voltage/fail bin' },
         { step: 'Wafer Map', desc: 'Pass/fail map recorded; ink-marked failing dies before dicing' },
       ],
-      inspectionTools: ['ebeam-inspection', 'optical-wafer-inspection', 'aoi'],
+      inspectionTools: ['aoi'],
       companies: [],
       companyDetails: [
         { name: 'Advantest', country: 'Japan', role: 'T2000/V93000 ATE systems — leading tester for logic, memory, and SoC applications.' },
@@ -612,7 +695,7 @@ DICING EQUIPMENT: DISCO Corporation (Japan) is world leader — DAD series blade
         { step: 'Die Inspection', desc: 'Vision system checks die edge quality, chipping, and cracks' },
         { step: 'Die Pick', desc: 'Vacuum collet picks individual dies from tape for placement' },
       ],
-      inspectionTools: ['optical-wafer-inspection', 'aoi', 'xray-inspection'],
+      inspectionTools: ['aoi', 'xray'],
       companies: [],
       companyDetails: [
         { name: 'DISCO Corporation', country: 'Japan', role: 'World\'s largest dicing equipment manufacturer. DAD blade and DFL laser dicing systems. ~70% market share.' },
@@ -652,7 +735,7 @@ PACKAGE TYPES: SOIC (8-28 pins), TSOP (28-100 pins), BGA (169-1000+ pins), FCBGA
         { step: 'Trim & Form', desc: 'Excess lead material cut; leads formed to gull-wing or J-bend shape' },
         { step: 'Marking', desc: 'Product/date codes laser-marked or ink-jet printed at 300-1200 dpi' },
       ],
-      inspectionTools: ['xray-inspection', 'aoi', 'optical-wafer-inspection'],
+      inspectionTools: ['xray', 'aoi'],
       companies: [],
       companyDetails: [
         { name: 'Kulicke & Soffa (K&S)', country: 'USA', role: 'Wire bonding systems — IConn Pro, KATALYST; industry leader with >50% market share.' },
@@ -690,7 +773,7 @@ OUTGOING QUALITY CONTROL: AQL (Acceptable Quality Level) sampling. Cpk (process 
         { step: 'Tape & Reel', desc: 'Passing devices loaded into carrier tape and reeled for SMT' },
         { step: 'Traceability', desc: 'Lot traceability code recorded linking chip to wafer, test, and QC data' },
       ],
-      inspectionTools: ['aoi', 'xray-inspection', 'optical-wafer-inspection'],
+      inspectionTools: ['aoi', 'xray'],
       companies: [],
       companyDetails: [
         { name: 'Advantest', country: 'Japan', role: 'T2000, V93000, T5700 series ATE — leading packaged device testers for logic, memory, SoC.' },
