@@ -1480,6 +1480,29 @@ footer {
   color: var(--w30);
 }
 
+/* ─── LOADING RABBIT ANIMATION ─────────────────────────────────────────── */
+.loading-rabbit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+.rabbit-svg {
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.35));
+  animation: rabbitFloat 1.8s ease-in-out infinite, rabbitAppear 0.5s ease both;
+  transform-origin: bottom center;
+}
+@keyframes rabbitFloat {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  25%       { transform: translateY(-8px) rotate(1deg); }
+  50%       { transform: translateY(-4px) rotate(-1deg); }
+  75%       { transform: translateY(-10px) rotate(2deg); }
+}
+@keyframes rabbitAppear {
+  from { opacity: 0; transform: scale(0.6) translateY(10px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
 /* ─── RESPONSIVE ────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   .footer-inner { grid-template-columns: 1fr 1fr; }
@@ -3664,6 +3687,57 @@ h5.wiki-reader-heading { font-size: 0.88rem; }
   50% { transform: scale(1.05); filter: drop-shadow(0 0 20px rgba(255,255,255,0.3)); }
 }
 
+@keyframes cookieSlideUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
 
+/* Checklist Item 13: Color contrast enhancements */
+.section-label {
+  color: #a1a1aa !important; /* WCAG AA contrast compliance against pure black */
+}
+.hero-sub {
+  color: rgba(255, 255, 255, 0.78) !important;
+}
+.footer-links a {
+  color: rgba(255, 255, 255, 0.75) !important;
+  transition: color 0.2s ease;
+}
+.footer-links a:hover {
+  color: #ffffff !important;
+}
 
+/* Checklist Item 14: Mobile friendly touch targets >= 44px */
+@media (max-width: 768px) {
+  .nav-links li a, 
+  .mobile-nav a, 
+  .btn, 
+  .hamburger {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+}
 
+/* Team Holographic Badge Glow */
+.member-badge-card {
+  position: relative;
+  overflow: hidden;
+}
+.member-badge-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 65%);
+  pointer-events: none;
+  animation: pulseGlow 6s ease-in-out infinite;
+}

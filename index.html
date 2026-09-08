@@ -9,24 +9,43 @@
   <meta name="keywords" content="semiconductor manufacturing, photolithography, etching, ion implantation, CMP, wafer inspection, ASML, KLA, TSMC, IC fabrication">
   <meta name="author" content="Akshith Mandapally">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="ELCHIP — Semiconductor Manufacturing & Inspection System">
-  <meta property="og:description" content="Explore semiconductor IC fabrication processes, tools, and companies.">
+  <link rel="canonical" href="https://akshithmandapally-cmyk.github.io/Elchip/">
+
+  <!-- Open Graph / Facebook / LinkedIn (Checklist Item 6 & 7) -->
+  <meta property="og:title" content="ELCHIP — Semiconductor Manufacturing & Inspection Platform">
+  <meta property="og:description" content="Explore nanoscale semiconductor IC fabrication processes — from silicon wafer prep to EUV lithography, metrology, and global foundries.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://akshithmandapally-cmyk.github.io/Elchip/">
+  <meta property="og:image" content="https://akshithmandapally-cmyk.github.io/Elchip/real_chip_pkg_1779418720672.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="ELCHIP">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="tnc-removebg-preview.png?v=3">
+  <!-- Twitter Card (Checklist Item 6 & 7) -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ELCHIP — Semiconductor Manufacturing & Inspection Platform">
+  <meta name="twitter:description" content="Explore 13 nanoscale IC fabrication phases, inspection equipment physics, and global foundries.">
+  <meta name="twitter:image" content="https://akshithmandapally-cmyk.github.io/Elchip/real_chip_pkg_1779418720672.png">
+  <meta name="twitter:creator" content="@AkshithMandapally">
 
-  <!-- Content Security Policy
-       - script-src: self + unpkg.com (AOS)
-       - connect-src: Wikipedia API, DuckDuckGo API, and Invidious API
-       - frame-src: YouTube for embedded video players
-       - img-src: Wikipedia and YouTube thumbnails
-       - style-src: unsafe-inline required for AOS CDN styles -->
+  <!-- Favicon & Touch Icons (Checklist Item 8) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="tnc-removebg-preview.png?v=3">
+  <link rel="icon" type="image/png" sizes="192x192" href="tnc-removebg-preview.png?v=3">
+  <link rel="apple-touch-icon" href="tnc-removebg-preview.png?v=3">
+  <meta name="theme-color" content="#000000">
+
+  <!-- Page Speed: Resource Preconnects (Checklist Item 12) -->
+  <link rel="preconnect" href="https://unpkg.com" crossorigin>
+  <link rel="dns-prefetch" href="https://unpkg.com">
+  <link rel="preconnect" href="https://upload.wikimedia.org" crossorigin>
+  <link rel="dns-prefetch" href="https://upload.wikimedia.org">
+
+  <!-- Content Security Policy & Force HTTPS (Checklist Item 4) -->
   <meta http-equiv="Content-Security-Policy"
-    content="default-src 'self';
+    content="upgrade-insecure-requests;
+             default-src 'self';
              script-src 'self' https://unpkg.com;
-             style-src 'self' 'unsafe-inline';
+             style-src 'self' 'unsafe-inline' https://unpkg.com;
              font-src 'self';
              img-src 'self' data: https://upload.wikimedia.org https://en.wikipedia.org https://img.youtube.com https://books.google.com https://*.google.com https://*.ggpht.com;
              connect-src 'self' https://en.wikipedia.org https://api.duckduckgo.com https://yewtu.be https://invidious.lunar.icu https://vid.puffyan.us https://invidious.flokinet.to https://www.googleapis.com https://generativelanguage.googleapis.com https://export.arxiv.org https://yt.chocolatemoo53.com https://inv.thepixora.com;
@@ -39,13 +58,7 @@
   <!-- Prevent MIME sniffing -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
 
-  <!-- Tahoma is a system font — no external font CDN required -->
-
-  <!-- AOS — Animate on Scroll (CDN with SRI hash)
-       TODO(security): Verify SRI hash matches current version before production deployment.
-       NOTE: Update AOS version here if upgrading the library. -->
-  <!-- TODO(security): Add verified SRI hash before production deployment.
-       Generate with: openssl dgst -sha384 -binary aos.css | openssl base64 -A -->
+  <!-- AOS — Animate on Scroll -->
   <link rel="stylesheet"
     href="https://unpkg.com/aos@2.3.1/dist/aos.css"
     crossorigin="anonymous">
@@ -58,11 +71,38 @@
 
   <!-- ─── LOADING SCREEN ──────────────────────────────────────────────── -->
   <div class="loading-screen" id="loading-screen" aria-live="polite" aria-label="Loading platform">
+    <div class="loading-rabbit" aria-hidden="true">
+      <svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" class="rabbit-svg">
+        <!-- Ears -->
+        <ellipse cx="22" cy="14" rx="5" ry="12" fill="white" opacity="0.9"/>
+        <ellipse cx="42" cy="14" rx="5" ry="12" fill="white" opacity="0.9"/>
+        <ellipse cx="22" cy="14" rx="2.5" ry="8" fill="rgba(255,200,200,0.4)"/>
+        <ellipse cx="42" cy="14" rx="2.5" ry="8" fill="rgba(255,200,200,0.4)"/>
+        <!-- Head -->
+        <ellipse cx="32" cy="30" rx="14" ry="13" fill="white" opacity="0.95"/>
+        <!-- Eyes -->
+        <circle cx="26" cy="27" r="2.5" fill="#111"/>
+        <circle cx="38" cy="27" r="2.5" fill="#111"/>
+        <circle cx="27" cy="26" r="0.8" fill="white"/>
+        <circle cx="39" cy="26" r="0.8" fill="white"/>
+        <!-- Nose -->
+        <ellipse cx="32" cy="32" rx="2" ry="1.2" fill="rgba(255,150,150,0.7)"/>
+        <!-- Mouth -->
+        <path d="M30 33.5 Q32 35.5 34 33.5" stroke="rgba(150,100,100,0.5)" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+        <!-- Body -->
+        <ellipse cx="32" cy="50" rx="11" ry="9" fill="white" opacity="0.9"/>
+        <!-- Tail -->
+        <circle cx="43" cy="52" r="4" fill="white" opacity="0.85"/>
+        <!-- Front paws -->
+        <ellipse cx="22" cy="58" rx="4" ry="2.5" fill="white" opacity="0.85"/>
+        <ellipse cx="32" cy="60" rx="4" ry="2.5" fill="white" opacity="0.85"/>
+      </svg>
+    </div>
     <div class="loading-logo">ELCHIP</div>
     <div class="loading-bar-wrap">
       <div class="loading-bar"></div>
     </div>
-    <div class="loading-text">Initializing Semiconductor Platform</div>
+    <div class="loading-text">Initializing Research Platform</div>
   </div>
 
   <!-- ─── NAV SHELL ───────────────────────────────────────────────────── -->
@@ -97,6 +137,9 @@
   <script src="pages/process.js"></script>
   <script src="pages/tool.js"></script>
   <script src="pages/companies.js"></script>
+  <script src="pages/team.js"></script>
+  <script src="pages/privacy.js"></script>
+  <script src="pages/terms.js"></script>
   <script src="pages/auth.js"></script>
   <script src="pages/connect.js"></script>
   <script src="pages/dashboard.js"></script>

@@ -42,17 +42,42 @@ window.renderHome = function (container) {
   heroInner.style.position = 'relative';
   heroInner.style.zIndex = '1';
 
+  // Recruitment banner tag
+  const recruitTag = document.createElement('a');
+  recruitTag.href = '#/team';
+  recruitTag.className = 'hero-recruit-badge anim-fade-up';
+  recruitTag.style.cssText = 'display:inline-flex; align-items:center; gap:0.6rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.18); border-radius:999px; padding:0.45rem 1.15rem; margin-bottom:1.5rem; text-decoration:none; color:#ffffff; font-size:0.78rem; font-family:var(--mono); letter-spacing:0.04em; transition:all 0.3s ease; box-shadow:0 0 20px rgba(255,255,255,0.05);';
+  recruitTag.innerHTML = '<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow:0 0 10px #22c55e;"></span><span>We\'re Recruiting: Join Team ELCHIP &amp; Register &rarr;</span>';
+  recruitTag.addEventListener('mouseenter', () => {
+    recruitTag.style.background = 'rgba(255,255,255,0.12)';
+    recruitTag.style.borderColor = 'rgba(255,255,255,0.4)';
+    recruitTag.style.transform = 'translateY(-2px)';
+  });
+  recruitTag.addEventListener('mouseleave', () => {
+    recruitTag.style.background = 'rgba(255,255,255,0.06)';
+    recruitTag.style.borderColor = 'rgba(255,255,255,0.18)';
+    recruitTag.style.transform = 'translateY(0)';
+  });
+
   const h1 = document.createElement('h1');
   h1.className = 'hero-title anim-fade-up-d1';
   h1.textContent = 'Deep Dive into Semiconductor Manufacturing';
 
+  const heroSub = document.createElement('p');
+  heroSub.className = 'hero-sub anim-fade-up-d2';
+  heroSub.style.cssText = 'font-size:clamp(1rem,2vw,1.15rem); color:rgba(255,255,255,0.72); max-width:640px; margin:1rem auto 2.25rem; line-height:1.7;';
+  heroSub.textContent = 'Explore 13 nanoscale fabrication phases, equipment inspection physics, and global foundries — engineered for students, researchers, and builders.';
+
   const cta = document.createElement('div');
   cta.className = 'hero-cta anim-fade-up-d3';
+  cta.style.cssText = 'display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; align-items:center;';
 
+  // 1 Clear Call to Action (Checklist Item 20)
   const btnExplore = document.createElement('a');
   btnExplore.className = 'btn btn-primary btn-hero-explore';
   btnExplore.href = '#/process-flow';
   btnExplore.setAttribute('aria-label', 'Explore manufacturing process');
+  btnExplore.style.cssText = 'padding:0.95rem 1.8rem; font-size:0.9rem; font-weight:700; box-shadow:0 0 30px rgba(255,255,255,0.25);';
   btnExplore.textContent = 'Explore Process Flow';
   
   // Arrow icon SVG
@@ -63,14 +88,22 @@ window.renderHome = function (container) {
   btnExplore.appendChild(document.importNode(arrowSvg.documentElement, true));
   cta.appendChild(btnExplore);
 
+  const btnTeam = document.createElement('a');
+  btnTeam.className = 'btn btn-ghost';
+  btnTeam.href = '#/team';
+  btnTeam.setAttribute('aria-label', 'Join Team ELCHIP');
+  btnTeam.style.cssText = 'padding:0.95rem 1.5rem; font-size:0.9rem; border-color:rgba(255,255,255,0.3);';
+  btnTeam.textContent = 'Join Team ELCHIP';
+  cta.appendChild(btnTeam);
+
   const btnCompanies = document.createElement('a');
   btnCompanies.className = 'btn btn-ghost btn-hero-companies';
   btnCompanies.href = '#/companies';
   btnCompanies.setAttribute('aria-label', 'View companies');
-  btnCompanies.textContent = 'View Companies';
+  btnCompanies.textContent = 'Foundries';
   cta.appendChild(btnCompanies);
 
-  heroInner.append(h1, cta);
+  heroInner.append(recruitTag, h1, heroSub, cta);
   hero.appendChild(heroInner);
 
   frag.appendChild(hero);
@@ -262,34 +295,7 @@ window.renderHome = function (container) {
   coLink.textContent = 'View All Companies →';
   coBtn.appendChild(coLink);
 
-  const user = localStorage.getItem('elchip_user');
-  if (!user) {
-    const lockCard = document.createElement('div');
-    lockCard.className = 'glass-card';
-    lockCard.style.cssText = 'padding:3rem 2rem; border-radius:18px; text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.25rem;';
-
-    const lockIcon = document.createElement('div');
-    lockIcon.style.cssText = 'font-size:2.5rem;';
-    lockIcon.textContent = '🔒';
-
-    const lockText = document.createElement('div');
-    lockText.style.cssText = 'font-size:1.15rem; font-weight:700; color:#fff;';
-    lockText.textContent = 'Companies Directory Locked';
-
-    const lockDesc = document.createElement('p');
-    lockDesc.style.cssText = 'font-size:0.88rem; color:rgba(255,255,255,0.5); max-width:480px; line-height:1.65; margin:0;';
-    lockDesc.textContent = 'Sign Up or Sign In to access semiconductor companies directory.';
-
-    const lockBtn = document.createElement('a');
-    lockBtn.className = 'btn btn-primary';
-    lockBtn.href = '#/auth';
-    lockBtn.textContent = 'Sign Up / Sign In';
-
-    lockCard.append(lockIcon, lockText, lockDesc, lockBtn);
-    coInner.append(coLabel, coTitle, coDivider, lockCard);
-  } else {
-    coInner.append(coLabel, coTitle, coDivider, coGrid, coBtn);
-  }
+  coInner.append(coLabel, coTitle, coDivider, coGrid, coBtn);
   coSection.appendChild(coInner);
   frag.appendChild(coSection);
 
@@ -307,24 +313,40 @@ window.renderHome = function (container) {
 
 function buildFooter() {
   const footer = document.createElement('footer');
+  footer.className = 'footer-shell';
   const inner = document.createElement('div');
   inner.className = 'footer-inner container';
 
-  // Brand
+  // Brand column
   const brand = document.createElement('div');
+  brand.style.cssText = 'display:flex; flex-direction:column; gap:0.75rem; max-width:320px;';
   const brandName = document.createElement('span');
   brandName.className = 'footer-brand';
   brandName.textContent = 'ELCHIP';
-  brand.append(brandName);
+  
+  const brandDesc = document.createElement('p');
+  brandDesc.style.cssText = 'font-size:0.85rem; color:rgba(255,255,255,0.65); line-height:1.6; margin:0;';
+  brandDesc.textContent = 'Open educational semiconductor engineering platform — exploring nanoscale IC fabrication, cleanroom metrology, and equipment physics.';
+  
+  const brandBadge = document.createElement('div');
+  brandBadge.style.cssText = 'display:inline-flex; align-items:center; gap:0.5rem; font-size:0.72rem; color:#86efac; font-family:var(--mono);';
+  brandBadge.innerHTML = '<span style="width:6px; height:6px; border-radius:50%; background:#22c55e;"></span> System Nominal &bull; Production v2.0';
+  
+  brand.append(brandName, brandDesc, brandBadge);
 
-  // Quick links (Glossary removed)
+  // Quick links
   const links = document.createElement('div');
   const linksHeading = document.createElement('span');
   linksHeading.className = 'footer-heading';
-  linksHeading.textContent = 'Navigation';
+  linksHeading.textContent = 'Platform';
   const linksList = document.createElement('ul');
   linksList.className = 'footer-links';
-  [['Process Flow', '#/process-flow'], ['Inspection Tools', '#/tools'], ['Companies', '#/companies']].forEach(([text, href]) => {
+  [
+    ['Process Flow', '#/process-flow'],
+    ['Inspection Tools', '#/tools'],
+    ['Foundries & Companies', '#/companies'],
+    ["Let's Connect", '#/connect']
+  ].forEach(([text, href]) => {
     const li = document.createElement('li');
     const a = document.createElement('a');
     a.href = href;
@@ -334,31 +356,64 @@ function buildFooter() {
   });
   links.append(linksHeading, linksList);
 
-  // References
-  const refs = document.createElement('div');
-  const refsHeading = document.createElement('span');
-  refsHeading.className = 'footer-heading';
-  refsHeading.textContent = 'References';
-  const refsList = document.createElement('ul');
-  refsList.className = 'footer-links';
-  ['JEDEC Standards', 'SEMI Equipment Reports', 'ITRS/IRDS Roadmap', 'IEEE Transactions on Semiconductor Mfg'].forEach(ref => {
+  // Team & Recruitment column
+  const teamCol = document.createElement('div');
+  const teamHeading = document.createElement('span');
+  teamHeading.className = 'footer-heading';
+  teamHeading.textContent = 'Team ELCHIP';
+  const teamList = document.createElement('ul');
+  teamList.className = 'footer-links';
+  [
+    ['Join Team ELCHIP', '#/team'],
+    ['Member Portal & Badge', '#/team'],
+    ['Project Registration', '#/team'],
+  ].forEach(([text, href]) => {
     const li = document.createElement('li');
-    const span = document.createElement('span');
-    span.style.cssText = 'font-size:0.85rem; color:rgba(255,255,255,0.4);';
-    span.textContent = ref;
-    li.appendChild(span);
-    refsList.appendChild(li);
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = text;
+    li.appendChild(a);
+    teamList.appendChild(li);
   });
-  refs.append(refsHeading, refsList);
+  teamCol.append(teamHeading, teamList);
 
-  inner.append(brand, links, refs);
+  // Legal & Trust column (Checklist Items 1 & 2)
+  const legalCol = document.createElement('div');
+  const legalHeading = document.createElement('span');
+  legalHeading.className = 'footer-heading';
+  legalHeading.textContent = 'Trust & Legal';
+  const legalList = document.createElement('ul');
+  legalList.className = 'footer-links';
+  [
+    ['Privacy Policy', '#/privacy'],
+    ['Terms & Conditions', '#/terms'],
+    ['Cookie Preferences', '#cookie-settings'],
+  ].forEach(([text, href]) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a');
+    a.href = href;
+    a.textContent = text;
+    if (href === '#cookie-settings') {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (typeof window.showCookieBanner === 'function') {
+          window.showCookieBanner();
+        }
+      });
+    }
+    li.appendChild(a);
+    legalList.appendChild(li);
+  });
+  legalCol.append(legalHeading, legalList);
+
+  inner.append(brand, links, teamCol, legalCol);
 
   const bottom = document.createElement('div');
   bottom.className = 'footer-bottom container';
   const copy = document.createElement('span');
-  copy.textContent = '© 2026 Akshith Mandapally — Semiconductor Manufacturing Platform';
+  copy.textContent = '© 2026 ELCHIP — Open Semiconductor Education Platform';
   const credit = document.createElement('span');
-  credit.textContent = 'Built with precision • Based in India • Open to Relocation';
+  credit.textContent = 'Research Use Only • SSL Secured';
   bottom.append(copy, credit);
 
   footer.append(inner, bottom);

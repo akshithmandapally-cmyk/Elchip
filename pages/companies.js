@@ -3,11 +3,6 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 window.renderCompanies = function(container) {
-  const user = localStorage.getItem('elchip_user');
-  if (!user) {
-    window.renderCompaniesLocked(container);
-    return;
-  }
   const data = window.SEMI_DATA;
   const frag = document.createDocumentFragment();
 
@@ -244,30 +239,5 @@ function buildCompanyCard(co, type) {
 }
 
 window.renderCompaniesLocked = function(container) {
-  const frag = document.createDocumentFragment();
-  
-  const wrapper = document.createElement('main');
-  wrapper.style.cssText = 'min-height:80vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:6rem 1.5rem;';
-  
-  const icon = document.createElement('div');
-  icon.style.cssText = 'font-size:4rem; margin-bottom:1.5rem; filter:drop-shadow(0 0 12px rgba(255,255,255,0.15));';
-  icon.textContent = '🔒';
-  
-  const title = document.createElement('h1');
-  title.style.cssText = 'font-size:clamp(1.5rem,4vw,2.2rem); font-weight:800; color:#fff; margin-bottom:1rem; letter-spacing:-0.02em;';
-  title.textContent = 'Companies Directory';
-  
-  const desc = document.createElement('p');
-  desc.style.cssText = 'font-size:0.95rem; color:rgba(255,255,255,0.5); max-width:540px; line-height:1.75; margin-bottom:2.5rem;';
-  desc.textContent = 'Sign Up or Sign In to access semiconductor companies directory.';
-  
-  const btn = document.createElement('a');
-  btn.className = 'btn btn-primary';
-  btn.href = '#/auth';
-  btn.textContent = 'Sign Up / Sign In';
-  
-  wrapper.append(icon, title, desc, btn);
-  frag.appendChild(wrapper);
-  frag.appendChild(window._buildFooter());
-  container.appendChild(frag);
+  return window.renderCompanies(container);
 };

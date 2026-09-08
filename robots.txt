@@ -1,0 +1,6 @@
+# robots.txt for ELCHIP Semiconductor Educational Platform
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://akshithmandapally-cmyk.github.io/Elchip/sitemap.xml

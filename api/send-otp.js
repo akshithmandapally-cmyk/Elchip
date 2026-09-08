@@ -64,7 +64,8 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'Authorization': `Bearer ${apiKey}`,
+        'User-Agent': 'ELCHIP-App/1.0'
       },
       body: JSON.stringify({
         from: 'ELCHIP <onboarding@resend.dev>',
@@ -76,10 +77,29 @@ export default async function handler(req, res) {
     });
 
     if (!response.ok) {
-      const errData = await response.json().catch(() => ({}));
-      const errMsg = errData.message || `HTTP error! Status: ${response.status}`;
+      let errMsg = `HTTP error! Status: ${response.status}`;
+      try {
+        const errData = await response.json();
+        errMsg = errData.message || errData.error?.message || JSON.stringify(errData);
+      } catch (e) {
+        try {
+          const text = await response.text();
+          if (text) {
+            errMsg = text.substring(0, 200);
+          }
+        } catch (_) {}
+      }
+      
       console.error('Resend API error:', errMsg);
-      return res.status(response.status).json({ error: errMsg });
+      
+      // Provide a helpful tip for common Resend sandbox/domain verification errors
+      let helpfulTip = '';
+      const lowerMsg = errMsg.toLowerCase();
+      if (lowerMsg.includes('sandbox') || lowerMsg.includes('registered email') || lowerMsg.includes('verify your domain') || lowerMsg.includes('restricted_to_registered_email')) {
+        helpfulTip = ' (Tip: Resend\'s free onboarding sandbox only allows sending to your own registered account email. To send to others, verify a custom domain in Resend and update the "from" address in api/send-otp.js)';
+      }
+      
+      return res.status(response.status).json({ error: `${errMsg}${helpfulTip}` });
     }
 
     return res.status(200).json({ success: true });

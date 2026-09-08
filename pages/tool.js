@@ -303,7 +303,9 @@ function buildToolCard(tool) {
     const img = document.createElement('img');
     img.className = 'tool-card-img';
     img.src = tool.image;
-    img.alt = tool.name;
+    img.alt = `Cleanroom inspection apparatus: ${tool.name} — ${tool.fullName || ''}`;
+    img.loading = 'lazy';
+    img.decoding = 'async';
     imgWrap.appendChild(img);
     card.appendChild(imgWrap);
   }
@@ -346,7 +348,9 @@ function buildDiagram(tool) {
     const img = document.createElement('img');
     img.className = 'tool-detail-img';
     img.src = tool.image;
-    img.alt = tool.name + ' Diagram';
+    img.alt = `Schematic engineering diagram of ${tool.name} (${tool.fullName || ''})`;
+    img.loading = 'lazy';
+    img.decoding = 'async';
     imgWrap.appendChild(img);
     outer.appendChild(imgWrap);
   }

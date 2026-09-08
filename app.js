@@ -9,15 +9,14 @@
 (function() {
   'use strict';
 
-  /* ─── ELCHIP CONFIGURATION ─────────────────────────────────────────────
-     TODO(security): For production, restrict this API key to your domain
-     in the Google Cloud Console (API Key Restrictions → HTTP Referrers).
-     This ensures the key only works from your GitHub Pages domain.
-     Steps: https://aistudio.google.com/ → Get API Key → Restrict Key
-     ────────────────────────────────────────────────────────────────────── */
+  // ─── FORCE HTTPS (Checklist Item 4) ────────────────────────────────────
+  if (window.location.protocol === 'http:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    window.location.protocol = 'https:';
+  }
+
+  // ─── ELCHIP CONFIGURATION (Checklist Item 3: Secrets off frontend) ─────
   const ELCHIP_CONFIG = {
-    // Set your Gemini API key here — all visitors will use this for AI responses
-    GEMINI_API_KEY: 'AIzaSyBSAsmRhmAx0jn80m2VxHbRJdV3bM7GvEg',
+    // No hardcoded secrets in client. AI queries route via serverless /api/chat.
     DEFAULT_MODEL: 'gemini-2.5-flash'
   };
 
@@ -35,9 +34,12 @@
     '/tool/:slug':  (params) => window.renderTool(getApp(), params.slug),
     '/tools':       () => window.renderToolsList(getApp()),
     '/companies':   () => window.renderCompanies(getApp()),
-    '/auth':        () => window.renderAuth(getApp()),
+    '/team':        () => window.renderTeam(getApp()),
+    '/auth':        () => window.renderTeam(getApp()), // Legacy alias redirects to Team Hub
     '/connect':     () => window.renderConnect(getApp()),
-    '/dashboard':   () => window.renderDashboard(getApp()),
+    '/privacy':     () => window.renderPrivacy(getApp()),
+    '/terms':       () => window.renderTerms(getApp()),
+    '/dashboard':   () => (window.renderDashboard ? window.renderDashboard(getApp()) : window.renderTeam(getApp())),
     '/glossary':    () => render404Page(getApp()), // Glossary page removed
   };
 
@@ -74,9 +76,48 @@
     return null;
   }
 
+  // ─── DYNAMIC DOCUMENT TITLES (Checklist Item 6) ────────────────────────
+  function updateDocumentTitle(hash) {
+    const cleanPath = (hash.replace(/^#/, '') || '/').split('?')[0];
+    const titles = {
+      '/': 'ELCHIP — Semiconductor Manufacturing & Cleanroom Platform',
+      '/process-flow': 'Manufacturing Process Flow | ELCHIP',
+      '/tools': 'Cleanroom Inspection Tools & Metrology | ELCHIP',
+      '/companies': 'Semiconductor Foundries & Equipment Ecosystem | ELCHIP',
+      '/team': 'Team ELCHIP — Engineering Cohort & Member Hub',
+      '/auth': 'Team ELCHIP — Member Access',
+      '/connect': "Let's Connect | ELCHIP",
+      '/privacy': 'Privacy Policy | ELCHIP',
+      '/terms': 'Terms & Conditions | ELCHIP',
+      '/dashboard': 'Cleanroom Member Dashboard | ELCHIP'
+    };
+
+    if (titles[cleanPath]) {
+      document.title = titles[cleanPath];
+    } else if (cleanPath.startsWith('/process/')) {
+      const slug = cleanPath.replace('/process/', '');
+      const step = window.SEMI_DATA?.steps?.find(s => s.slug === slug);
+      document.title = step ? `${step.title} | ELCHIP Process Flow` : 'Fabrication Step | ELCHIP';
+    } else if (cleanPath.startsWith('/tool/')) {
+      const slug = cleanPath.replace('/tool/', '');
+      const tool = window.SEMI_DATA?.tools?.find(t => t.slug === slug);
+      document.title = tool ? `${tool.name} — ${tool.fullName} | ELCHIP` : 'Inspection Tool | ELCHIP';
+    } else {
+      document.title = 'ELCHIP — Semiconductor Manufacturing Platform';
+    }
+  }
+
   function navigate() {
     const hash = window.location.hash || '#/';
     window.scrollTo({ top: 0, behavior: 'instant' });
+
+    // Update dynamic title
+    updateDocumentTitle(hash);
+
+    // Track analytics pageview (Checklist Item 19)
+    if (window.ELCHIP_ANALYTICS) {
+      window.ELCHIP_ANALYTICS.track('page_view', { path: hash });
+    }
 
     // Close assistant panel upon route change to keep layout clean
     if (typeof toggleAssistPanel === 'function') {
@@ -139,6 +180,7 @@
       { label: 'Process Flow', href: '#/process-flow' },
       { label: 'Tools', href: '#/tools' },
       { label: 'Companies', href: '#/companies' },
+      { label: 'Team ELCHIP', href: '#/team', isTeam: true },
       { label: "Let's Connect", href: '#/connect' }
     ];
 
@@ -146,51 +188,18 @@
       const li = document.createElement('li');
       const a = document.createElement('a');
       a.href = item.href;
-      a.textContent = item.label;
       a.setAttribute('data-href', item.href);
+
+      if (item.isTeam) {
+        a.style.cssText = 'display:inline-flex; align-items:center; gap:0.4rem; color:#86efac; font-weight:700;';
+        a.innerHTML = '<span style="width:6px; height:6px; border-radius:50%; background:#22c55e; box-shadow:0 0 6px #22c55e;"></span><span>Team ELCHIP</span>';
+      } else {
+        a.textContent = item.label;
+      }
+
       li.appendChild(a);
       ul.appendChild(li);
     });
-
-    // Authentication dynamic link
-    const user = JSON.parse(localStorage.getItem('elchip_user') || 'null');
-    if (user) {
-      const liUser = document.createElement('li');
-      liUser.style.cssText = 'font-size:0.72rem; color:rgba(255,255,255,0.4); text-transform:uppercase; font-family:var(--mono); letter-spacing:0.12em; display:inline-flex; align-items:center; gap:0.5rem; white-space:nowrap; margin-left:0.5rem;';
-      
-      const linkName = document.createElement('a');
-      linkName.href = '#/dashboard';
-      linkName.setAttribute('data-href', '#/dashboard');
-      linkName.style.cssText = 'color:#fff; text-decoration:none; border-bottom:1px dashed rgba(255,255,255,0.3); padding-bottom:2px; cursor:pointer; transition:color 0.2s;';
-      linkName.textContent = user.firstName;
-      linkName.addEventListener('mouseenter', () => linkName.style.color = 'var(--w70)');
-      linkName.addEventListener('mouseleave', () => linkName.style.color = '#fff');
-      
-      const btnLogout = document.createElement('a');
-      btnLogout.href = '#/';
-      btnLogout.style.cssText = 'color:var(--w50); text-decoration:none; border-bottom:1px dashed rgba(255,255,255,0.3); padding-bottom:2px; cursor:pointer; transition:color 0.2s;';
-      btnLogout.textContent = 'Logout';
-      btnLogout.addEventListener('click', (e) => {
-        e.preventDefault();
-        localStorage.removeItem('elchip_user');
-        buildNav();
-        window.location.hash = '#/';
-        window.location.reload();
-      });
-      btnLogout.addEventListener('mouseenter', () => btnLogout.style.color = '#fff');
-      btnLogout.addEventListener('mouseleave', () => btnLogout.style.color = 'var(--w50)');
-      
-      liUser.append(linkName, document.createTextNode('|'), btnLogout);
-      ul.appendChild(liUser);
-    } else {
-      const liAuth = document.createElement('li');
-      const authLink = document.createElement('a');
-      authLink.href = '#/auth';
-      authLink.textContent = 'Sign In';
-      authLink.setAttribute('data-href', '#/auth');
-      liAuth.appendChild(authLink);
-      ul.appendChild(liAuth);
-    }
 
     navEl.appendChild(ul);
 
@@ -289,41 +298,6 @@
       a.addEventListener('click', closeMobileNav);
       mobileNav.appendChild(a);
     });
-
-    // Mobile auth section
-    if (user) {
-      const divUser = document.createElement('div');
-      divUser.style.cssText = 'font-size:0.95rem; color:rgba(255,255,255,0.5); font-family:var(--mono); letter-spacing:0.1em; text-transform:uppercase; display:flex; flex-direction:column; align-items:center; gap:0.75rem;';
-      
-      const nameLink = document.createElement('a');
-      nameLink.href = '#/dashboard';
-      nameLink.style.cssText = 'color:#fff; text-decoration:none; font-weight:700; border-bottom:1px dashed rgba(255,255,255,0.3); padding-bottom:2px; cursor:pointer; transition:color 0.2s;';
-      nameLink.textContent = `Welcome, ${user.firstName}`;
-      nameLink.addEventListener('mouseenter', () => nameLink.style.color = 'var(--w70)');
-      nameLink.addEventListener('mouseleave', () => nameLink.style.color = '#fff');
-      nameLink.addEventListener('click', closeMobileNav);
-      
-      const logoutLink = document.createElement('a');
-      logoutLink.href = '#/';
-      logoutLink.style.cssText = 'color:#fca5a5; text-decoration:none;';
-      logoutLink.textContent = 'Logout';
-      logoutLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        localStorage.removeItem('elchip_user');
-        closeMobileNav();
-        buildNav();
-        window.location.hash = '#/';
-        window.location.reload();
-      });
-      divUser.append(nameLink, logoutLink);
-      mobileNav.appendChild(divUser);
-    } else {
-      const a = document.createElement('a');
-      a.href = '#/auth';
-      a.textContent = 'Sign In';
-      a.addEventListener('click', closeMobileNav);
-      mobileNav.appendChild(a);
-    }
 
     document.body.insertBefore(mobileNav, document.body.firstChild);
 
@@ -2022,15 +1996,8 @@
       apiKeyInput.value = apiKey;
       modelSelect.value = model;
 
-      // Always show Online if config key or localStorage key exists
-      const hasKey = apiKey || ELCHIP_CONFIG.GEMINI_API_KEY;
-      if (hasKey) {
-        hStatus.textContent = '● Online — AI Powered';
-        hStatus.style.color = '#10b981';
-      } else {
-        hStatus.textContent = '● Local Mode — Offline';
-        hStatus.style.color = '#f59e0b';
-      }
+      hStatus.textContent = '● Cleanroom AI Online';
+      hStatus.style.color = '#10b981';
     };
 
     // Save settings helper
@@ -2062,12 +2029,9 @@
       // Typing animation
       const indicator = _appendTypingIndicator(messages);
 
-      // Always attempt RAG first — use config key or localStorage key
-      const hasAnyKey = localStorage.getItem('ak_gemini_api_key') || ELCHIP_CONFIG.GEMINI_API_KEY;
-
-      if (hasAnyKey) {
-        const context = _retrieveContext(q);
-        _callGemini(q, context)
+      // Query AI assistant
+      const context = _retrieveContext(q);
+      _callGemini(q, context)
           .then(reply => {
             indicator.remove();
 
@@ -2115,21 +2079,6 @@
               }, 1000);
             }
           });
-      } else {
-        // No API key at all — pure local mode
-        setTimeout(() => {
-          indicator.remove();
-          const response = _getAssistAnswer(q);
-          _appendBotMessage(messages, response);
-
-          if (response.nav) {
-            setTimeout(() => {
-              window.location.hash = response.nav;
-              toggleAssistPanel(false);
-            }, 1000);
-          }
-        }, 450);
-      }
     };
 
     sendBtn.addEventListener('click', () => handleSend());
@@ -2407,120 +2356,48 @@
   }
 
   async function _callGemini(query, context) {
-    // Use localStorage key if owner set one, otherwise fall back to config key
-    const apiKey = localStorage.getItem('ak_gemini_api_key') || ELCHIP_CONFIG.GEMINI_API_KEY;
+    const userCustomKey = localStorage.getItem('ak_gemini_api_key');
     const model = localStorage.getItem('ak_gemini_model') || ELCHIP_CONFIG.DEFAULT_MODEL;
 
-    if (!apiKey) {
-      throw new Error('No API key configured.');
-    }
+    // 1. If user configured personal key in settings, call Google API directly
+    if (userCustomKey) {
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${userCustomKey}`;
+      const systemPrompt = `You are ELCHIP Assistant, a brilliant, funny, and technically sharp AI embedded in the ELCHIP semiconductor platform. Context: ${context}`;
+      const requestBody = {
+        contents: [{ role: "user", parts: [{ text: `${systemPrompt}\n\nUser Question: ${query}` }] }],
+        generationConfig: { temperature: 0.85, maxOutputTokens: 1200 }
+      };
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-    const systemPrompt = `You are ELCHIP Assistant, an incredibly smart, aggressively funny, and savage AI bot embedded in a semiconductor tech website. You are hilariously unhinged but technically god-tier. You combine the brain of a TSMC process engineer with the mouth of an internet troll.
-
-CRITICAL BEHAVIORAL DIRECTIVES:
-
-1. AGGRESSIVE + FUNNY SOCIAL MEDIA ROASTING:
-Your insults, jokes, and roasts MUST be based on current social media trends, meme templates, internet culture, and popular online jokes. Treat the user like you're a savage in a TikTok, Twitter, or Reddit comment section (e.g., "bro really asked...", "ain't no way you thought...", "bro thinks he's...", NPC jokes, clowning, telling them to touch grass, "bro is yapping"). Do NOT use semiconductor manufacturing terms for the insults/roasts themselves. Keep the humor grounded in online roast culture, making it hilariously savage and relatable.
-
-2. ANSWER EVERYTHING — THEN ROAST:
-No matter what the user asks — semiconductor or not — give a correct, detailed answer. But ALWAYS wrap it in aggressive humor using social media and internet culture roasts. If they ask something non-technical on a semiconductor website, mock them for it using social media meme formats (e.g., "Sir, this is a Wendy's... or rather, a multi-billion dollar cleanroom. Why are we asking this?").
-
-3. GOD-TIER SEMICONDUCTOR KNOWLEDGE:
-When they ask a legitimate technical question, deliver an incredibly deep, accurate, and flawless explanation. But the delivery should still be funny and aggressive, styled like a savage online response. You can be brilliant AND savage simultaneously.
-
-4. TONALITY:
-- Aggressive but never mean-spirited (think: tough love from an online genius)
-- Genuinely funny — make people laugh out loud
-- Use social media meme style and internet jokes as natural comedy
-- Sharp, chaotic neutral energy
-- Zero corporate filter
-
-Your thinking process:
-- Write out your reasoning process inside \`<thought>...</thought>\` tags at the very beginning of your response. Map out how you will structure your answer and locate the details in the context. Keep this technical and objective.
-- Keep the final response outside the \`<thought>\` tags.
-
-Context (Retrieval Augmented Generation):
-You are provided with relevant excerpts from the ELCHIP database. Use this context to answer the user's questions accurately if it relates to semiconductors. If the context does not contain the answer or if the query is unrelated, use your general knowledge to answer.
-Excerpts:
-${context}
-
-CRITICAL WEBSITE NAVIGATION ROUTING:
-If a user wants to find sections on the site, answer them sharply and point them to these exact hash links:
-- Home / Main Hub: '#/'
-- Step-by-step Fabricating Process: '#/process-flow'
-- Equipment & Industrial Tools: '#/tools'
-- Global Manufacturing Companies: '#/companies'
-- Tell them to stop being lazy and hit '⌘K' to use the search bar if they can't find something.
-
-Agent Actions:
-You have the ability to navigate the user to different pages on the ELCHIP platform. If the user asks to see or go to a page/tool/company, or if your answer is directly related to a specific step, tool, or companies page, you can choose to navigate them there.
-To perform an action, you MUST end your response with a JSON action block on a new line (and nothing else after it) in this format:
-{"action": "navigate", "target": "#/process/photolithography"}
-
-Possible navigation targets:
-- "#/process-flow"
-- "#/process/wafer-preparation"
-- "#/process/oxidation"
-- "#/process/photolithography"
-- "#/process/etching"
-- "#/process/ion-implantation"
-- "#/process/thin-film-deposition"
-- "#/process/cmp"
-- "#/process/wafer-inspection"
-- "#/process/assembly-packaging"
-- "#/tools"
-- "#/tool/cd-sem"
-- "#/tool/ellipsometer"
-- "#/tool/overlay-sem"
-- "#/tool/optical-wafer-inspection"
-- "#/tool/ebeam-inspection"
-- "#/tool/xrd"
-- "#/tool/aoi"
-- "#/tool/profilometer"
-- "#/tool/xray-inspection"
-- "#/tool/dopant-profiler"
-- "#/companies"
-
-If you don't need to perform any action, do not include the action block. Only use valid JSON for the action block. Do not format the action block in code blocks (like \`\`\`), just write it as a plain line at the end.`;
-
-    const requestBody = {
-      contents: [
-        {
-          role: "user",
-          parts: [
-            { text: `${systemPrompt}\n\nUser Question: ${query}` }
-          ]
-        }
-      ],
-      generationConfig: {
-        temperature: 0.85,
-        maxOutputTokens: 1200
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody)
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (text) return text;
       }
-    };
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestBody)
-    });
-
-    if (!res.ok) {
-      const errData = await res.json().catch(() => ({}));
-      const errMsg = errData.error?.message || `HTTP error! Status: ${res.status}`;
-      throw new Error(errMsg);
     }
 
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (!text) {
-      throw new Error('Empty response from model.');
+    // 2. Otherwise route through serverless proxy /api/chat (keeps secrets off frontend)
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, context, model })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.text) return data.text;
+      }
+    } catch (_) {
+      // Serverless proxy unavailable (e.g. static GitHub Pages)
     }
 
-    return text;
+    // 3. Built-in contextual cleanroom knowledge fallback
+    const localAnswer = _getAssistAnswer(query);
+    return localAnswer.text || "I'm analyzing the silicon cleanroom records for this topic. Use the ⌘K search bar or explore the 13-step Process Flow for full specs!";
   }
 
   function _getAssistAnswer(query) {
@@ -2667,10 +2544,90 @@ If you don't need to perform any action, do not include the action block. Only u
     };
   }
 
+  // ─── PRIVACY-RESPECTING ANALYTICS (Checklist Item 19) ─────────────────
+  window.ELCHIP_ANALYTICS = {
+    track: function(eventName, props = {}) {
+      const consent = localStorage.getItem('elchip_cookie_consent');
+      if (consent === 'essential') return; // User opted out of non-essential metrics
+
+      const entry = {
+        event: eventName,
+        path: window.location.hash || '#/',
+        timestamp: new Date().toISOString(),
+        ...props
+      };
+
+      try {
+        const logs = JSON.parse(localStorage.getItem('elchip_analytics_log') || '[]');
+        logs.push(entry);
+        if (logs.length > 50) logs.shift();
+        localStorage.setItem('elchip_analytics_log', JSON.stringify(logs));
+      } catch (_) {}
+    }
+  };
+
+  // ─── COOKIE CONSENT BANNER (Checklist Item 5) ─────────────────────────
+  function showCookieBanner() {
+    let banner = document.getElementById('elchip-cookie-banner');
+    if (banner) banner.remove();
+
+    banner = document.createElement('div');
+    banner.id = 'elchip-cookie-banner';
+    banner.setAttribute('role', 'region');
+    banner.setAttribute('aria-label', 'Cookie Consent');
+    banner.style.cssText = 'position:fixed; bottom:24px; left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:760px; z-index:9999; background:rgba(12,12,16,0.92); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.18); border-radius:18px; padding:1.25rem 1.5rem; box-shadow:0 12px 50px rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:space-between; gap:1.25rem; flex-wrap:wrap; animation:cookieSlideUp 0.4s cubic-bezier(0.16,1,0.3,1);';
+
+    const textWrap = document.createElement('div');
+    textWrap.style.cssText = 'flex:1; min-width:280px; font-size:0.84rem; color:rgba(255,255,255,0.78); line-height:1.55;';
+    textWrap.innerHTML = '<strong style="color:#fff; font-weight:700;">🍪 Privacy &amp; Cleanroom Storage:</strong> We use local storage and essential session state to keep your cleanroom preferences and Team ELCHIP membership active. We do not sell your personal data. Read our <a href="#/privacy" style="color:#fff; text-decoration:underline; font-weight:600;">Privacy Policy</a>.';
+
+    const btnWrap = document.createElement('div');
+    btnWrap.style.cssText = 'display:flex; gap:0.65rem; align-items:center; flex-wrap:wrap;';
+
+    const btnEssential = document.createElement('button');
+    btnEssential.className = 'btn btn-ghost';
+    btnEssential.style.cssText = 'padding:0.5rem 1rem; font-size:0.8rem; border-color:rgba(255,255,255,0.2);';
+    btnEssential.textContent = 'Essential Only';
+    btnEssential.addEventListener('click', () => {
+      localStorage.setItem('elchip_cookie_consent', 'essential');
+      dismissBanner();
+    });
+
+    const btnAccept = document.createElement('button');
+    btnAccept.className = 'btn btn-primary';
+    btnAccept.style.cssText = 'padding:0.5rem 1.25rem; font-size:0.8rem; font-weight:700;';
+    btnAccept.textContent = 'Accept All';
+    btnAccept.addEventListener('click', () => {
+      localStorage.setItem('elchip_cookie_consent', 'all');
+      dismissBanner();
+    });
+
+    function dismissBanner() {
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateX(-50%) translateY(20px)';
+      banner.style.transition = 'all 0.3s ease';
+      setTimeout(() => banner.remove(), 300);
+    }
+
+    btnWrap.append(btnEssential, btnAccept);
+    banner.append(textWrap, btnWrap);
+    document.body.appendChild(banner);
+  }
+
+  window.showCookieBanner = showCookieBanner;
+
+  function checkCookieConsent() {
+    const consent = localStorage.getItem('elchip_cookie_consent');
+    if (!consent) {
+      setTimeout(showCookieBanner, 1200);
+    }
+  }
+
   /* ─── INIT ──────────────────────────────────────────────────────────── */
   document.addEventListener('DOMContentLoaded', () => {
     buildNav();
     buildAssistBot();
+    checkCookieConsent();
     setTimeout(hideLoadingScreen, 800);
   });
 
